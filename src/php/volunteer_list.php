@@ -1,39 +1,39 @@
 <?php
 session_start();
-if (!isset($_SESSION["user_id"])) {
+
+$isUserLoggedIn = isset($_SESSION["user_id"]);
+
+if (!$isUserLoggedIn) {
     header('Location: login.php');
     exit();
 }
 
 require 'config.php';
 
+try {
+    $limitOfItemsOnOnePage = 3;
+    $pageNumber = isset($_GET["pageNumber"]) ? (int)$_GET["pageNumber"] : 1;
+    $offset = ($pageNumber - 1) * $limitOfItemsOnOnePage;
+
+    $sqlQueryToFetchVolunteersList = "SELECT benevoles.id, benevoles.nom, benevoles.email, benevoles.role, COALESCE(GROUP_CONCAT(CONCAT(collectes.lieu, ' (', collectes.date_collecte, ')') SEPARATOR ', '), 'Aucune participation pour le moment') AS 'participations' FROM benevoles LEFT JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole LEFT JOIN collectes ON collectes.id = benevoles_collectes.id_collecte GROUP BY benevoles.id ORDER BY benevoles.nom ASC LIMIT :limit OFFSET :offset";
+    $statementToFetchVolunteersList = $pdo->prepare($sqlQueryToFetchVolunteersList);
+    $statementToFetchVolunteersList->bindParam(':limit', $limitOfItemsOnOnePage, PDO::PARAM_INT);
+    $statementToFetchVolunteersList->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $statementToFetchVolunteersList->execute();
+    $volunteersList = $statementToFetchVolunteersList->fetchAll();
+
+    $sqlQueryToCountNumberOfRegisteredVolunteers = "SELECT COUNT(*) AS total FROM benevoles";
+    $statementToGetTotalNumberOfRegisteredVolunteers = $pdo->query($sqlQueryToCountNumberOfRegisteredVolunteers);
+    $totalOfVolunteers = $statementToGetTotalNumberOfRegisteredVolunteers->fetch(PDO::FETCH_ASSOC)['total'];
+    $totalPages = ceil($totalOfVolunteers / $limitOfItemsOnOnePage);
+} catch (PDOException $pdoException) {
+    echo "Erreur de base de données : " . $pdoException->getMessage();
+    exit;
+}
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
-try {
-    // définit la pagination
-    $limit = 3;
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $offset = ($page - 1) * $limit;
-
-    // récupération de la liste des bénévoles
-    $statement = $pdo->prepare("SELECT benevoles.id, benevoles.nom, benevoles.email, benevoles.role, COALESCE(GROUP_CONCAT(CONCAT(collectes.lieu, ' (', collectes.date_collecte, ')') SEPARATOR ', '), 'Aucune participation pour le moment') AS 'participations' FROM benevoles LEFT JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole LEFT JOIN collectes ON collectes.id = benevoles_collectes.id_collecte GROUP BY benevoles.id ORDER BY benevoles.nom ASC LIMIT :limit OFFSET :offset"); // écriture de la requête
-
-    // Sécurisation des variables dans la requête, evite les injections SQL
-    $statement->bindParam(':limit', $limit, PDO::PARAM_INT);
-    $statement->bindParam(':offset', $offset, PDO::PARAM_INT);
-    $statement->execute();
-    $volunteersList = $statement->fetchAll(); // exécution de la requête
-
-    // Récupérer le nombre total de bénévoles (pour la pagination)
-    $totalStmt = $pdo->query("SELECT COUNT(*) AS total FROM benevoles");
-    $totalBenevoles = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
-    $totalPages = ceil($totalBenevoles / $limit);
-} catch (PDOException $e) {
-    echo "Erreur de base de données : " . $e->getMessage();
-    exit;
-}
 ?>
 
 <!DOCTYPE html>
@@ -46,15 +46,11 @@ try {
 
 <body class="bg-gray-100 text-gray-900">
     <div class="flex h-screen">
-        <!-- Barre de navigation -->
         <?php require 'navbar.php'; ?>
 
-        <!-- Contenu principal -->
         <main class="flex-1 p-8 overflow-y-auto">
-            <!-- Titre -->
             <h1 class="text-4xl text-cyan-950 font-bold mb-6">Liste des Bénévoles</h1>
 
-            <!-- Tableau des bénévoles -->
             <div class="overflow-hidden rounded-lg shadow-lg bg-white">
                 <table class="w-full table-auto border-collapse">
                     <thead class="bg-cyan-950 text-white">
@@ -62,7 +58,7 @@ try {
                             <th class="py-3 px-4 text-left">Nom</th>
                             <th class="py-3 px-4 text-left">Email</th>
                             <th class="py-3 px-4 text-left">Rôle</th>
-                            <th class="py-2 px-4 border-b">Collectes</th>
+                            <th class="py-3 px-4 text-left">Participations</th>
                             <?php if ($_SESSION["role"] !== "admin"): ?>
                             <?php else: ?>
                                 <th class="py-3 px-4 text-left">Actions</th>
@@ -70,51 +66,37 @@ try {
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-300">
-                        <?php for ($index = 0; $index < count($volunteersList); $index++): ?>
+                        <?php foreach ($volunteersList as $volunteer): ?>
                             <tr class="hover:bg-gray-100 transition duration-200">
-                                <td class="py-3 px-4"><?= htmlspecialchars($volunteersList[$index]["nom"]) ?></td>
-                                <td class="py-3 px-4"><?= htmlspecialchars($volunteersList[$index]["email"]) ?></td>
-                                <td class="py-3 px-4"><?= htmlspecialchars($volunteersList[$index]["role"]) ?></td>
-                                <td class="py-3 px-4"><?= htmlspecialchars($volunteersList[$index]["participations"]) ? htmlspecialchars($volunteersList[$index]["participations"]) : "Aucune" ?></td>
-                                <?php if ($_SESSION["role"] !== "admin"): ?>
-                                <?php else: ?>
-                                    <td class="py-3 px-4 flex space-x-2">
-                                        <a href="volunteer_edit.php?id=<?= $volunteersList[$index]["id"] ?>"
-                                            class="bg-cyan-950 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" aria-label="Modifier le bénévole <?= htmlspecialchars($volunteersList[$index]["nom"]) ?>" role="button" title="Modifier le bénévole <?= htmlspecialchars($volunteersList[$index]["nom"]) ?>">
-                                            Modifier
-                                        </a>
-                                        <a href="volunteer_delete.php?id=<?= $volunteersList[$index]["id"] ?>"
-                                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-lg focus:outline-none         focus:ring-2 focus:ring-red-500 transition duration-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce bénévole ?');">
-                                            Supprimer
-                                        </a>
-                                    </td>
+                                <td class="py-3 px-4">
+                                    <?= htmlspecialchars($volunteer["nom"]) ?>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <?= htmlspecialchars($volunteer["email"]) ?>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <?= htmlspecialchars($volunteer["role"]) ?>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <?= htmlspecialchars($volunteer["participations"]) ? htmlspecialchars($volunteer["participations"]) : "Aucune" ?>
+                                </td>
+                                <?php if ($_SESSION["role"] === "admin"): ?>
+                                    <?php
+                                    $editUrl = "volunteer_edit.php?id=" . $volunteer["id"];
+                                    $deleteUrl = "volunteer_delete.php?id=" . $volunteer["id"];
+                                    $editTitle = "Modifier " . htmlspecialchars($volunteer["nom"]);
+                                    $deleteTitle = "Supprimer " . htmlspecialchars($volunteer["nom"]);
+                                    require 'actionsButtons.php';
+                                    ?>
                                 <?php endif ?>
                             </tr>
 
-                            <!-- syntaxe de fermeture d'une boucle -->
-                        <?php endfor; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
-            <div class="flex justify-center items-center space-x-4 mt-4">
-                <!-- Bouton Précédent -->
-                <!-- la fonction max permet de s'assurer que les pazges ne partent pas en négatif, lorsque l'ont est est sur la page 1, onchange l'aspect du bouton et on annule son réactivité -->
-                <a href="?page=<?= max(1, $page - 1) ?>"
-                    class="min-w-[120px] text-center bg-cyan-950 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition
-                    <?= ($page <= 1) ? 'pointer-events-none opacity-50' : '' ?>">
-                    Précédent
-                </a>
 
-                <span class="text-gray-700 font-semibold">Page <?= $page ?> sur <?= $totalPages ?></span>
-
-                <!-- Bouton Suivant -->
-                <!-- même principe mais dans le sens inverse -->
-                <a href="?page=<?= min($totalPages, $page + 1) ?>"
-                    class="min-w-[120px] text-center bg-cyan-950 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition
-                    <?= ($page >= $totalPages) ? 'pointer-events-none opacity-50' : '' ?>">
-                    Suivant
-                </a>
-            </div>
+            <?php require 'paginationButtons.php'; ?>
         </main>
     </div>
 </body>
