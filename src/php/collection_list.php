@@ -2,7 +2,6 @@
 session_start();
 
 $isUserLoggedIn = isset($_SESSION["user_id"]);
-
 if (!$isUserLoggedIn) {
     header('Location: login.php');
     exit();
@@ -17,15 +16,18 @@ try {
 
     $sqlQueryToFetchCollectionsList = "SELECT benevoles_collectes.id_collecte AS id, collectes.date_collecte, collectes.lieu, GROUP_CONCAT(DISTINCT benevoles.nom ORDER BY benevoles.nom SEPARATOR ', ') AS benevoles, GROUP_CONCAT(DISTINCT CONCAT(COALESCE(dechets_collectes.type_dechet, 'type(s) non défini(s)'), ' (', ROUND(COALESCE(dechets_collectes.quantite_kg, 0), 1), 'kg)') ORDER BY dechets_collectes.type_dechet SEPARATOR ', ') AS wasteDetails FROM benevoles INNER JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole INNER JOIN collectes ON collectes.id = benevoles_collectes.id_collecte LEFT JOIN dechets_collectes ON collectes.id = dechets_collectes.id_collecte GROUP BY benevoles_collectes.id_collecte ORDER BY collectes.date_collecte DESC LIMIT :limit OFFSET :offset";
     $statementToFetchCollectionsList = $pdo->prepare($sqlQueryToFetchCollectionsList);
-    $statementToFetchCollectionsList->bindParam(':limit', $limitOfItemsOnOnePage, PDO::PARAM_INT);
-    $statementToFetchCollectionsList->bindParam(':offset', $offset, PDO::PARAM_INT);
-    $statementToFetchCollectionsList->execute();
+    if (!$statementToFetchCollectionsList->bindParam(':limit', $limitOfItemsOnOnePage, PDO::PARAM_INT) || !$statementToFetchCollectionsList->bindParam(':offset', $offset, PDO::PARAM_INT) || !$statementToFetchCollectionsList->execute()) {
+        die("Erreur lors de la récupération des collectes.");
+    }
     $collectionsList = $statementToFetchCollectionsList->fetchAll();
 
     $sqlQueryToCountNumberOfRegisteredCollections = "SELECT COUNT(DISTINCT benevoles_collectes.id_collecte) AS total FROM benevoles INNER JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole INNER JOIN collectes ON collectes.id = benevoles_collectes.id_collecte";
-    $statementToGetTotalNumberOfRegisteredCollections = $pdo->query($sqlQueryToCountNumberOfRegisteredCollections);
-    $totalOfCollections = $statementToGetTotalNumberOfRegisteredCollections->fetch(PDO::FETCH_ASSOC)['total'];
-    $totalPages = ceil($totalOfCollections / $limitOfItemsOnOnePage);
+    $statementToGetTotalNumberOfRegisteredCollections = $pdo->prepare($sqlQueryToCountNumberOfRegisteredCollections);
+    if (!$statementToGetTotalNumberOfRegisteredCollections->execute()) {
+        die("Erreur lors de la récupération du nombre de collectes.");
+    }
+    $totalNumberOfRegisteredCollections = $statementToGetTotalNumberOfRegisteredCollections->fetch(PDO::FETCH_ASSOC)['total'];
+    $totalPages = ceil($totalNumberOfRegisteredCollections / $limitOfItemsOnOnePage);
 
     $sqlQueryToFetchTotalQuantityOfAllWastesEverCollected = "SELECT ROUND(SUM(COALESCE(dechets_collectes.quantite_kg,0)),1) AS quantite_total_des_dechets_collectes FROM collectes LEFT JOIN dechets_collectes ON collectes.id=dechets_collectes.id_collecte";
     $statementToGetTotalQuantityOfAllWastesEverCollected = $pdo->query($sqlQueryToFetchTotalQuantityOfAllWastesEverCollected);
@@ -94,7 +96,7 @@ error_reporting(E_ALL);
             <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <h3 class="text-xl font-semibold text-gray-800 mb-3">Total des Collectes</h3>
-                    <p class="text-3xl font-bold text-blue-600"><?= $totalOfCollections ?></p>
+                    <p class="text-3xl font-bold text-blue-600"><?= $totalNumberOfRegisteredCollections ?></p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <h3 class="text-xl font-semibold text-gray-800 mb-3">Total des déchets collectés </h3>
@@ -137,13 +139,13 @@ error_reporting(E_ALL);
                                     <?= date($dateFormat, strtotime($collection['date_collecte'])) ?>
                                 </td>
                                 <td class="py-3 px-4">
-                                    <?= htmlspecialchars($collection['lieu']) ?>
+                                    <?= $collection['lieu'] ?>
                                 </td>
                                 <td class="py-3 px-4">
-                                    <?= $collection['benevoles'] ? htmlspecialchars($collection['benevoles']) : 'Aucun bénévole' ?>
+                                    <?= $collection['benevoles'] ? $collection['benevoles'] : 'Aucun bénévole' ?>
                                 </td>
                                 <td class="py-3 px-4">
-                                    <?= htmlspecialchars($collection['wasteDetails']) ?>
+                                    <?= $collection['wasteDetails'] ?>
                                 </td>
                                 <?php if ($_SESSION["role"] === "admin"): ?>
                                     <?php
