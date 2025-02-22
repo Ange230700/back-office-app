@@ -2,7 +2,6 @@
 session_start();
 
 $isUserLoggedIn = isset($_SESSION["user_id"]);
-
 if (!$isUserLoggedIn) {
     header('Location: login.php');
     exit();
@@ -17,15 +16,18 @@ try {
 
     $sqlQueryToFetchVolunteersList = "SELECT benevoles.id, benevoles.nom, benevoles.email, benevoles.role, COALESCE(GROUP_CONCAT(CONCAT(collectes.lieu, ' (', collectes.date_collecte, ')') SEPARATOR ', '), 'Aucune participation pour le moment') AS 'participations' FROM benevoles LEFT JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole LEFT JOIN collectes ON collectes.id = benevoles_collectes.id_collecte GROUP BY benevoles.id ORDER BY benevoles.nom ASC LIMIT :limit OFFSET :offset";
     $statementToFetchVolunteersList = $pdo->prepare($sqlQueryToFetchVolunteersList);
-    $statementToFetchVolunteersList->bindParam(':limit', $limitOfItemsOnOnePage, PDO::PARAM_INT);
-    $statementToFetchVolunteersList->bindParam(':offset', $offset, PDO::PARAM_INT);
-    $statementToFetchVolunteersList->execute();
+    if (!$statementToFetchVolunteersList->bindParam(':limit', $limitOfItemsOnOnePage, PDO::PARAM_INT) || !$statementToFetchVolunteersList->bindParam(':offset', $offset, PDO::PARAM_INT) || !$statementToFetchVolunteersList->execute()) {
+        die("Erreur lors de la récupération des bénévoles.");
+    }
     $volunteersList = $statementToFetchVolunteersList->fetchAll();
 
     $sqlQueryToCountNumberOfRegisteredVolunteers = "SELECT COUNT(*) AS total FROM benevoles";
-    $statementToGetTotalNumberOfRegisteredVolunteers = $pdo->query($sqlQueryToCountNumberOfRegisteredVolunteers);
-    $totalOfVolunteers = $statementToGetTotalNumberOfRegisteredVolunteers->fetch(PDO::FETCH_ASSOC)['total'];
-    $totalPages = ceil($totalOfVolunteers / $limitOfItemsOnOnePage);
+    $statementToGetTotalNumberOfRegisteredVolunteers = $pdo->prepare($sqlQueryToCountNumberOfRegisteredVolunteers);
+    if (!$statementToGetTotalNumberOfRegisteredVolunteers->execute()) {
+        die("Erreur lors de la récupération du nombre de bénévoles.");
+    }
+    $totalNumberOfRegisteredVolunteers = $statementToGetTotalNumberOfRegisteredVolunteers->fetch(PDO::FETCH_ASSOC)['total'];
+    $totalPages = ceil($totalNumberOfRegisteredVolunteers / $limitOfItemsOnOnePage);
 } catch (PDOException $pdoException) {
     echo "Erreur de base de données : " . $pdoException->getMessage();
     exit;
@@ -49,7 +51,7 @@ error_reporting(E_ALL);
         <?php require 'navbar.php'; ?>
 
         <main class="flex-1 p-8 overflow-y-auto">
-            <h1 class="text-4xl text-cyan-950 font-bold mb-6">Liste des Bénévoles</h1>
+            <h1 class="text-4xl font-bold text-cyan-950 mb-6">Liste des Bénévoles</h1>
 
             <div class="overflow-hidden rounded-lg shadow-lg bg-white">
                 <table class="w-full table-auto border-collapse">
