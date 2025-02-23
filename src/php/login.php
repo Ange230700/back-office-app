@@ -1,19 +1,15 @@
 <?php
-session_start(); // Démarrer la session
+session_start();
 require 'config.php';
 
-// récupération des champs tapé par l'utilisateur
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
 
-    // Vérifier si l'utilisateur existe dans la table `benevoles`
     $stmt = $pdo->prepare("SELECT * FROM benevoles WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
-    // Vérification du mot de passe (si hashé en BDD)
-    // si l'utilisateur est trouve, on garde les info de l'utilisateur dans une session
     if ($user && password_verify($password, $user['mot_de_passe'])) {
         $_SESSION["user_id"] = $user["id"];
         $_SESSION["nom"] = $user["nom"];
@@ -59,8 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <input type="password" name="password" id="password" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
-                <div class="flex justify-between items-center">
-                    <a href="#" class="text-sm text-blue-600 hover:underline">Mot de passe oublié ?</a>
+                <div class="flex justify-center items-center">
                     <button type="submit" class="bg-cyan-950 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md">
                         Se connecter
                     </button>

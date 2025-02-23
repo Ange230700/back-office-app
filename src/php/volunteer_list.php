@@ -1,106 +1,73 @@
 <?php
-session_start();
+require 'init.php';
 
-$isUserLoggedIn = isset($_SESSION["user_id"]);
-if (!$isUserLoggedIn) {
-    header('Location: login.php');
-    exit();
-}
+// Pagination parameters
+$limitOfItemsOnOnePage = 3;
+$pageNumber = isset($_GET["pageNumber"]) ? (int)$_GET["pageNumber"] : 1;
+$offset = ($pageNumber - 1) * $limitOfItemsOnOnePage;
 
-require 'config.php';
+// Retrieve volunteers with their participations
+$sql = "SELECT benevoles.id, benevoles.nom, benevoles.email, benevoles.role, COALESCE(GROUP_CONCAT(CONCAT(collectes.lieu, ' (', collectes.date_collecte, ')') SEPARATOR ', '), 'Aucune participation pour le moment') AS participations
+    FROM benevoles
+    LEFT JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole
+    LEFT JOIN collectes ON collectes.id = benevoles_collectes.id_collecte
+    GROUP BY benevoles.id
+    ORDER BY benevoles.nom ASC
+    LIMIT :limit OFFSET :offset";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':limit', $limitOfItemsOnOnePage, PDO::PARAM_INT);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+$volunteersList = $stmt->fetchAll();
 
-try {
-    $limitOfItemsOnOnePage = 3;
-    $pageNumber = isset($_GET["pageNumber"]) ? (int)$_GET["pageNumber"] : 1;
-    $offset = ($pageNumber - 1) * $limitOfItemsOnOnePage;
+// Get total number of volunteers for pagination
+$countSql = "SELECT COUNT(*) AS total FROM benevoles";
+$stmtCount = $pdo->prepare($countSql);
+$stmtCount->execute();
+$totalVolunteers = $stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
+$totalPages = ceil($totalVolunteers / $limitOfItemsOnOnePage);
 
-    $sqlQueryToFetchVolunteersList = "SELECT benevoles.id, benevoles.nom, benevoles.email, benevoles.role, COALESCE(GROUP_CONCAT(CONCAT(collectes.lieu, ' (', collectes.date_collecte, ')') SEPARATOR ', '), 'Aucune participation pour le moment') AS 'participations' FROM benevoles LEFT JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole LEFT JOIN collectes ON collectes.id = benevoles_collectes.id_collecte GROUP BY benevoles.id ORDER BY benevoles.nom ASC LIMIT :limit OFFSET :offset";
-    $statementToFetchVolunteersList = $pdo->prepare($sqlQueryToFetchVolunteersList);
-    if (!$statementToFetchVolunteersList->bindParam(':limit', $limitOfItemsOnOnePage, PDO::PARAM_INT) || !$statementToFetchVolunteersList->bindParam(':offset', $offset, PDO::PARAM_INT) || !$statementToFetchVolunteersList->execute()) {
-        die("Erreur lors de la récupération des bénévoles.");
-    }
-    $volunteersList = $statementToFetchVolunteersList->fetchAll();
+$pageTitle = "Liste des Bénévoles";
+$pageHeader = "Liste des Bénévoles";
 
-    $sqlQueryToCountNumberOfRegisteredVolunteers = "SELECT COUNT(*) AS total FROM benevoles";
-    $statementToGetTotalNumberOfRegisteredVolunteers = $pdo->prepare($sqlQueryToCountNumberOfRegisteredVolunteers);
-    if (!$statementToGetTotalNumberOfRegisteredVolunteers->execute()) {
-        die("Erreur lors de la récupération du nombre de bénévoles.");
-    }
-    $totalNumberOfRegisteredVolunteers = $statementToGetTotalNumberOfRegisteredVolunteers->fetch(PDO::FETCH_ASSOC)['total'];
-    $totalPages = ceil($totalNumberOfRegisteredVolunteers / $limitOfItemsOnOnePage);
-} catch (PDOException $pdoException) {
-    echo "Erreur de base de données : " . $pdoException->getMessage();
-    exit;
-}
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Build the page content using output buffering
+ob_start();
 ?>
-
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <?php require 'headElement.php'; ?>
-    <title>Liste des Bénévoles</title>
-</head>
-
-<body class="bg-gray-100 text-gray-900">
-    <div class="flex h-screen">
-        <?php require 'navbar.php'; ?>
-
-        <main class="flex-1 p-8 overflow-y-auto">
-            <h1 class="text-4xl font-bold text-cyan-950 mb-6">Liste des Bénévoles</h1>
-
-            <div class="overflow-hidden rounded-lg shadow-lg bg-white">
-                <table class="w-full table-auto border-collapse">
-                    <thead class="bg-cyan-950 text-white">
-                        <tr>
-                            <th class="py-3 px-4 text-left">Nom</th>
-                            <th class="py-3 px-4 text-left">Email</th>
-                            <th class="py-3 px-4 text-left">Rôle</th>
-                            <th class="py-3 px-4 text-left">Participations</th>
-                            <?php if ($_SESSION["role"] !== "admin"): ?>
-                            <?php else: ?>
-                                <th class="py-3 px-4 text-left">Actions</th>
-                            <?php endif ?>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-300">
-                        <?php foreach ($volunteersList as $volunteer): ?>
-                            <tr class="hover:bg-gray-100 transition duration-200">
-                                <td class="py-3 px-4">
-                                    <?= htmlspecialchars($volunteer["nom"]) ?>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <?= htmlspecialchars($volunteer["email"]) ?>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <?= htmlspecialchars($volunteer["role"]) ?>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <?= htmlspecialchars($volunteer["participations"]) ? htmlspecialchars($volunteer["participations"]) : "Aucune" ?>
-                                </td>
-                                <?php if ($_SESSION["role"] === "admin"): ?>
-                                    <?php
-                                    $editUrl = "volunteer_edit.php?id=" . $volunteer["id"];
-                                    $deleteUrl = "volunteer_delete.php?id=" . $volunteer["id"];
-                                    $editTitle = "Modifier " . htmlspecialchars($volunteer["nom"]);
-                                    $deleteTitle = "Supprimer " . htmlspecialchars($volunteer["nom"]);
-                                    require 'actionsButtons.php';
-                                    ?>
-                                <?php endif ?>
-                            </tr>
-
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <?php require 'paginationButtons.php'; ?>
-        </main>
-    </div>
-</body>
-
-</html>
+<div class="overflow-hidden rounded-lg shadow-lg bg-white">
+    <table class="w-full table-auto border-collapse">
+        <thead class="bg-cyan-950 text-white">
+            <tr>
+                <th class="py-3 px-4 text-left">Nom</th>
+                <th class="py-3 px-4 text-left">Email</th>
+                <th class="py-3 px-4 text-left">Rôle</th>
+                <th class="py-3 px-4 text-left">Participations</th>
+                <?php if ($_SESSION["role"] === "admin"): ?>
+                    <th class="py-3 px-4 text-left">Actions</th>
+                <?php endif; ?>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-300">
+            <?php foreach ($volunteersList as $volunteer): ?>
+                <tr class="hover:bg-gray-100 transition duration-200">
+                    <td class="py-3 px-4"><?= htmlspecialchars($volunteer["nom"]) ?></td>
+                    <td class="py-3 px-4"><?= htmlspecialchars($volunteer["email"]) ?></td>
+                    <td class="py-3 px-4"><?= htmlspecialchars($volunteer["role"]) ?></td>
+                    <td class="py-3 px-4"><?= htmlspecialchars($volunteer["participations"]) ?></td>
+                    <?php if ($_SESSION["role"] === "admin"):
+                        // Set up URLs and titles for the action buttons
+                        $editUrl = "volunteer_edit.php?id=" . $volunteer["id"];
+                        $deleteUrl = "volunteer_delete.php?id=" . $volunteer["id"];
+                        $editTitle = "Modifier " . htmlspecialchars($volunteer["nom"]);
+                        $deleteTitle = "Supprimer " . htmlspecialchars($volunteer["nom"]);
+                        require 'actionsButtons.php';
+                    endif; ?>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+<?php require 'paginationButtons.php'; ?>
+<?php
+$content = ob_get_clean();
+require 'layout.php';
+?>
