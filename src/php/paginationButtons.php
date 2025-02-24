@@ -3,6 +3,7 @@ $paginationButtonsTailwindBaseStyles = "min-w-[120px] text-center bg-cyan-950 ho
 ?>
 
 <div class="flex justify-center items-center space-x-4 mt-4">
+    <?php if ($totalPages >= 1): ?>
     <a href="?pageNumber=<?= max(1, $pageNumber - 1) ?>"
         class="<?= $paginationButtonsTailwindBaseStyles ?> <?= ($pageNumber <= 1) ? 'pointer-events-none opacity-50' : '' ?>">
         Précédent
@@ -14,4 +15,7 @@ $paginationButtonsTailwindBaseStyles = "min-w-[120px] text-center bg-cyan-950 ho
         class="<?= $paginationButtonsTailwindBaseStyles ?> <?= ($pageNumber >= $totalPages) ? 'pointer-events-none opacity-50' : '' ?>">
         Suivant
     </a>
+    <?php else: ?>
+    <span class="text-gray-700 font-semibold">Aucune donnée à afficher</span>
+    <?php endif; ?>
 </div>
