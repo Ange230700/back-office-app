@@ -1,11 +1,17 @@
 <?php
 require 'common_functions.php';
+require 'collection_functions.php';
 require 'config.php';
 
 checkUserAdmin();
 
-$volunteers = getVolunteers($pdo);
-$wasteTypes = getWasteTypes($pdo);
+try {
+    $volunteers = getVolunteers($pdo);
+    $wasteTypes = getWasteTypes($pdo);
+    $places = getPlaces($pdo);
+} catch (PDOException $pdoException) {
+    echo "Erreur de la base de données : " . $pdoException->getMessage();
+}
 
 $collection = [];
 $selectedVolunteers = [];
