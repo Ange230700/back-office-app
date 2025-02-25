@@ -1,5 +1,6 @@
 <?php
 require 'common_functions.php';
+require 'collection_functions.php';
 require 'config.php';
 
 checkUserAdmin();
@@ -23,6 +24,7 @@ try {
     $selectedVolunteers = $stmt->fetchAll(PDO::FETCH_COLUMN);
     $volunteers = getVolunteers($pdo);
     $wasteTypes = getWasteTypes($pdo);
+    $places = getPlaces($pdo);
     $stmt = $pdo->prepare("SELECT type_dechet, quantite_kg FROM dechets_collectes WHERE id_collecte = ?");
     $stmt->execute([$collectionId]);
     $collectedWastes = $stmt->fetchAll();
