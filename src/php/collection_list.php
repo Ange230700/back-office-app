@@ -61,7 +61,10 @@ $nextCollection = $nextStmt->fetch();
 
 $pageTitle = "Liste des Collectes";
 $pageHeader = "Liste des Collectes de Déchets";
+?>
 
+<!-- Collections Table -->
+<?php
 // Build table header HTML
 $headerHtml = '
 <tr>
@@ -94,43 +97,11 @@ foreach ($collectionsList as $collection) {
     }
     $bodyHtml .= '</tr>';
 }
-?>
-<!-- Statistics Section -->
-<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h3 class="text-xl font-semibold text-gray-800 mb-3">Total des Collectes</h3>
-        <p class="text-3xl font-bold text-blue-600"><?= $totalPages * getPaginationParams()['limit'] /* or use total from count query */ ?></p>
-    </div>
-    <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h3 class="text-xl font-semibold text-gray-800 mb-3">Total des déchets collectés</h3>
-        <p class="text-3xl font-bold text-blue-600"><?= $totalWaste ?> kg</p>
-    </div>
-    <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h3 class="text-xl font-semibold text-gray-800 mb-3">Dernière Collecte</h3>
-        <?php if ($mostRecentCollection): ?>
-            <p class="text-lg text-gray-600"><?= htmlspecialchars($mostRecentCollection['lieu']) ?></p>
-            <p class="text-lg text-gray-600"><?= date($dateFormat, strtotime($mostRecentCollection['date_collecte'])) ?></p>
-        <?php else: ?>
-            <p class="text-lg text-gray-600">Aucune collecte pour le moment</p>
-        <?php endif; ?>
-    </div>
-    <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h3 class="text-xl font-semibold text-gray-800 mb-3">Prochaine Collecte</h3>
-        <?php if ($nextCollection): ?>
-            <p class="text-lg text-gray-600"><?= htmlspecialchars($nextCollection['lieu']) ?></p>
-            <p class="text-lg text-gray-600"><?= date($dateFormat, strtotime($nextCollection['date_collecte'])) ?></p>
-        <?php else: ?>
-            <p class="text-lg text-gray-600">Aucune collecte à venir</p>
-        <?php endif; ?>
-    </div>
-</section>
 
-<!-- Collections Table -->
-<?php require 'table_template.php'; ?>
-
-<?php $paginationParams = getPaginationParams();
+require 'table_template.php';
+$paginationParams = getPaginationParams();
 $pageNumber = $paginationParams['pageNumber'];
-require 'paginationButtons.php'; ?>
-<?php
+require 'paginationButtons.php';
 $content = ob_get_clean();
 require 'layout.php';
+?>
