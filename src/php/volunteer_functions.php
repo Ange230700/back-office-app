@@ -13,7 +13,7 @@ function checkUserAdmin()
     }
 }
 
-function getCollections(PDO $pdo)
+function getCollectionsList(PDO $pdo)
 {
     $stmt = $pdo->prepare("SELECT id, CONCAT(DATE_FORMAT(date_collecte, '%d/%m/%Y'), ' - ', lieu) AS collection_label FROM collectes ORDER BY date_collecte");
     if (!$stmt->execute()) {
