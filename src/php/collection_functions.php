@@ -4,7 +4,7 @@ require 'config.php';
 /**
  * Retrieve all volunteers.
  */
-function getVolunteers(PDO $pdo)
+function getVolunteersList(PDO $pdo)
 {
     $stmt = $pdo->prepare("SELECT id, nom FROM benevoles ORDER BY nom");
     if (!$stmt->execute()) {
@@ -16,7 +16,7 @@ function getVolunteers(PDO $pdo)
 /**
  * Retrieve distinct waste types.
  */
-function getWasteTypes(PDO $pdo)
+function getWasteTypesList(PDO $pdo)
 {
     $stmt = $pdo->prepare("SELECT DISTINCT type_dechet FROM dechets_collectes");
     if (!$stmt->execute()) {
@@ -28,7 +28,7 @@ function getWasteTypes(PDO $pdo)
 /**
  * Retrieve distinct places.
  */
-function getPlaces(PDO $pdo)
+function getPlacesList(PDO $pdo)
 {
     $stmt = $pdo->prepare("SELECT DISTINCT lieu FROM collectes ORDER BY lieu");
     if (!$stmt->execute()) {

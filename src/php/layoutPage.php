@@ -20,7 +20,7 @@
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-lg">
                         <h3 class="text-xl font-semibold text-gray-800 mb-3">Total des déchets collectés</h3>
-                        <p class="text-3xl font-bold text-blue-600"><?= $totalWaste ?> kg</p>
+                        <p class="text-3xl font-bold text-blue-600"><?= $collectedWastesTotalQuantity ?> kg</p>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-lg">
                         <h3 class="text-xl font-semibold text-gray-800 mb-3">Dernière Collecte</h3>

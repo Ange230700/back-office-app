@@ -31,9 +31,9 @@
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">
             Participations
-            <?php if (!empty($collections)): ?>
+            <?php if (!empty($collectionsList)): ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <?php foreach ($collections as $collection): ?>
+                    <?php foreach ($collectionsList as $collection): ?>
                         <div class="flex items-center">
                             <input type="checkbox" name="attendances[]" value="<?= $collection['id'] ?>" id="collection_<?= $collection['id'] ?>" class="mr-2"
                                 <?= in_array($collection['id'], $selectedCollections) ? 'checked' : '' ?>>
