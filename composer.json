@@ -1,0 +1,16 @@
+{
+    "name": "kouak/back-office-app",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Kouak\\BackOfficeApp\\": "source/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ange230700",
+            "email": "kouakouangeericstephane@gmail.com"
+        }
+    ],
+    "require": {}
+}
