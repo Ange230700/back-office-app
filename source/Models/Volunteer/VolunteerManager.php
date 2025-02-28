@@ -80,20 +80,30 @@ class VolunteerManager
     {
         $paginationParams = Helpers::getPaginationParams();
         $sql = "SELECT
-                    benevoles.id,
-                    benevoles.nom,
-                    benevoles.email,
-                    benevoles.role,
-                    COALESCE(
-                        GROUP_CONCAT(CONCAT(collectes.lieu, ' (', collectes.date_collecte, ')') SEPARATOR ', '),
-                        'Aucune participation pour le moment'
-                    ) AS participations
-                FROM benevoles
-                LEFT JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole
-                LEFT JOIN collectes ON collectes.id = benevoles_collectes.id_collecte
-                GROUP BY benevoles.id
-                ORDER BY benevoles.nom ASC
-                LIMIT :limit OFFSET :offset";
+    benevoles.id,
+    benevoles.nom,
+    benevoles.email,
+    benevoles.role,
+    COALESCE(
+       GROUP_CONCAT(
+          CONCAT(
+             collectes.lieu, ' (', 
+             DATE_FORMAT(collectes.date_collecte, '%d/%m/%Y'), 
+             ')'
+          )
+          SEPARATOR ', '
+       ),
+       'Aucune participation pour le moment'
+    ) AS participations
+FROM benevoles
+LEFT JOIN benevoles_collectes 
+    ON benevoles.id = benevoles_collectes.id_benevole
+LEFT JOIN collectes 
+    ON collectes.id = benevoles_collectes.id_collecte
+GROUP BY benevoles.id
+ORDER BY benevoles.nom ASC
+LIMIT :limit OFFSET :offset;
+";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':limit', $paginationParams['limit'], PDO::PARAM_INT);
         $stmt->bindValue(':offset', $paginationParams['offset'], PDO::PARAM_INT);

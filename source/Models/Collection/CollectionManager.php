@@ -142,7 +142,8 @@ class CollectionManager
         return $statementToGetPlacesList->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    public function readCollectionsList() {
+    public function readCollectionsList()
+    {
         $sqlQueryToSelectCollectionsList = "SELECT id, CONCAT(DATE_FORMAT(date_collecte, '%d/%m/%Y'), ' - ', lieu) AS collection_label FROM collectes ORDER BY date_collecte";
         $statementToGetCollectionsList = $this->pdo->prepare($sqlQueryToSelectCollectionsList);
         if (!$statementToGetCollectionsList->execute()) {
@@ -156,19 +157,35 @@ class CollectionManager
         $limit = $paginationParams['limit'];
         $offset = $paginationParams['offset'];
         $sql = "SELECT
-                    benevoles_collectes.id_collecte AS id,
-                    collectes.date_collecte,
-                    collectes.lieu,
-                    GROUP_CONCAT(DISTINCT benevoles.nom ORDER BY benevoles.nom SEPARATOR ', ') AS benevoles,
-                    GROUP_CONCAT(DISTINCT CONCAT(COALESCE(dechets_collectes.type_dechet, 'type  (s) non défini(s)'), ' (', ROUND(COALESCE(dechets_collectes.quantite_kg, 0), 1), 'kg)')
-                    ORDER BY dechets_collectes.type_dechet SEPARATOR ', ') AS wasteDetails
-                FROM benevoles
-                INNER JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole
-                INNER JOIN collectes ON collectes.id = benevoles_collectes.id_collecte
-                LEFT JOIN dechets_collectes ON collectes.id = dechets_collectes.id_collecte
-                GROUP BY benevoles_collectes.id_collecte
-                ORDER BY collectes.date_collecte DESC
-                LIMIT :limit OFFSET :offset";
+    collectes.id,
+    collectes.date_collecte,
+    collectes.lieu,
+    COALESCE(
+       GROUP_CONCAT(DISTINCT benevoles.nom ORDER BY benevoles.nom SEPARATOR ', '),
+       'Aucun bénévole'
+    ) AS benevoles,
+    COALESCE(
+       GROUP_CONCAT(
+           DISTINCT CONCAT(
+             COALESCE(dechets_collectes.type_dechet, 'type (s) non défini(s)'),
+             ' (', ROUND(COALESCE(dechets_collectes.quantite_kg, 0), 1), 'kg)'
+           )
+           ORDER BY dechets_collectes.type_dechet
+           SEPARATOR ', '
+       ),
+       'Aucun déchet collecté'
+    ) AS wasteDetails
+FROM collectes
+LEFT JOIN benevoles_collectes 
+    ON collectes.id = benevoles_collectes.id_collecte
+LEFT JOIN benevoles 
+    ON benevoles_collectes.id_benevole = benevoles.id
+LEFT JOIN dechets_collectes 
+    ON collectes.id = dechets_collectes.id_collecte
+GROUP BY collectes.id
+ORDER BY collectes.date_collecte DESC
+LIMIT :limit OFFSET :offset;
+";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
