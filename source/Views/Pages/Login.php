@@ -5,6 +5,7 @@ namespace Kouak\BackOfficeApp\Views\Pages;
 use Kouak\BackOfficeApp\Views\Components\HeadElement;
 use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Database\Configuration;
+use Kouak\BackOfficeApp\Controllers\Login\LoginController;
 
 class Login
 {
@@ -26,11 +27,10 @@ class Login
                 $email = $_POST["email"] ?? '';
                 $password = $_POST["password"] ?? '';
 
-                // Retrieve PDO instance and verify user credentials...
+                // Use LoginController to handle authentication.
                 $pdo = Configuration::getPdo();
-                $stmt = $pdo->prepare("SELECT * FROM benevoles WHERE email = ?");
-                $stmt->execute([$email]);
-                $user = $stmt->fetch();
+                $loginController = new LoginController($pdo);
+                $user = $loginController->authenticate($email, $password);
 
                 if ($user && password_verify($password, $user['mot_de_passe'])) {
                     Session::regenerate();
