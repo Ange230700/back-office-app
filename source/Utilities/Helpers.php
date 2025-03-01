@@ -19,7 +19,8 @@ class Helpers
     {
         self::initSession();
 
-        if (!isset($_SESSION["user_id"])) {
+        $userId = Session::get("user_id");
+        if (!isset($userId)) {
             header('Location: /back-office-app/index.php?route=login');
             exit();
         }
@@ -32,7 +33,8 @@ class Helpers
     {
         self::checkUserLoggedIn();
 
-        if ($_SESSION["role"] !== "admin") {
+        $role = Session::get("role");
+        if ($role !== "admin") {
             header("Location: /back-office-app/index.php?route=collection-list");
             exit();
         }

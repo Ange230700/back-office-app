@@ -2,6 +2,7 @@
 
 namespace Kouak\BackOfficeApp\Views\Pages;
 
+use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
@@ -32,7 +33,8 @@ class VolunteerList
                 <th class="py-3 px-4 text-left">Email</th>
                 <th class="py-3 px-4 text-left">Rôle</th>
                 <th class="py-3 px-4 text-left">Participations</th>';
-        if ($_SESSION["role"] === "admin") {
+        $role = Session::get("role");
+        if ($role === "admin") {
             $tableHeadersRow .= '<th class="py-3 px-4 text-left">Actions</th>';
         }
         $tableHeadersRow .= '</tr>';
@@ -44,7 +46,8 @@ class VolunteerList
             $tableBody .= '<td class="py-3 px-4">' . htmlspecialchars($volunteer["email"]) . '</td>';
             $tableBody .= '<td class="py-3 px-4">' . htmlspecialchars($volunteer["role"]) . '</td>';
             $tableBody .= '<td class="py-3 px-4">' . htmlspecialchars($volunteer["participations"]) . '</td>';
-            if ($_SESSION["role"] === "admin") {
+
+            if ($role === "admin") {
                 $editUrl = "/back-office-app/index.php?route=volunteer-edit&id=" . $volunteer["id"];
                 $deleteUrl = "/back-office-app/index.php?route=volunteer-delete&id=" . $volunteer["id"];
                 $editTitle = "Modifier " . htmlspecialchars($volunteer["nom"]);

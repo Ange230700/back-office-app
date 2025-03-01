@@ -2,6 +2,7 @@
 
 namespace Kouak\BackOfficeApp\Views\Pages;
 
+use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
@@ -33,7 +34,8 @@ class CollectionList
                 <th class="py-3 px-4 text-left">Lieu</th>
                 <th class="py-3 px-4 text-left">Bénévoles</th>
                 <th class="py-3 px-4 text-left">Types de déchets (quantité en kg)</th>';
-        if ($_SESSION["role"] === "admin") {
+        $role = Session::get("role");
+        if ($role === "admin") {
             $tableHeadersRow .= '<th class="py-3 px-4 text-left">Actions</th>';
         }
         $tableHeadersRow .= '</tr>';
@@ -45,7 +47,7 @@ class CollectionList
             $tableBody .= '<td class="py-3 px-4">' . htmlspecialchars($collection['lieu']) . '</td>';
             $tableBody .= '<td class="py-3 px-4">' . ($collection['benevoles'] ? htmlspecialchars($collection['benevoles']) : 'Aucun bénévole') . '</td>';
             $tableBody .= '<td class="py-3 px-4">' . $collection['wasteDetails'] . '</td>';
-            if ($_SESSION["role"] === "admin") {
+            if ($role === "admin") {
                 $editUrl = "/back-office-app/index.php?route=collection-edit&id=" . $collection["id"];
                 $deleteUrl = "/back-office-app/index.php?route=collection-delete&id=" . $collection["id"];
                 $editTitle = "Modifier la collecte du " . date($dateFormat, strtotime($collection['date_collecte'])) . " à " . htmlspecialchars($collection['lieu']);

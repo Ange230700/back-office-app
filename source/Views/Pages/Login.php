@@ -3,7 +3,6 @@
 namespace Kouak\BackOfficeApp\Views\Pages;
 
 use Kouak\BackOfficeApp\Views\Components\HeadElement;
-use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Database\Configuration;
 

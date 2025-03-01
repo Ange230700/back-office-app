@@ -2,6 +2,7 @@
 
 namespace Kouak\BackOfficeApp\Views\Pages;
 
+use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\MyAccount\MyAccountController;
@@ -16,7 +17,7 @@ class MyAccount
         $pdo = Configuration::getPdo();
 
         $controller = new MyAccountController($pdo);
-        $userId = $_SESSION["user_id"];
+        $userId = Session::get("user_id");
         $account = $controller->getAccount($userId);
 
         $error = "";
@@ -30,8 +31,8 @@ class MyAccount
             $error = $controller->updateAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword);
             if ($error === null) {
                 // Update session values
-                $_SESSION["nom"] = $nom;
-                $_SESSION["email"] = $email;
+                Session::set("nom", $nom);
+                Session::set("email", $email);
                 // Optionally, redirect to a confirmation page or simply continue.
                 header("Location: /back-office-app/index.php?route=my-account");
                 exit;

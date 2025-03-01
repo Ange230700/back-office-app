@@ -2,6 +2,8 @@
 
 namespace Kouak\BackOfficeApp\Views\Components;
 
+use Kouak\BackOfficeApp\Utilities\Session;
+
 class Navbar
 {
   /**
@@ -12,7 +14,8 @@ class Navbar
 ?>
     <nav role="navigation" class="bg-cyan-950 text-white w-64 p-6">
       <h2 class="text-2xl font-bold mb-6">Littoral propre</h2>
-      <?php if (!isset($_SESSION["user_id"])): ?>
+      <?php $userId = Session::get('user_id');
+      if (!isset($userId)): ?>
         <div class="mt-6 flex flex-col items-center">
           <a href="/back-office-app/index.php?route=login" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow-md text-center">
             Connexion
@@ -25,7 +28,8 @@ class Navbar
               <i class="fas fa-tachometer-alt mr-3"></i> Tableau de bord
             </a>
           </li>
-          <?php if ($_SESSION["role"] === "admin"): ?>
+          <?php $role = Session::get("role");
+          if ($role === "admin"): ?>
             <li>
               <a href="/back-office-app/index.php?route=collection-add" class="flex items-center py-2 px-3 hover:bg-blue-600 rounded-lg">
                 <i class="fas fa-plus-circle mr-3"></i> Ajouter une collecte
@@ -37,7 +41,8 @@ class Navbar
               <i class="fa-solid fa-list mr-3"></i> Liste des bénévoles
             </a>
           </li>
-          <?php if ($_SESSION["role"] === "admin"): ?>
+          <?php $role = Session::get("role");
+          if ($role === "admin"): ?>
             <li>
               <a href="/back-office-app/index.php?route=volunteer-add" class="flex items-center py-2 px-3 hover:bg-blue-600 rounded-lg">
                 <i class="fas fa-user-plus mr-3"></i> Ajouter un bénévole
