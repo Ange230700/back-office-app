@@ -2,6 +2,8 @@
 
 namespace Kouak\BackOfficeApp\Utilities;
 
+use Kouak\BackOfficeApp\Utilities\Session;
+
 class Logout
 {
     /**
@@ -10,12 +12,7 @@ class Logout
      */
     public static function run()
     {
-        // Ensure the session is started.
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        session_unset();
-        session_destroy();
+        Session::destroy();
 
         // Redirect to the login page using the front controller route.
         header("Location: /back-office-app/index.php");

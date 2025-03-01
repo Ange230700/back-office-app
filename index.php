@@ -3,17 +3,18 @@ define('BASE_PATH', __DIR__);
 require_once BASE_PATH . '/vendor/autoload.php';
 
 use Kouak\BackOfficeApp\Views\Pages\Login;
-use Kouak\BackOfficeApp\Views\Pages\Main;
 use Kouak\BackOfficeApp\Views\Pages\CollectionList;
 use Kouak\BackOfficeApp\Views\Pages\CollectionAdd;
 use Kouak\BackOfficeApp\Views\Pages\CollectionEdit;
-use Kouak\BackOfficeApp\Utilities\CollectionDelete;
 use Kouak\BackOfficeApp\Views\Pages\VolunteerList;
 use Kouak\BackOfficeApp\Views\Pages\VolunteerAdd;
 use Kouak\BackOfficeApp\Views\Pages\VolunteerEdit;
+use Kouak\BackOfficeApp\Views\Pages\MyAccount;
+use Kouak\BackOfficeApp\Views\Pages\Home;
+
+use Kouak\BackOfficeApp\Utilities\CollectionDelete;
 use Kouak\BackOfficeApp\Utilities\VolunteerDelete;
 use Kouak\BackOfficeApp\Utilities\Logout;
-use Kouak\BackOfficeApp\Views\Pages\MyAccount;
 
 $route = $_GET['route'] ?? 'home';
 
@@ -40,13 +41,5 @@ if ($route === 'login') {
 } elseif ($route === 'my-account') {
     MyAccount::render();
 } else {
-    // Default home page
-    $pageTitle = "Accueil";
-    $pageHeader = "Bienvenue chez 'Littoral propre' !";
-    ob_start();
-?>
-    <p>Il faut se connecter pour accéder aux informations de l'association.</p>
-<?php
-    $content = ob_get_clean();
-    Main::render($pageTitle, $pageHeader, $content);
+    Home::render();
 }

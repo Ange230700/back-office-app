@@ -4,6 +4,7 @@ namespace Kouak\BackOfficeApp\Views\Pages;
 
 use Kouak\BackOfficeApp\Views\Components\HeadElement;
 use Kouak\BackOfficeApp\Utilities\Helpers;
+use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Database\Configuration;
 
 class Login
@@ -14,7 +15,7 @@ class Login
     public static function render()
     {
         // Ensure session is started
-        Helpers::initSession();
+        Session::start();
 
         $error = "";
 
@@ -30,11 +31,14 @@ class Login
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['mot_de_passe'])) {
-                $_SESSION["user_id"] = $user["id"];
-                $_SESSION["nom"] = $user["nom"];
-                $_SESSION["role"] = $user["role"];
-                $_SESSION["email"] = $user["email"];
-                $_SESSION["mot_de_passe"] = $password;
+                // Regenerate session ID to prevent fixation.
+                Session::regenerate();
+
+                // Set session variables.
+                Session::set("user_id", $user["id"]);
+                Session::set("nom", $user["nom"]);
+                Session::set("role", $user["role"]);
+                Session::set("email", $user["email"]);
 
                 header("Location: /back-office-app/index.php?route=collection-list");
                 exit;
