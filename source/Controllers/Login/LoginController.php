@@ -40,7 +40,8 @@ class LoginController
             }
             return null;
         } catch (PDOException $e) {
-            return null;
+            $this->pdo->rollBack();
+            throw $e;
         }
     }
 }

@@ -5,17 +5,31 @@ namespace Kouak\BackOfficeApp\Controllers\Collection;
 use PDO;
 use PDOException;
 use Kouak\BackOfficeApp\Models\Collection\CollectionManager;
+use Kouak\BackOfficeApp\Models\CollectionVolunteer\CollectionVolunteerManager;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 
 class CollectionController
 {
+    /**
+     * @var PDO
+     */
     private $pdo;
+
+    /**
+     * @var CollectionManager
+     */
     private $collectionManager;
+
+    /**
+     * @var CollectionVolunteerManager
+     */
+    private $collectionVolunteerManager;
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
         $this->collectionManager = new CollectionManager($pdo);
+        $this->collectionVolunteerManager = new CollectionVolunteerManager($pdo);
     }
 
     /**
@@ -29,53 +43,101 @@ class CollectionController
      *
      * @return int The ID of the newly created collection.
      */
-    public function addNewCollection($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted)
+    public function addNewCollection($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted): int
     {
-        return $this->collectionManager->createCollectionWithDetails($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted);
+        try {
+            return $this->collectionManager->createCollectionWithDetails($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted);
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
     public function getCollectedWastesTotalQuantity()
     {
-        return $this->collectionManager->readCollectedWastesTotalQuantity();
+        try {
+            return $this->collectionManager->readCollectedWastesTotalQuantity();
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
     public function getMostRecentCollection()
     {
-        return $this->collectionManager->readMostRecentCollection();
+        try {
+            return $this->collectionManager->readMostRecentCollection();
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
     public function getNextCollection()
     {
-        return $this->collectionManager->readNextCollection();
+        try {
+            return $this->collectionManager->readNextCollection();
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
-    public function getCollection($collectionId) {
-        return $this->collectionManager->readCollection($collectionId);
+    public function getCollection($collectionId)
+    {
+        try {
+            return $this->collectionManager->readCollection($collectionId);
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
-    public function getVolunteersListWhoAttendedCollection($collectionId) {
-        return $this->collectionManager->readVolunteersListWhoAttendedCollection($collectionId);
+    public function getVolunteersListWhoAttendedCollection($collectionId)
+    {
+        try {
+            return $this->collectionVolunteerManager->readVolunteersListWhoAttendedCollection($collectionId);
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
-    public function getPlacesList() {
-        return $this->collectionManager->readPlacesList();
+    public function getPlacesList()
+    {
+        try {
+            return $this->collectionManager->readPlacesList();
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
-    public function getCollectionsList() {
-        return $this->collectionManager->readCollectionsList();
+    public function getCollectionsList()
+    {
+        try {
+            return $this->collectionManager->readCollectionsList();
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
     public function getCollectionsListPaginated()
     {
-        $paginationParams = Helpers::getPaginationParams();
-        return $this->collectionManager->readCollectionsListPaginated($paginationParams);
+        try {
+            $paginationParams = Helpers::getPaginationParams();
+            return $this->collectionManager->readCollectionsListPaginated($paginationParams);
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
     public function editCollection($submittedDate, $submittedPlace, $collectionId, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted)
     {
-        // Wrap the update operations in a transaction for atomicity.
-        $this->pdo->beginTransaction();
         try {
+            $this->pdo->beginTransaction();
             $this->collectionManager->updateCollection($submittedDate, $submittedPlace, $collectionId);
             $this->collectionManager->updateVolunteersParticipation($collectionId, $volunteersAssigned);
             $this->collectionManager->updateCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted);
@@ -88,7 +150,11 @@ class CollectionController
 
     public function eraseCollection($collectionId)
     {
-        return $this->collectionManager->deleteCollection($collectionId);
+        try {
+            $this->collectionManager->deleteCollection($collectionId);
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
-
 }
