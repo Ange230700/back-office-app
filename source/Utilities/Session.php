@@ -55,7 +55,6 @@ class Session
         if (session_status() !== PHP_SESSION_ACTIVE) {
             self::start();
         }
-        $_SESSION = [];
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
             setcookie(
@@ -68,6 +67,26 @@ class Session
                 $params["httponly"]
             );
         }
+        session_unset();
         session_destroy();
+    }
+
+    /**
+     * Retrieve the CSRF token from session or generate a new one if missing.
+     */
+    public static function getCsrfToken(): string
+    {
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+
+    /**
+     * Verify the submitted CSRF token.
+     */
+    public static function verifyCsrfToken(?string $token): bool
+    {
+        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], (string)$token);
     }
 }

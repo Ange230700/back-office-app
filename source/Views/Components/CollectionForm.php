@@ -2,6 +2,7 @@
 
 namespace Kouak\BackOfficeApp\Views\Components;
 
+use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Views\Components\AddOrEditButtonsGroup;
 
 class CollectionForm
@@ -52,6 +53,7 @@ class CollectionForm
             <div class="text-red-600 mb-4"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
         <form method="POST" class="space-y-4" action="<?= htmlspecialchars($actionUrl) ?>">
+            <input type="hidden" name="csrf_token" value="<?= Session::getCsrfToken() ?>">
             <div>
                 <label for="date" class="block text-sm font-medium text-gray-700">
                     Date

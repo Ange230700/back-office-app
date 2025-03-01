@@ -2,6 +2,8 @@
 
 namespace Kouak\BackOfficeApp\Views\Components;
 
+use Kouak\BackOfficeApp\Utilities\Session;
+
 class VolunteerForm
 {
     /**
@@ -30,9 +32,6 @@ class VolunteerForm
         $selectedCollections = $data['selectedCollections'];
         $error = $data['error'] ?? '';
 
-        // For add mode, volunteer data is empty.
-        $nameValue = isset($volunteer['nom']) ? htmlspecialchars($volunteer['nom']) : '';
-        $emailValue = isset($volunteer['email']) ? htmlspecialchars($volunteer['email']) : '';
         // Role may already be set if editing.
         $roleValue = isset($volunteer['role']) ? $volunteer['role'] : 'participant';
 ?>
@@ -40,6 +39,7 @@ class VolunteerForm
             <div class="text-red-600 mb-4"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
         <form method="POST" class="space-y-4" action="<?= htmlspecialchars($actionUrl) ?>">
+            <input type="hidden" name="csrf_token" value="<?= Session::getCsrfToken() ?>">
             <?php if (empty($volunteer)): ?>
                 <div>
                     <label for="nom" class="block text-sm font-medium text-gray-700">
@@ -89,7 +89,7 @@ class VolunteerForm
                     <?php endif; ?>
                 </label>
             </div>
-            <?php \Kouak\BackOfficeApp\Views\Components\AddOrEditButtonsGroup::render($cancelUrl, $cancelTitle, $buttonTitle, $buttonTextContent); ?>
+            <?php AddOrEditButtonsGroup::render($cancelUrl, $cancelTitle, $buttonTitle, $buttonTextContent); ?>
         </form>
 <?php
     }

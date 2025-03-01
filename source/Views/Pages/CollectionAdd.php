@@ -2,6 +2,7 @@
 
 namespace Kouak\BackOfficeApp\Views\Pages;
 
+use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
@@ -36,24 +37,28 @@ class CollectionAdd
         // Process POST submission
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $submittedDate = $_POST["date"] ?? '';
-            $submittedPlace = $_POST["lieu"] ?? '';
-            $volunteersAssigned = $_POST["benevoles"] ?? [];
-            $wasteTypesSubmitted = $_POST['type_dechet'] ?? [];
-            $quantitiesSubmitted = $_POST['quantite_kg'] ?? [];
+            if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
+                $error = "Le jeton CSRF est invalide. Veuillez réessayer.";
+            } else {
+                $submittedDate = $_POST["date"] ?? '';
+                $submittedPlace = $_POST["lieu"] ?? '';
+                $volunteersAssigned = $_POST["benevoles"] ?? [];
+                $wasteTypesSubmitted = $_POST['type_dechet'] ?? [];
+                $quantitiesSubmitted = $_POST['quantite_kg'] ?? [];
 
-            try {
-                $collectionController->addNewCollection(
-                    $submittedDate,
-                    $submittedPlace,
-                    $volunteersAssigned,
-                    $wasteTypesSubmitted,
-                    $quantitiesSubmitted
-                );
-                header("Location: /back-office-app/index.php?route=collection-list");
-                exit;
-            } catch (\PDOException $e) {
-                $error = "Erreur de base de données : " . $e->getMessage();
+                try {
+                    $collectionController->addNewCollection(
+                        $submittedDate,
+                        $submittedPlace,
+                        $volunteersAssigned,
+                        $wasteTypesSubmitted,
+                        $quantitiesSubmitted
+                    );
+                    header("Location: /back-office-app/index.php?route=collection-list");
+                    exit;
+                } catch (\PDOException $e) {
+                    $error = "Erreur de base de données : " . $e->getMessage();
+                }
             }
         }
 

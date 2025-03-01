@@ -22,20 +22,24 @@ class MyAccount
 
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $nom = $_POST["nom"] ?? "";
-            $email = $_POST["email"] ?? "";
-            $currentPassword = $_POST["current_password"] ?? "";
-            $newPassword = $_POST["new_password"] ?? "";
-            $confirmPassword = $_POST["confirm_password"] ?? "";
+            if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
+                $error = "Le jeton CSRF est invalide. Veuillez réessayer.";
+            } else {
+                $nom = $_POST["nom"] ?? "";
+                $email = $_POST["email"] ?? "";
+                $currentPassword = $_POST["current_password"] ?? "";
+                $newPassword = $_POST["new_password"] ?? "";
+                $confirmPassword = $_POST["confirm_password"] ?? "";
 
-            $error = $controller->updateAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword);
-            if ($error === null) {
-                // Update session values
-                Session::set("nom", $nom);
-                Session::set("email", $email);
-                // Optionally, redirect to a confirmation page or simply continue.
-                header("Location: /back-office-app/index.php?route=my-account");
-                exit;
+                $error = $controller->updateAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword);
+                if ($error === null) {
+                    // Update session values
+                    Session::set("nom", $nom);
+                    Session::set("email", $email);
+                    // Optionally, redirect to a confirmation page or simply continue.
+                    header("Location: /back-office-app/index.php?route=my-account");
+                    exit;
+                }
             }
         }
 
@@ -63,6 +67,7 @@ class MyAccount
                         <div class="text-red-600 text-center mb-4"><?= htmlspecialchars($error) ?></div>
                     <?php endif; ?>
                     <form method="POST" class="space-y-6">
+                        <input type="hidden" name="csrf_token" value="<?= Session::getCsrfToken() ?>">
                         <div>
                             <label for="nom" class="block text-sm font-medium text-gray-700">Nom</label>
                             <input type="text" name="nom" id="nom" value="<?= htmlspecialchars($account['nom']) ?>" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
@@ -105,7 +110,6 @@ class MyAccount
         </html>
 <?php
         $content = ob_get_clean();
-        // Optionally, you can use your Main layout here as well:
         echo $content;
     }
 }

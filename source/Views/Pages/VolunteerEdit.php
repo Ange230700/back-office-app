@@ -4,6 +4,7 @@ namespace Kouak\BackOfficeApp\Views\Pages;
 
 use PDOException;
 
+use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
@@ -19,8 +20,10 @@ class VolunteerEdit
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
+        $destinationUrl = "Location: /back-office-app/index.php?route=volunteer-list";
+
         if (!isset($_GET['id']) || empty($_GET['id'])) {
-            header("Location: /back-office-app/index.php?route=volunteer-list");
+            header($destinationUrl);
             exit;
         }
         $volunteerId = $_GET['id'];
@@ -28,7 +31,7 @@ class VolunteerEdit
         $volunteerController = new VolunteerController($pdo);
         $volunteer = $volunteerController->getEditableFieldsOfVolunteer($volunteerId);
         if (!$volunteer) {
-            header("Location: /back-office-app/index.php?route=volunteer-list");
+            header($destinationUrl);
             exit;
         }
 
@@ -40,14 +43,18 @@ class VolunteerEdit
         // Process POST submission
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $submittedRole = $_POST["role"] ?? $volunteer['role'];
-            $submittedParticipations = $_POST['attendances'] ?? [];
-            try {
-                $volunteerController->editVolunteer($submittedRole, $volunteerId, $submittedParticipations);
-                header("Location: /back-office-app/index.php?route=volunteer-list");
-                exit;
-            } catch (PDOException $e) {
-                $error = "Erreur de base de données : " . $e->getMessage();
+            if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
+                $error = "Le jeton CSRF est invalide. Veuillez réessayer.";
+            } else {
+                $submittedRole = $_POST["role"] ?? $volunteer['role'];
+                $submittedParticipations = $_POST['attendances'] ?? [];
+                try {
+                    $volunteerController->editVolunteer($submittedRole, $volunteerId, $submittedParticipations);
+                    header($destinationUrl);
+                    exit;
+                } catch (PDOException $e) {
+                    $error = "Erreur de base de données : " . $e->getMessage();
+                }
             }
         }
 

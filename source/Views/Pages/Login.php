@@ -19,30 +19,30 @@ class Login
         $error = "";
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $email = $_POST["email"] ?? '';
-            $password = $_POST["password"] ?? '';
-
-            // Retrieve PDO instance from Configuration
-            $pdo = Configuration::getPdo();
-
-            $stmt = $pdo->prepare("SELECT * FROM benevoles WHERE email = ?");
-            $stmt->execute([$email]);
-            $user = $stmt->fetch();
-
-            if ($user && password_verify($password, $user['mot_de_passe'])) {
-                // Regenerate session ID to prevent fixation.
-                Session::regenerate();
-
-                // Set session variables.
-                Session::set("user_id", $user["id"]);
-                Session::set("nom", $user["nom"]);
-                Session::set("role", $user["role"]);
-                Session::set("email", $user["email"]);
-
-                header("Location: /back-office-app/index.php?route=collection-list");
-                exit;
+            // Check CSRF token before any further processing.
+            if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
+                $error = "Le jeton CSRF est invalide. Veuillez réessayer.";
             } else {
-                $error = "Identifiants incorrects";
+                $email = $_POST["email"] ?? '';
+                $password = $_POST["password"] ?? '';
+
+                // Retrieve PDO instance and verify user credentials...
+                $pdo = Configuration::getPdo();
+                $stmt = $pdo->prepare("SELECT * FROM benevoles WHERE email = ?");
+                $stmt->execute([$email]);
+                $user = $stmt->fetch();
+
+                if ($user && password_verify($password, $user['mot_de_passe'])) {
+                    Session::regenerate();
+                    Session::set("user_id", $user["id"]);
+                    Session::set("nom", $user["nom"]);
+                    Session::set("role", $user["role"]);
+                    Session::set("email", $user["email"]);
+                    header("Location: /back-office-app/index.php?route=collection-list");
+                    exit;
+                } else {
+                    $error = "Identifiants incorrects";
+                }
             }
         }
 
@@ -67,6 +67,7 @@ class Login
                         </div>
                     <?php endif; ?>
                     <form method="POST" class="space-y-6">
+                        <input type="hidden" name="csrf_token" value="<?= Session::getCsrfToken() ?>">
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                             <input type="email" name="email" id="email" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
