@@ -1,0 +1,51 @@
+{% extends 'Pages/main.twig' %}
+
+{% block title %}Liste des Bénévoles
+{% endblock %}
+
+{% block content %}
+	<div class="overflow-hidden rounded-lg shadow-lg bg-white">
+		<table class="w-full table-auto border-collapse">
+			<thead class="bg-cyan-950 text-white">
+				<tr>
+					<th class="py-3 px-4 text-left">Nom</th>
+					<th class="py-3 px-4 text-left">Email</th>
+					<th class="py-3 px-4 text-left">Rôle</th>
+					<th class="py-3 px-4 text-left">Participations</th>
+					{% if role == 'admin' %}
+						<th class="py-3 px-4 text-left">Actions</th>
+					{% endif %}
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-gray-300">
+				{% for volunteer in volunteers %}
+					<tr class="hover:bg-gray-100 transition duration-200">
+						<td class="py-3 px-4">{{ volunteer.nom|e }}</td>
+						<td class="py-3 px-4">{{ volunteer.email|e }}</td>
+						<td class="py-3 px-4">{{ volunteer.role|e }}</td>
+						<td class="py-3 px-4">{{ volunteer.participations|e }}</td>
+						{% if role == 'admin' %}
+							<td class="py-3 px-4">
+								{% include 'Components/action_buttons.twig' with {
+                  editUrl: '/back-office-app/index.php?route=volunteer-edit&id=' ~ volunteer.id,
+                  deleteUrl: '/back-office-app/index.php?route=volunteer-delete&id=' ~ volunteer.id,
+                  editTitle: 'Modifier ' ~ volunteer.nom,
+                  deleteTitle: 'Supprimer ' ~ volunteer.nom
+                } %}
+							</td>
+						{% endif %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	{# Pagination Section #}
+	{% set urlPrefix = route is defined and route ? '?route=' ~ route ~ '&' : '?' %}
+	{% include 'Components/pagination_buttons.twig' with {
+      totalPages: totalPages,
+      pageNumber: pageNumber,
+      urlPrefix: urlPrefix
+  } %}
+{% endblock %}
+
