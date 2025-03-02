@@ -3,14 +3,12 @@
 namespace Kouak\BackOfficeApp\Views\Pages;
 
 use PDOException;
-
 use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
-use Kouak\BackOfficeApp\Views\Components\VolunteerForm;
-use Kouak\BackOfficeApp\Views\Pages\Main;
+use Kouak\BackOfficeApp\Utilities\View;
 
 class VolunteerEdit
 {
@@ -35,9 +33,9 @@ class VolunteerEdit
             exit;
         }
 
-        // Assume we need the list of collections for participation assignments.
+        // Retrieve collections for participation
         $collectionController = new CollectionController($pdo);
-        $collectionsList = $collectionController->getCollectionsList(); // Adjust accordingly
+        $collectionsList = $collectionController->getCollectionsList();
         $selectedCollections = $volunteerController->getCollectionsListVolunteerAttended($volunteerId);
 
         // Process POST submission
@@ -58,6 +56,7 @@ class VolunteerEdit
             }
         }
 
+        // Set page variables
         $pageTitle = "Modifier un bénévole";
         $pageHeader = "Modifier un Bénévole";
         $actionUrl = $_SERVER['PHP_SELF'] . "?route=volunteer-edit&id=" . urlencode($volunteerId);
@@ -66,21 +65,18 @@ class VolunteerEdit
         $buttonTitle = "Modifier le bénévole";
         $buttonTextContent = "Modifier le bénévole";
 
-        // Render the volunteer form using the VolunteerForm component.
-        ob_start();
-        VolunteerForm::render([
-            'actionUrl'             => $actionUrl,
-            'cancelUrl'             => $cancelUrl,
-            'cancelTitle'           => $cancelTitle,
-            'buttonTitle'           => $buttonTitle,
-            'buttonTextContent'     => $buttonTextContent,
-            'volunteer'             => $volunteer,
-            'collectionsList'       => $collectionsList,
-            'selectedCollections'   => $selectedCollections,
-            'error'                 => $error,
+        $twig = View::getTwig();
+        echo $twig->render('Pages/volunteer_edit.twig', [
+            'error'               => $error,
+            'actionUrl'           => $actionUrl,
+            'cancelUrl'           => $cancelUrl,
+            'cancelTitle'         => $cancelTitle,
+            'buttonTitle'         => $buttonTitle,
+            'buttonTextContent'   => $buttonTextContent,
+            'volunteer'           => $volunteer,
+            'collectionsList'     => $collectionsList,
+            'selectedCollections' => $selectedCollections,
+            'session'             => $_SESSION,
         ]);
-        $content = ob_get_clean();
-
-        Main::render($pageTitle, $pageHeader, $content);
     }
 }
