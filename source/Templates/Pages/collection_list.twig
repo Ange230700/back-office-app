@@ -1,0 +1,66 @@
+{% extends 'Pages/main.twig' %}
+
+{% block title %}Liste des Collectes
+{% endblock %}
+
+{% block content %}
+	{# Dashboard Section (if available) #}
+	{% if dashboard is defined %}
+		{% include 'Components/dashboard_section.twig' with {
+        dashboard: dashboard,
+        dateFormat: dateFormat,
+        pageLimit: 3
+    } %}
+	{% endif %}
+
+
+	{# Use embedded table_template.twig to build the table #}
+	{% embed 'Components/table_template.twig' %}
+		{% block table_headers %}
+			<tr>
+				<th class="py-3 px-4 text-left">Date</th>
+				<th class="py-3 px-4 text-left">Lieu</th>
+				<th class="py-3 px-4 text-left">Bénévoles</th>
+				<th class="py-3 px-4 text-left">Types de déchets (quantité en kg)</th>
+				{% if role == 'admin' %}
+					<th class="py-3 px-4 text-left">Actions</th>
+				{% endif %}
+			</tr>
+		{% endblock %}
+
+		{% block table_body %}
+			{% for collection in collections %}
+				<tr class="hover:bg-gray-100 transition duration-200">
+					<td class="py-3 px-4">{{ collection.date_collecte|date(dateFormat) }}</td>
+					<td class="py-3 px-4">{{ collection.lieu|e }}</td>
+					<td class="py-3 px-4">
+						{% if collection.benevoles %}
+							{{ collection.benevoles|e }}
+						{% else %}
+							Aucun bénévole
+						{% endif %}
+					</td>
+					<td class="py-3 px-4">{{ collection.wasteDetails|raw }}</td>
+					{% if role == 'admin' %}
+						<td class="py-3 px-4">
+							{% include 'Components/action_buttons.twig' with {
+                  editUrl: '/back-office-app/index.php?route=collection-edit&id=' ~ collection.id,
+                  deleteUrl: '/back-office-app/index.php?route=collection-delete&id=' ~ collection.id,
+                  editTitle: 'Modifier la collecte du ' ~ collection.date_collecte|date(dateFormat) ~ ' à ' ~ collection.lieu,
+                  deleteTitle: 'Supprimer la collecte du ' ~ collection.date_collecte|date(dateFormat) ~ ' à ' ~ collection.lieu
+              } %}
+						</td>
+					{% endif %}
+				</tr>
+			{% endfor %}
+		{% endblock %}
+	{% endembed %}
+
+	{# Pagination Section #}
+	{% set urlPrefix = route is defined and route ? '?route=' ~ route ~ '&' : '?' %}
+	{% include 'Components/pagination_buttons.twig' with {
+      totalPages: totalPages,
+      pageNumber: pageNumber,
+      urlPrefix: urlPrefix
+  } %}
+{% endblock %}

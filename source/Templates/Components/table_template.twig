@@ -1,0 +1,17 @@
+{# source/Templates/Components/table_template.twig #}
+
+<div class="overflow-hidden rounded-lg shadow-lg bg-white">
+	<table class="w-full table-auto border-collapse">
+		<thead class="bg-cyan-950 text-white">
+			{% block table_headers %}
+				{# Default table headers can go here if needed #}
+			{% endblock %}
+		</thead>
+		<tbody class="divide-y divide-gray-300">
+			{% block table_body %}
+				{# Default table body can go here if needed #}
+			{% endblock %}
+		</tbody>
+	</table>
+</div>
+
