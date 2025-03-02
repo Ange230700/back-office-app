@@ -8,8 +8,7 @@ use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
 use Kouak\BackOfficeApp\Controllers\CollectedWasteDetails\CollectedWasteDetailsController;
-use Kouak\BackOfficeApp\Views\Components\CollectionForm;
-use Kouak\BackOfficeApp\Views\Pages\Main;
+use Kouak\BackOfficeApp\Utilities\View;
 
 class CollectionEdit
 {
@@ -28,9 +27,8 @@ class CollectionEdit
         }
         $collectionId = $_GET['id'];
 
-        // Create a CollectionController instance
+        // Retrieve collection data
         $collectionController = new CollectionController($pdo);
-        // Retrieve the collection
         $collection = $collectionController->getCollection($collectionId);
         if (!$collection) {
             header($destinationUrl);
@@ -39,8 +37,6 @@ class CollectionEdit
 
         // Retrieve pre-selected volunteers and waste details
         $volunteerController = new VolunteerController($pdo);
-
-        // Get lists from controllers
         $selectedVolunteersList = $collectionController->getVolunteersListWhoAttendedCollection($collectionId);
         $volunteersList = $volunteerController->getVolunteersList();
         $collectedWasteController = new CollectedWasteDetailsController($pdo);
@@ -51,7 +47,6 @@ class CollectionEdit
             $collectedWasteDetailsList[] = ['type_dechet' => '', 'quantite_kg' => ''];
         }
 
-        // Process POST submission
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -89,9 +84,10 @@ class CollectionEdit
         $buttonTitle = "Modifier la collecte";
         $buttonTextContent = "Modifier la collecte";
 
-        // Render the collection form using the CollectionForm component
-        ob_start();
-        CollectionForm::render([
+        // Render using Twig
+        $twig = View::getTwig();
+        echo $twig->render('Pages/collection_edit.twig', [
+            'error'                 => $error,
             'actionUrl'             => $actionUrl,
             'cancelUrl'             => $cancelUrl,
             'cancelTitle'           => $cancelTitle,
@@ -103,11 +99,8 @@ class CollectionEdit
             'collection'            => $collection,
             'selectedVolunteersList' => $selectedVolunteersList,
             'collectedWastesList'   => $collectedWasteDetailsList,
-            'error'                 => $error
+            'error'                 => $error,
+            'session'               => $_SESSION,
         ]);
-        $content = ob_get_clean();
-
-        // Render the page using the Main layout
-        Main::render($pageTitle, $pageHeader, $content);
     }
 }

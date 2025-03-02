@@ -1,11 +1,6 @@
 {# Collection Form Partial #}
-{# Optionally, compute defaultWasteOptions if not precomputed #}
-{% set defaultWasteOptions = "<option value=''>Sélectionner un type</option>" %}
-	{% for wasteType in wasteTypesList %}
-{% set defaultWasteOptions = defaultWasteOptions ~ "<option value='" ~ wasteType|e ~ "'>" %}
-{% endfor %}
-
-	<form method="POST" class="space-y-4" action="{{ actionUrl }}"> <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+<form method="POST" class="space-y-4" action="{{ actionUrl }}">
+	<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
 	<div>
 		<label for="date" class="block text-sm font-medium text-gray-700">
@@ -47,9 +42,8 @@
 		<div>
 			<label class="block text-sm font-medium text-gray-700 mb-2">
 				Déchets collectés
-				<div id="waste-container" class="mt-2" data-options="{{ defaultWasteOptions|raw }}">
+				<div id="waste-container" class="mt-2">
 					{% if collectedWastesList is empty %}
-						{# If no waste rows, create one empty row #}
 						<div class="waste-item flex space-x-4 mb-2">
 							<input type="text" name="type_dechet[]" list="wasteTypesList" value="" placeholder="Sélectionner ou saisir un nouveau type" class="w-full p-2 border border-gray-300 rounded-lg">
 							<input type="number" min="0" step="0.1" name="quantite_kg[]" placeholder="Quantité (kg)" value="" class="w-full p-2 border border-gray-300 rounded-lg">
@@ -80,7 +74,7 @@
 				</label>
 			</div>
 
-			{# Include the add or edit buttons group partial #}
+			{# Include the AddOrEditButtonsGroup partial #}
 			{% include 'Components/add_or_edit_buttons.twig' with {
       cancelUrl: cancelUrl,
       cancelTitle: cancelTitle,
