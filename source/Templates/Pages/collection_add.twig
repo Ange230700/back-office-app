@@ -1,0 +1,31 @@
+{% extends 'Pages/main.twig' %}
+
+{% block title %}Ajouter une collecte
+{% endblock %}
+
+{% block content %}
+	<h1 class="text-4xl font-bold text-cyan-950 mb-6">Ajouter une collecte</h1>
+
+	{% if error is defined and error %}
+		<div class="text-red-600 mb-4">{{ error }}</div>
+	{% endif %}
+
+	{# Include the collection form partial and pass in all required variables #}
+	{% include 'Components/collection_form.twig' with {
+      actionUrl: actionUrl,
+      cancelUrl: cancelUrl,
+      cancelTitle: cancelTitle,
+      buttonTitle: buttonTitle,
+      buttonTextContent: buttonTextContent,
+      volunteersList: volunteersList,
+      wasteTypesList: wasteTypesList,
+      placesList: placesList,
+      collection: collection,
+      selectedVolunteersList: selectedVolunteersList,
+      collectedWastesList: collectedWastesList,
+      session: session
+  } %}
+
+	<script src="/back-office-app/source/Views/javascript/collection.js"></script>
+{% endblock %}
+
