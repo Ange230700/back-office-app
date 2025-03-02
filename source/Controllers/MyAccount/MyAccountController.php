@@ -3,7 +3,6 @@
 namespace Kouak\BackOfficeApp\Controllers\MyAccount;
 
 use PDO;
-use PDOException;
 use Kouak\BackOfficeApp\Models\MyAccount\MyAccountManager;
 
 class MyAccountController
@@ -25,23 +24,25 @@ class MyAccountController
 
     public function updateAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword)
     {
+        $error = null;
         $account = $this->manager->getAccount($userId);
         if (!$account) {
-            return "Utilisateur introuvable.";
-        }
-
-        if (!empty($currentPassword) && !empty($newPassword) && !empty($confirmPassword)) {
-            if (!password_verify($currentPassword, $account['mot_de_passe'])) {
-                return "Le mot de passe actuel est incorrect.";
+            $error = "Utilisateur introuvable.";
+        } else {
+            if (!empty($currentPassword) && !empty($newPassword) && !empty($confirmPassword)) {
+                if (!password_verify($currentPassword, $account['mot_de_passe'])) {
+                    $error = "Le mot de passe actuel est incorrect.";
+                } elseif ($newPassword !== $confirmPassword) {
+                    $error = "Le nouveau mot de passe et la confirmation ne correspondent pas.";
+                } else {
+                    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+                    $this->manager->updatePassword($userId, $hashedPassword);
+                }
             }
-            if ($newPassword !== $confirmPassword) {
-                return "Le nouveau mot de passe et la confirmation ne correspondent pas.";
+            if (!$error) {
+                $this->manager->updateAccount($userId, $nom, $email);
             }
-            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-            $this->manager->updatePassword($userId, $hashedPassword);
         }
-
-        $this->manager->updateAccount($userId, $nom, $email);
-        return null;
+        return $error;
     }
 }
