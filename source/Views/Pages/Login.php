@@ -48,7 +48,7 @@ class Login
 
         // Render the login form
         $twig = View::getTwig();
-        echo $twig->render('login.twig', [
+        echo $twig->render('/Pages/login.twig', [
             'error'       => $error,
             'csrf_token'  => Session::getCsrfToken(),
             'session'     => $_SESSION, // pass session data to your template if needed

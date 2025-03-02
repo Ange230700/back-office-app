@@ -19,6 +19,6 @@ class Navbar
     ];
 
     // Render the Twig template with the data.
-    echo View::getTwig()->render('navbar.twig', ['session' => $navData]);
+    echo View::getTwig()->render('/Components/navbar.twig', ['session' => $navData]);
   }
 }
