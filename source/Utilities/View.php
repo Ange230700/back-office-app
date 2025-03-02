@@ -13,7 +13,7 @@ class View
     {
         if (self::$twig === null) {
             // BASE_PATH is defined in index.php and points to your project root.
-            $loader = new FilesystemLoader(BASE_PATH . '/templates');
+            $loader = new FilesystemLoader(BASE_PATH . '/source/Views/templates/');
             self::$twig = new Environment($loader, [
                 'cache' => BASE_PATH . '/cache/twig', // You can disable cache in development
                 'debug' => true,
