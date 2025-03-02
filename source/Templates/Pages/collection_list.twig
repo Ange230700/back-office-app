@@ -6,7 +6,6 @@
 {% endblock %}
 
 {% block content %}
-	{# Dashboard Section (if available) #}
 	{% if dashboard is defined %}
 		{% include 'Components/dashboard_section.twig' with {
         dashboard: dashboard,
@@ -16,7 +15,6 @@
 	{% endif %}
 
 
-	{# Use embedded table_template.twig to build the table #}
 	{% embed 'Components/table_template.twig' %}
 		{% block table_headers %}
 			<tr>
@@ -58,7 +56,6 @@
 		{% endblock %}
 	{% endembed %}
 
-	{# Pagination Section #}
 	{% set urlPrefix = route is defined and route ? '?route=' ~ route ~ '&' : '?' %}
 	{% include 'Components/pagination_buttons.twig' with {
       totalPages: totalPages,

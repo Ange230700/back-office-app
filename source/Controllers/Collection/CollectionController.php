@@ -10,19 +10,10 @@ use Kouak\BackOfficeApp\Utilities\Helpers;
 
 class CollectionController
 {
-    /**
-     * @var PDO
-     */
     private $pdo;
 
-    /**
-     * @var CollectionManager
-     */
     private $collectionManager;
 
-    /**
-     * @var CollectionVolunteerManager
-     */
     private $collectionVolunteerManager;
 
     public function __construct(PDO $pdo)
@@ -32,17 +23,6 @@ class CollectionController
         $this->collectionVolunteerManager = new CollectionVolunteerManager($pdo);
     }
 
-    /**
-     * Add a new collection with its associated volunteers and waste details.
-     *
-     * @param string $submittedDate
-     * @param string $submittedPlace
-     * @param array  $volunteersAssigned
-     * @param array  $wasteTypesSubmitted
-     * @param array  $quantitiesSubmitted
-     *
-     * @return int The ID of the newly created collection.
-     */
     public function addNewCollection($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted): int
     {
         try {

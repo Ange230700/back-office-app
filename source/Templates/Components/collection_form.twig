@@ -1,4 +1,6 @@
-{# Collection Form Partial #}
+{# source\Templates\Components\collection_form.twig #}
+
+
 <form method="POST" class="space-y-4" action="{{ actionUrl }}">
 	<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
@@ -74,7 +76,6 @@
 				</label>
 			</div>
 
-			{# Include the AddOrEditButtonsGroup partial #}
 			{% include 'Components/add_or_edit_buttons.twig' with {
       cancelUrl: cancelUrl,
       cancelTitle: cancelTitle,

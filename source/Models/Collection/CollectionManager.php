@@ -194,7 +194,6 @@ class CollectionManager
             $this->pdo->rollBack();
             return null;
         }
-        // Delegate volunteer assignment:
         $this->volunteerManager->assignVolunteersToCollection($collectionId, $volunteersAssigned);
         if (!empty($wasteTypesSubmitted) && !empty($quantitiesSubmitted)) {
             $this->wasteDetailsManager->createNewPotentialCollectedWastesDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted);

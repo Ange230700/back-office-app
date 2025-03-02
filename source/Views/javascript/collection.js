@@ -10,12 +10,10 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
     `.trim();
 
-    // When the "Ajouter un déchet" button is clicked, append a new waste row
     document.getElementById('add-waste').addEventListener('click', function () {
         container.insertAdjacentHTML('beforeend', wasteRowTemplate.innerHTML);
     });
 
-    // Listen for clicks on the container to handle waste row removal
     container.addEventListener('click', function (e) {
         if (e.target?.matches('button.remove-waste')) {
             e.target.parentNode.remove();

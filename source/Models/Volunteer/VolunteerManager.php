@@ -7,9 +7,6 @@ use PDOException;
 
 class VolunteerManager
 {
-    /**
-     * @var PDO
-     */
     private $pdo;
 
     public function __construct(PDO $pdo)
@@ -17,18 +14,6 @@ class VolunteerManager
         $this->pdo = $pdo;
     }
 
-    /**
-     * Create a new volunteer.
-     *
-     * @param string $submittedName
-     * @param string $submittedEmail
-     * @param string $hashedPassword
-     * @param string $submittedRole
-     *
-     * @return int|null The ID of the newly created volunteer.
-     *
-     * @throws PDOException
-     */
     public function createVolunteer(string $submittedName, string $submittedEmail, string $hashedPassword, string $submittedRole): ?int
     {
         $sql = "INSERT INTO benevoles (nom, email, mot_de_passe, role) VALUES (?, ?, ?, ?)";
@@ -39,13 +24,6 @@ class VolunteerManager
         return $this->pdo->lastInsertId();
     }
 
-    /**
-     * Retrieve full details of volunteers with pagination.
-     *
-     * @return array [volunteersList, numberOfPages]
-     *
-     * @throws PDOException
-     */
     public function readVolunteersFullDetailsPaginated(): array
     {
         $paginationParams = \Kouak\BackOfficeApp\Utilities\Helpers::getPaginationParams();
@@ -87,13 +65,6 @@ class VolunteerManager
         return [$volunteersList, $numberOfPages];
     }
 
-    /**
-     * Get the list of volunteers.
-     *
-     * @return array|null
-     *
-     * @throws PDOException
-     */
     public function readVolunteersList(): ?array
     {
         $sql = "SELECT id, nom FROM benevoles ORDER BY nom";
@@ -104,15 +75,6 @@ class VolunteerManager
         return $stmt->fetchAll();
     }
 
-    /**
-     * Get editable fields of a volunteer.
-     *
-     * @param int $volunteerId
-     *
-     * @return array
-     *
-     * @throws PDOException
-     */
     public function readEditableFieldsOfVolunteer(int $volunteerId): array
     {
         $sql = "SELECT id, role FROM benevoles WHERE id = ?";
@@ -123,14 +85,6 @@ class VolunteerManager
         return $stmt->fetch();
     }
 
-    /**
-     * Update volunteer's role.
-     *
-     * @param string $submittedRole
-     * @param int    $volunteerId
-     *
-     * @throws PDOException
-     */
     public function updateVolunteer(string $submittedRole, int $volunteerId): void
     {
         $sql = "UPDATE benevoles SET role = COALESCE(?, role) WHERE id = ?";
@@ -140,13 +94,6 @@ class VolunteerManager
         }
     }
 
-    /**
-     * Delete a volunteer.
-     *
-     * @param int $volunteerId
-     *
-     * @throws PDOException
-     */
     public function deleteVolunteer(int $volunteerId): void
     {
         $sql = "DELETE FROM benevoles WHERE id = ?";

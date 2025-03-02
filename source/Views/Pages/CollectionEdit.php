@@ -14,20 +14,17 @@ class CollectionEdit
 {
     public static function render()
     {
-        // Ensure admin privileges
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
         $destinationUrl = "Location: /back-office-app/index.php?route=collection-list";
 
-        // Get collection ID from GET parameters
         if (!isset($_GET['id']) || empty($_GET['id'])) {
             header($destinationUrl);
             exit;
         }
         $collectionId = $_GET['id'];
 
-        // Retrieve collection data
         $collectionController = new CollectionController($pdo);
         $collection = $collectionController->getCollection($collectionId);
         if (!$collection) {
@@ -35,7 +32,6 @@ class CollectionEdit
             exit;
         }
 
-        // Retrieve pre-selected volunteers and waste details
         $volunteerController = new VolunteerController($pdo);
         $selectedVolunteersList = $collectionController->getVolunteersListWhoAttendedCollection($collectionId);
         $volunteersList = $volunteerController->getVolunteersList();
@@ -75,16 +71,12 @@ class CollectionEdit
             }
         }
 
-        // Set page variables
-        $pageTitle = "Modifier une collecte";
-        $pageHeader = "Modifier une collecte";
         $actionUrl = $_SERVER['PHP_SELF'] . "?route=collection-edit&id=" . urlencode($collectionId);
         $cancelUrl = "/back-office-app/index.php?route=collection-list";
         $cancelTitle = "Retour à la liste des collectes";
         $buttonTitle = "Modifier la collecte";
         $buttonTextContent = "Modifier la collecte";
 
-        // Render using Twig
         $twig = View::getTwig();
         echo $twig->render('Pages/collection_edit.twig', [
             'error'                 => $error,

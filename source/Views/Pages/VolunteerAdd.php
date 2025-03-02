@@ -2,6 +2,8 @@
 
 namespace Kouak\BackOfficeApp\Views\Pages;
 
+use PDOException;
+
 use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
@@ -13,7 +15,6 @@ class VolunteerAdd
 {
     public static function render()
     {
-        // Ensure only admin users can add a volunteer
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
@@ -37,21 +38,18 @@ class VolunteerAdd
                     $volunteerController->addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations);
                     header("Location: /back-office-app/index.php?route=volunteer-list");
                     exit;
-                } catch (\PDOException $e) {
+                } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
 
-        $pageTitle = "Ajouter un bénévole";
-        $pageHeader = "Ajouter un Bénévole";
         $actionUrl = $_SERVER['PHP_SELF'] . "?route=volunteer-add";
         $cancelUrl = "/back-office-app/index.php?route=volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Ajouter le bénévole";
         $buttonTextContent = "Ajouter le bénévole";
 
-        // For add mode, volunteer data is empty.
         $volunteer = [];
         $selectedCollections = [];
 

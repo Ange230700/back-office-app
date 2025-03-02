@@ -10,16 +10,8 @@ use Dotenv\Dotenv;
 
 class Configuration
 {
-    /**
-     * @var PDO|null
-     */
     private static $pdo = null;
 
-    /**
-     * Returns a singleton PDO instance.
-     *
-     * @return PDO
-     */
     public static function getPdo(): PDO
     {
         if (self::$pdo === null) {

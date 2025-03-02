@@ -1,3 +1,5 @@
+{# source\Templates\Pages\volunteer_list.twig #}
+
 {% extends 'Pages/main.twig' %}
 
 {% block title %}Liste des Bénévoles
@@ -40,7 +42,6 @@
 		</table>
 	</div>
 
-	{# Pagination Section #}
 	{% set urlPrefix = route is defined and route ? '?route=' ~ route ~ '&' : '?' %}
 	{% include 'Components/pagination_buttons.twig' with {
       totalPages: totalPages,
@@ -48,4 +49,3 @@
       urlPrefix: urlPrefix
   } %}
 {% endblock %}
-

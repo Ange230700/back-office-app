@@ -14,7 +14,6 @@ class VolunteerEdit
 {
     public static function render()
     {
-        // Ensure only admin users can edit a volunteer
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
@@ -33,12 +32,10 @@ class VolunteerEdit
             exit;
         }
 
-        // Retrieve collections for participation
         $collectionController = new CollectionController($pdo);
         $collectionsList = $collectionController->getCollectionsList();
         $selectedCollections = $volunteerController->getCollectionsListVolunteerAttended($volunteerId);
 
-        // Process POST submission
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -56,9 +53,6 @@ class VolunteerEdit
             }
         }
 
-        // Set page variables
-        $pageTitle = "Modifier un bénévole";
-        $pageHeader = "Modifier un Bénévole";
         $actionUrl = $_SERVER['PHP_SELF'] . "?route=volunteer-edit&id=" . urlencode($volunteerId);
         $cancelUrl = "/back-office-app/index.php?route=volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";

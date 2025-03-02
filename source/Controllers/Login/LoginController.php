@@ -8,14 +8,8 @@ use Kouak\BackOfficeApp\Models\Login\LoginManager;
 
 class LoginController
 {
-    /**
-     * @var PDO
-     */
     private $pdo;
 
-    /**
-     * @var LoginManager
-     */
     private $loginManager;
 
     public function __construct(PDO $pdo)
@@ -24,13 +18,6 @@ class LoginController
         $this->loginManager = new LoginManager($pdo);
     }
 
-    /**
-     * Authenticate a user using email and password.
-     *
-     * @param string $email
-     * @param string $password
-     * @return array|null Returns the user record if authentication succeeds; otherwise null.
-     */
     public function authenticate(string $email, string $password): ?array
     {
         try {

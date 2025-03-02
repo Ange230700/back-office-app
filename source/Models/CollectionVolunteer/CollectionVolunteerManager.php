@@ -23,14 +23,6 @@ class CollectionVolunteerManager
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    /**
-     * Get the list of collection IDs the volunteer attended.
-     *
-     * @param int $volunteerId
-     * @return array
-     *
-     * @throws PDOException
-     */
     public function readCollectionsListVolunteerAttended($volunteerId): ?array
     {
         $sql = "SELECT id_collecte FROM benevoles_collectes WHERE id_benevole = ?";
@@ -42,14 +34,6 @@ class CollectionVolunteerManager
         return array_column($results, 'id_collecte');
     }
 
-    /**
-     * Create volunteer participations.
-     *
-     * @param array $submittedParticipations
-     * @param int   $volunteerId
-     *
-     * @throws PDOException
-     */
     public function createVolunteerParticipation($submittedParticipations, $volunteerId)
     {
         if (!empty($submittedParticipations)) {

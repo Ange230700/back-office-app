@@ -4,17 +4,11 @@ namespace Kouak\BackOfficeApp\Utilities;
 
 class Helpers
 {
-    /**
-     * Initialize session if not already started.
-     */
     public static function initSession()
     {
         Session::start();
     }
 
-    /**
-     * Check if a user is logged in.
-     */
     public static function checkUserLoggedIn()
     {
         self::initSession();
@@ -26,9 +20,6 @@ class Helpers
         }
     }
 
-    /**
-     * Check if a user is an admin.
-     */
     public static function checkUserAdmin()
     {
         self::checkUserLoggedIn();
@@ -40,12 +31,6 @@ class Helpers
         }
     }
 
-    /**
-     * Get pagination parameters.
-     *
-     * @param int $defaultLimit The default limit per page.
-     * @return array
-     */
     public static function getPaginationParams($defaultLimit = 3)
     {
         $limit = $defaultLimit;

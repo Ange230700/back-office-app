@@ -12,11 +12,9 @@ class CollectionList
 {
     public static function render()
     {
-        // Ensure the user is logged in
         Helpers::checkUserLoggedIn();
         $pdo = Configuration::getPdo();
 
-        // Use the CollectionController (OOP) to get needed data
         $controller = new CollectionController($pdo);
         $collectedWastesTotalQuantity = $controller->getCollectedWastesTotalQuantity();
         $mostRecentCollection = $controller->getMostRecentCollection();
@@ -27,7 +25,6 @@ class CollectionList
 
         $role = Session::get("role");
 
-        // Prepare dashboard data.
         $dashboardData = [
             'totalPages' => $totalPages,
             'collectedWastesTotalQuantity' => $collectedWastesTotalQuantity,
@@ -36,10 +33,8 @@ class CollectionList
             'dateFormat' => $dateFormat,
         ];
 
-        // Get current page number from query params.
         $pageNumber = $_GET['pageNumber'] ?? 1;
 
-        // Render the template using Twig.
         $twig = View::getTwig();
         echo $twig->render('Pages/collection_list.twig', [
             'collections' => $collectionsList,

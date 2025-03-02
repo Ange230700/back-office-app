@@ -1,3 +1,6 @@
+{# source\Templates\Pages\collection_edit.twig #}
+
+
 {% extends 'Pages/main.twig' %}
 
 {% block title %}Modifier une collecte
@@ -10,7 +13,6 @@
 		<div class="text-red-600 mb-4">{{ error }}</div>
 	{% endif %}
 
-	{# Include the collection form partial and pass all necessary variables #}
 	{% include 'Components/collection_form.twig' with {
       actionUrl: actionUrl,
       cancelUrl: cancelUrl,

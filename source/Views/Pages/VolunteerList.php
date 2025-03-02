@@ -12,22 +12,16 @@ class VolunteerList
 {
     public static function render()
     {
-        // Ensure the user is logged in
         Helpers::checkUserLoggedIn();
         $pdo = Configuration::getPdo();
 
-        // Use the VolunteerController to get needed data.
         $volunteerController = new VolunteerController($pdo);
         list($volunteersList, $numberOfPages) = $volunteerController->getVolunteersFullDetailsPaginated();
 
-        $pageTitle = "Liste des Bénévoles";
-        $pageHeader = "Liste des Bénévoles";
         $role = Session::get("role");
 
-        // Get current page number from query params.
         $pageNumber = $_GET['pageNumber'] ?? 1;
 
-        // Render the template using Twig.
         $twig = View::getTwig();
         echo $twig->render('Pages/volunteer_list.twig', [
             'volunteers'  => $volunteersList,

@@ -32,7 +32,6 @@ class MyAccount
 
                 $error = $controller->updateAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword);
                 if ($error === null) {
-                    // Update session values
                     Session::set("nom", $nom);
                     Session::set("email", $email);
                     header("Location: /back-office-app/index.php?route=my-account");
@@ -40,9 +39,6 @@ class MyAccount
                 }
             }
         }
-
-        $pageTitle = "Mon compte";
-        $pageHeader = "Mon compte";
 
         $twig = View::getTwig();
         echo $twig->render('Pages/my_account.twig', [

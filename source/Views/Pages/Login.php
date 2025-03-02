@@ -9,25 +9,19 @@ use Kouak\BackOfficeApp\Utilities\View;
 
 class Login
 {
-    /**
-     * Render the login page and process form submission.
-     */
     public static function render()
     {
-        // Ensure session is started
         Session::start();
 
         $error = "";
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            // Check CSRF token before any further processing.
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
                 $error = "Le jeton CSRF est invalide. Veuillez réessayer.";
             } else {
                 $email = $_POST["email"] ?? '';
                 $password = $_POST["password"] ?? '';
 
-                // Use LoginController to handle authentication.
                 $pdo = Configuration::getPdo();
                 $loginController = new LoginController($pdo);
                 $user = $loginController->authenticate($email, $password);
@@ -46,12 +40,11 @@ class Login
             }
         }
 
-        // Render the login form
         $twig = View::getTwig();
         echo $twig->render('/Pages/login.twig', [
             'error'       => $error,
             'csrf_token'  => Session::getCsrfToken(),
-            'session'     => $_SESSION, // pass session data to your template if needed
+            'session'     => $_SESSION,
         ]);
     }
 }

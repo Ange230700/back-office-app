@@ -1,3 +1,5 @@
+{# source\Templates\Pages\volunteer_edit.twig #}
+
 {% extends 'Pages/main.twig' %}
 
 {% block title %}Modifier un bénévole
@@ -10,7 +12,6 @@
 		<div class="text-red-600 mb-4">{{ error }}</div>
 	{% endif %}
 
-	{# Include the volunteer form partial, passing all necessary variables #}
 	{% include 'Components/volunteer_form.twig' with {
       actionUrl: actionUrl,
       cancelUrl: cancelUrl,

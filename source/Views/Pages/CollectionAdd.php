@@ -2,6 +2,8 @@
 
 namespace Kouak\BackOfficeApp\Views\Pages;
 
+use PDOException;
+
 use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
@@ -14,11 +16,9 @@ class CollectionAdd
 {
     public static function render()
     {
-        // Ensure only admin users can add a collection
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
-        // Retrieve necessary data from controllers.
         $volunteerController = new VolunteerController($pdo);
         $volunteersList = $volunteerController->getVolunteersList();
 
@@ -28,7 +28,6 @@ class CollectionAdd
         $collectionController = new CollectionController($pdo);
         $placesList = $collectionController->getPlacesList();
 
-        // Initialize empty/default data for add mode.
         $collection = [];
         $selectedVolunteersList = [];
         $collectedWastesList = [];
@@ -54,16 +53,13 @@ class CollectionAdd
                     );
                     header("Location: /back-office-app/index.php?route=collection-list");
                     exit;
-                } catch (\PDOException $e) {
+                } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
 
-        // Set page variables
-        $pageTitle = "Ajouter une collecte";
-        $pageHeader = "Ajouter une collecte";
-        $actionUrl = $_SERVER['PHP_SELF'] . "?route=collection-add"; // route-based URL
+        $actionUrl = $_SERVER['PHP_SELF'] . "?route=collection-add";
         $cancelUrl = "/back-office-app/index.php?route=collection-list";
         $cancelTitle = "Retour à la liste des collectes";
         $buttonTitle = "Ajouter la collecte";
