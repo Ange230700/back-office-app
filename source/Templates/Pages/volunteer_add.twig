@@ -1,0 +1,25 @@
+{% extends 'Pages/main.twig' %}
+
+{% block title %}Ajouter un bénévole
+{% endblock %}
+
+{% block content %}
+	<h1 class="text-4xl font-bold text-cyan-950 mb-6">Ajouter un Bénévole</h1>
+
+	{% if error is defined and error %}
+		<div class="text-red-600 mb-4">{{ error }}</div>
+	{% endif %}
+
+	{# Include the volunteer form partial and pass the needed variables #}
+	{% include 'Components/volunteer_form.twig' with {
+      actionUrl: actionUrl,
+      cancelUrl: cancelUrl,
+      cancelTitle: cancelTitle,
+      buttonTitle: buttonTitle,
+      buttonTextContent: buttonTextContent,
+      volunteer: volunteer,
+      collectionsList: collectionsList,
+      selectedCollections: selectedCollections
+  } %}
+{% endblock %}
+

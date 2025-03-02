@@ -7,8 +7,7 @@ use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
-use Kouak\BackOfficeApp\Views\Components\VolunteerForm;
-use Kouak\BackOfficeApp\Views\Pages\Main;
+use Kouak\BackOfficeApp\Utilities\View;
 
 class VolunteerAdd
 {
@@ -19,13 +18,9 @@ class VolunteerAdd
         $pdo = Configuration::getPdo();
 
         $volunteerController = new VolunteerController($pdo);
-        // For adding, we might also need a list of collections to assign participations.
-        // Assume we have a method getCollectionsList() (or similar) in a CollectionController.
-        // For brevity, let's assume we have a simplified collections list:
         $collectionController = new CollectionController($pdo);
-        $collectionsList = $collectionController->getCollectionsList(); // Adjust accordingly
+        $collectionsList = $collectionController->getCollectionsList();
 
-        // Process POST submission
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -48,7 +43,6 @@ class VolunteerAdd
             }
         }
 
-        // Set page variables
         $pageTitle = "Ajouter un bénévole";
         $pageHeader = "Ajouter un Bénévole";
         $actionUrl = $_SERVER['PHP_SELF'] . "?route=volunteer-add";
@@ -61,22 +55,18 @@ class VolunteerAdd
         $volunteer = [];
         $selectedCollections = [];
 
-        // Render the volunteer form using the VolunteerForm component.
-        ob_start();
-        VolunteerForm::render([
-            'actionUrl'             => $actionUrl,
-            'cancelUrl'             => $cancelUrl,
-            'cancelTitle'           => $cancelTitle,
-            'buttonTitle'           => $buttonTitle,
-            'buttonTextContent'     => $buttonTextContent,
-            'volunteer'             => $volunteer,
-            'collectionsList'       => $collectionsList,
-            'selectedCollections'   => $selectedCollections,
-            'error'                 => $error,
+        $twig = View::getTwig();
+        echo $twig->render('Pages/volunteer_add.twig', [
+            'error'               => $error,
+            'actionUrl'           => $actionUrl,
+            'cancelUrl'           => $cancelUrl,
+            'cancelTitle'         => $cancelTitle,
+            'buttonTitle'         => $buttonTitle,
+            'buttonTextContent'   => $buttonTextContent,
+            'volunteer'           => $volunteer,
+            'collectionsList'     => $collectionsList,
+            'selectedCollections' => $selectedCollections,
+            'session'             => $_SESSION,
         ]);
-        $content = ob_get_clean();
-
-        // Render the page using the Main layout.
-        Main::render($pageTitle, $pageHeader, $content);
     }
 }
