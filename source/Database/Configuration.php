@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Kouak\BackOfficeApp\Database;
 
 use PDO;
+use PDOException;
+use Dotenv\Dotenv;
 
 class Configuration
 {
@@ -21,10 +23,13 @@ class Configuration
     public static function getPdo(): PDO
     {
         if (self::$pdo === null) {
-            $host = '127.0.0.1';
-            $dbname = 'gestion_collectes';
-            $username = 'root';
-            $password = '';
+            $dotenv = Dotenv::createImmutable(BASE_PATH);
+            $dotenv->load();
+
+            $host = $_ENV['DB_HOST'];
+            $dbname = $_ENV['DB_NAME'];
+            $username = $_ENV['DB_USER'];
+            $password = $_ENV['DB_PASS'] ?? '';
 
             try {
                 self::$pdo = new PDO(
@@ -37,7 +42,7 @@ class Configuration
                         PDO::ATTR_EMULATE_PREPARES => false,
                     ]
                 );
-            } catch (\PDOException $e) {
+            } catch (PDOException $e) {
                 die("Erreur de connexion : " . $e->getMessage());
             }
         }

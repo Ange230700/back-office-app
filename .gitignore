@@ -1,5 +1,3 @@
 .vscode/
-projet-collectif-nantes-projet-php-taf/src/php/config.php
-src/sql/gestion_collectes.sql
-
 /vendor/
+.env
