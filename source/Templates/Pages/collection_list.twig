@@ -18,13 +18,14 @@
 	{% embed 'Components/table_template.twig' %}
 		{% block table_headers %}
 			<tr>
-				<th class="py-3 px-4 text-left">Date</th>
-				<th class="py-3 px-4 text-left">Lieu</th>
-				<th class="py-3 px-4 text-left">Bénévoles</th>
-				<th class="py-3 px-4 text-left">Types de déchets (quantité en kg)</th>
+				<th scope="col" class="py-3 px-4 text-left">Date</th>
+				<th scope="col" class="py-3 px-4 text-left">Lieu</th>
+				<th scope="col" class="py-3 px-4 text-left">Bénévoles</th>
+				<th scope="col" class="py-3 px-4 text-left">Types de déchets (quantité en kg)</th>
 				{% if role == 'admin' %}
-					<th class="py-3 px-4 text-left">Actions</th>
+					<th scope="col" class="py-3 px-4 text-left">Actions</th>
 				{% endif %}
+
 			</tr>
 		{% endblock %}
 
