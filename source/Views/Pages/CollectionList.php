@@ -15,19 +15,21 @@ class CollectionList
         Helpers::checkUserLoggedIn();
         $pdo = Configuration::getPdo();
 
-        $controller = new CollectionController($pdo);
-        $collectedWastesTotalQuantity = $controller->getCollectedWastesTotalQuantity();
-        $mostRecentCollection = $controller->getMostRecentCollection();
-        $nextCollection = $controller->getNextCollection();
+        $collectionController = new CollectionController($pdo);
+        $collectedWasteTotalQuantity = $collectionController->getCollectedWastesTotalQuantity();
+        $mostRecentCollection = $collectionController->getMostRecentCollection();
+        $nextCollection = $collectionController->getNextCollection();
 
-        list($collectionsList, $totalPages) = $controller->getCollectionsListPaginated();
+        list($collectionsList, $totalPages) = $collectionController->getCollectionsListPaginated();
+        $totalCollections = $collectionController->getTotalCollections();
         $dateFormat = "d/m/Y";
 
         $role = Session::getSession("role");
 
         $dashboardData = [
+            'totalCollections' => $totalCollections,
             'totalPages' => $totalPages,
-            'collectedWastesTotalQuantity' => $collectedWastesTotalQuantity,
+            'collectedWasteTotalQuantity' => $collectedWasteTotalQuantity,
             'mostRecentCollection' => $mostRecentCollection,
             'nextCollection' => $nextCollection,
             'dateFormat' => $dateFormat,

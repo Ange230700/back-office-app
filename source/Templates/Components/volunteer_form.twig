@@ -45,8 +45,8 @@
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-2">
 					{% for collection in collectionsList %}
 						<div class="flex items-center">
-							<input type="checkbox" name="attendances[]" value="{{ collection.id }}" id="collection_{{ collection.id }}" class="mr-2" {% if collection.id in selectedCollections %} checked {% endif %}>
-							<label for="collection_{{ collection.id }}" class="text-gray-700">
+							<input type="checkbox" name="attendances[]" value="{{ collection.collection_id }}" id="collection_{{ collection.collection_id }}" class="mr-2" {% if collection.collection_id in selectedCollections %} checked {% endif %}>
+							<label for="collection_{{ collection.collection_id }}" class="text-gray-700">
 								{{ collection.collection_label|e }}
 							</label>
 						</div>

@@ -31,7 +31,7 @@ class CollectionController
         }
     }
 
-    public function getCollectedWastesTotalQuantity(): ?int
+    public function getCollectedWastesTotalQuantity(): float
     {
         try {
             return $this->collectionManager->readCollectedWastesTotalQuantity();
@@ -111,6 +111,12 @@ class CollectionController
             throw $e;
         }
     }
+
+    public function getTotalCollections(): ?int
+    {
+        return $this->collectionManager->readNumberOfCollections();
+    }
+
 
     public function editCollection($submittedDate, $submittedPlace, $collectionId, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted): void
     {

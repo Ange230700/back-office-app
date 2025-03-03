@@ -89,7 +89,7 @@ class CollectionManager
                     GROUP_CONCAT(
                         DISTINCT CONCAT(
                             COALESCE(Collected_waste.waste_type, 'type (s) non défini(s)'),
-                            ' (', ROUND(COALESCE(Collected_waste.quantity_kg, 0), 1), 'kg)'
+                            ' (', REPLACE(FORMAT(COALESCE(Collected_waste.quantity_kg, 0), 1, 'fr_FR'), CHAR(160), ''), 'kg)'
                         )
                         ORDER BY Collected_waste.waste_type
                         SEPARATOR ', '
@@ -115,10 +115,7 @@ class CollectionManager
 
     public function readNumberOfCollections(): ?int
     {
-        $sql = "SELECT COUNT(DISTINCT Volunteer_Collection.id_collection) AS total
-                FROM Volunteer
-                INNER JOIN Volunteer_Collection ON Volunteer.volunteer_id = Volunteer_Collection.id_volunteer
-                INNER JOIN CollectionEvent ON CollectionEvent.collection_id = Volunteer_Collection.id_collection";
+        $sql = "SELECT COUNT(*) AS total FROM CollectionEvent";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
@@ -137,17 +134,17 @@ class CollectionManager
         return [$collectionsList, $numberOfPages];
     }
 
-    public function readCollectedWastesTotalQuantity(): ?int
+    public function readCollectedWastesTotalQuantity(): float
     {
-        $sql = "SELECT COALESCE(ROUND(SUM(COALESCE(Collected_waste.quantity_kg,0)),1), 0) AS quantite_total_des_dechets_collectes
-                FROM CollectionEvent
-                LEFT JOIN Collected_waste ON CollectionEvent.collection_id = Collected_waste.id_collection";
+        $sql = "SELECT COALESCE(ROUND(SUM(quantity_kg), 1), 0.0)
+                AS collected_waste_total_quantity
+                FROM Collected_waste";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
-            return null;
+            return 0.0;
         }
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['quantite_total_des_dechets_collectes'];
+        return (float) ($result['collected_waste_total_quantity'] ?? 0.0);
     }
 
     public function readMostRecentCollection(): ?array

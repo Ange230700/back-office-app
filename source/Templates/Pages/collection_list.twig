@@ -25,7 +25,6 @@
 				{% if role == 'admin' %}
 					<th scope="col" class="py-3 px-4 text-left">Actions</th>
 				{% endif %}
-
 			</tr>
 		{% endblock %}
 
@@ -45,8 +44,8 @@
 					{% if role == 'admin' %}
 						<td class="py-3 px-4">
 							{% include 'Components/action_buttons.twig' with {
-								editUrl: '/back-office-app/index.php?route=collection-edit&id=' ~ collection.id,
-								deleteUrl: '/back-office-app/index.php?route=collection-delete&id=' ~ collection.id,
+								editUrl: '/back-office-app/index.php?route=collection-edit&id=' ~ collection.collection_id,
+								deleteUrl: '/back-office-app/index.php?route=collection-delete&id=' ~ collection.collection_id,
 								editTitle: 'Modifier la collecte du ' ~ collection.collection_date|date(dateFormat) ~ ' à ' ~ collection.collection_place,
 								deleteTitle: 'Supprimer la collecte du ' ~ collection.collection_date|date(dateFormat) ~ ' à ' ~ collection.collection_place } %}
 						</td>
