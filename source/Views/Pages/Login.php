@@ -11,7 +11,7 @@ class Login
 {
     public static function render()
     {
-        Session::start();
+        Session::startSession();
 
         $error = "";
 
@@ -27,11 +27,11 @@ class Login
                 $user = $loginController->getUserByEmail($email, $password);
 
                 if ($user && password_verify($password, $user['mot_de_passe'])) {
-                    Session::regenerate();
-                    Session::set("user_id", $user["id"]);
-                    Session::set("nom", $user["nom"]);
-                    Session::set("role", $user["role"]);
-                    Session::set("email", $user["email"]);
+                    Session::regenerateSessionId();
+                    Session::setSession("user_id", $user["id"]);
+                    Session::setSession("nom", $user["nom"]);
+                    Session::setSession("role", $user["role"]);
+                    Session::setSession("email", $user["email"]);
                     header("Location: /back-office-app/index.php?route=collection-list");
                     exit;
                 } else {

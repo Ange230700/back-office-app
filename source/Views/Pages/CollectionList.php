@@ -23,7 +23,7 @@ class CollectionList
         list($collectionsList, $totalPages) = $controller->getCollectionsListPaginated();
         $dateFormat = "d/m/Y";
 
-        $role = Session::get("role");
+        $role = Session::getSession("role");
 
         $dashboardData = [
             'totalPages' => $totalPages,

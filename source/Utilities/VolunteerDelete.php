@@ -8,7 +8,7 @@ use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 
 class VolunteerDelete
 {
-    public static function run()
+    public static function runVolunteerDeletion()
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();

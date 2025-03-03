@@ -18,7 +18,7 @@ class VolunteerList
         $volunteerController = new VolunteerController($pdo);
         list($volunteersList, $numberOfPages) = $volunteerController->getVolunteersFullDetailsPaginated();
 
-        $role = Session::get("role");
+        $role = Session::getSession("role");
 
         $pageNumber = $_GET['pageNumber'] ?? 1;
 

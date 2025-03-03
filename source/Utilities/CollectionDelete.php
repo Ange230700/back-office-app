@@ -8,7 +8,7 @@ use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
 
 class CollectionDelete
 {
-    public static function run()
+    public static function runCollectionDeletion(): void
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();

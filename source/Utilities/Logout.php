@@ -8,7 +8,7 @@ class Logout
 {
     public static function run()
     {
-        Session::destroy();
+        Session::destroySession();
 
         header("Location: /back-office-app/index.php");
         exit;

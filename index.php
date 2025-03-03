@@ -27,7 +27,7 @@ if ($route === 'login') {
 } elseif ($route === 'collection-edit') {
     CollectionEdit::render();
 } elseif ($route === 'collection-delete') {
-    CollectionDelete::run();
+    CollectionDelete::runCollectionDeletion();
 } elseif ($route === 'volunteer-list') {
     VolunteerList::render();
 } elseif ($route === 'volunteer-add') {
@@ -35,7 +35,7 @@ if ($route === 'login') {
 } elseif ($route === 'volunteer-edit') {
     VolunteerEdit::render();
 } elseif ($route === 'volunteer-delete') {
-    VolunteerDelete::run();
+    VolunteerDelete::runVolunteerDeletion();
 } elseif ($route === 'logout') {
     Logout::run();
 } elseif ($route === 'my-account') {

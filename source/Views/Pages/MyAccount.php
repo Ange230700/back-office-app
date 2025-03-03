@@ -16,7 +16,7 @@ class MyAccount
         $pdo = Configuration::getPdo();
 
         $controller = new MyAccountController($pdo);
-        $userId = Session::get("user_id");
+        $userId = Session::getSession("user_id");
         $account = $controller->getAccount($userId);
 
         $error = "";
@@ -32,8 +32,8 @@ class MyAccount
 
                 $error = $controller->editAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword);
                 if ($error === null) {
-                    Session::set("nom", $nom);
-                    Session::set("email", $email);
+                    Session::setSession("nom", $nom);
+                    Session::setSession("email", $email);
                     header("Location: /back-office-app/index.php?route=my-account");
                     exit;
                 }
