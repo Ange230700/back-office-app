@@ -41,7 +41,7 @@
 		</table>
 	</div>
 
-	{% set urlPrefix = route is defined and route ? '/' ~ route ~ '&' : '?' %}
+	{% set urlPrefix = route is defined and route ? route ~ '?' : '' %}
 	{% include 'Components/pagination_buttons.twig' with {
       totalPages: totalPages,
       pageNumber: pageNumber,
