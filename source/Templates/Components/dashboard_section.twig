@@ -17,8 +17,8 @@
 	<div class="bg-white p-6 rounded-lg shadow-lg">
 		<h3 class="text-xl font-semibold text-gray-800 mb-3">Dernière Collecte</h3>
 		{% if dashboard.mostRecentCollection %}
-			<p class="text-lg text-gray-600">{{ dashboard.mostRecentCollection.lieu|e }}</p>
-			<p class="text-lg text-gray-600">{{ dashboard.mostRecentCollection.date_collecte|date(dateFormat) }}</p>
+			<p class="text-lg text-gray-600">{{ dashboard.mostRecentCollection.collection_place|e }}</p>
+			<p class="text-lg text-gray-600">{{ dashboard.mostRecentCollection.collection_date|date(dateFormat) }}</p>
 		{% else %}
 			<p class="text-lg text-gray-600">Aucune collecte pour le moment</p>
 		{% endif %}
@@ -26,8 +26,8 @@
 	<div class="bg-white p-6 rounded-lg shadow-lg">
 		<h3 class="text-xl font-semibold text-gray-800 mb-3">Prochaine Collecte</h3>
 		{% if dashboard.nextCollection %}
-			<p class="text-lg text-gray-600">{{ dashboard.nextCollection.lieu|e }}</p>
-			<p class="text-lg text-gray-600">{{ dashboard.nextCollection.date_collecte|date(dateFormat) }}</p>
+			<p class="text-lg text-gray-600">{{ dashboard.nextCollection.collection_place|e }}</p>
+			<p class="text-lg text-gray-600">{{ dashboard.nextCollection.collection_date|date(dateFormat) }}</p>
 		{% else %}
 			<p class="text-lg text-gray-600">Aucune collecte à venir</p>
 		{% endif %}

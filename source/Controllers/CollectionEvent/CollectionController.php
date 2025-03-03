@@ -1,10 +1,10 @@
 <?php
 
-namespace Kouak\BackOfficeApp\Controllers\Collection;
+namespace Kouak\BackOfficeApp\Controllers\CollectionEvent;
 
 use PDO;
 use PDOException;
-use Kouak\BackOfficeApp\Models\Collection\CollectionManager;
+use Kouak\BackOfficeApp\Models\CollectionEvent\CollectionManager;
 use Kouak\BackOfficeApp\Models\CollectionVolunteer\CollectionVolunteerManager;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 

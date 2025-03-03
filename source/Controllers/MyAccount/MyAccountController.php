@@ -26,7 +26,7 @@ class MyAccountController
         }
     }
 
-    public function editAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword): ?string
+    public function editAccount($userId, $username, $email, $currentPassword, $newPassword, $confirmPassword): ?string
     {
         try {
             $error = null;
@@ -35,7 +35,7 @@ class MyAccountController
                 $error = "Utilisateur introuvable.";
             } else {
                 if (!empty($currentPassword) && !empty($newPassword) && !empty($confirmPassword)) {
-                    if (!password_verify($currentPassword, $account['mot_de_passe'])) {
+                    if (!password_verify($currentPassword, $account['password'])) {
                         $error = "Le mot de passe actuel est incorrect.";
                     } elseif ($newPassword !== $confirmPassword) {
                         $error = "Le nouveau mot de passe et la confirmation ne correspondent pas.";
@@ -45,7 +45,7 @@ class MyAccountController
                     }
                 }
                 if (!$error) {
-                    $this->myAccountManager->updateAccount($userId, $nom, $email);
+                    $this->myAccountManager->updateAccount($userId, $username, $email);
                 }
             }
             return $error;

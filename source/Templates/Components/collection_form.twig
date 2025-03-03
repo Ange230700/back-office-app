@@ -7,14 +7,14 @@
 	<div>
 		<label for="date" class="block text-sm font-medium text-gray-700">
 			Date
-			<input type="date" id="date" name="date" value="{{ collection.date_collecte|default('') }}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required/>
+			<input type="date" id="date" name="date" value="{{ collection.collection_date|default('') }}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required/>
 		</label>
 	</div>
 
 	<div>
-		<label for="lieu" class="block text-sm font-medium text-gray-700">
+		<label for="collection_place" class="block text-sm font-medium text-gray-700">
 			Lieu
-			<input type="text" id="lieu" name="lieu" value="{{ collection.lieu|default('') }}" list="lieuxList" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Lieu de la collecte" required/>
+			<input type="text" id="collection_place" name="collection_place" value="{{ collection.collection_place|default('') }}" list="lieuxList" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Lieu de la collecte" required/>
 		</label>
 		<datalist id="lieuxList">
 			{% for place in placesList %}
@@ -30,8 +30,10 @@
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
 						{% for volunteer in volunteersList %}
 							<div class="flex items-center">
-								<input type="checkbox" name="benevoles[]" value="{{ volunteer.id }}" id="benevole_{{ volunteer.id }}" class="mr-2" {% if volunteer.id in selectedVolunteersList %} checked {% endif %}/>
-								<label for="benevole_{{ volunteer.id }}" class="text-gray-700">{{ volunteer.nom|e }}</label>
+								<input type="checkbox" name="Volunteer[]" value="{{ volunteer.volunteer_id }}" id="volunteer_{{ volunteer.volunteer_id }}" class="mr-2" {% if volunteer.volunteer_id in selectedVolunteersList %} checked {% endif %}/>
+
+								<label for="volunteer_{{ volunteer.volunteer_id }}" class="text-gray-700">{{ volunteer.username|e }}</label>
+
 							</div>
 						{% endfor %}
 					</div>
@@ -47,8 +49,8 @@
 				<div id="waste-container" class="mt-2">
 					{% if collectedWastesList is empty %}
 						<div class="waste-item flex space-x-4 mb-2">
-							<input type="text" name="type_dechet[]" list="wasteTypesList" value="" placeholder="Sélectionner ou saisir un nouveau type" class="w-full p-2 border border-gray-300 rounded-lg">
-							<input type="number" min="0" step="0.1" name="quantite_kg[]" placeholder="Quantité (kg)" value="" class="w-full p-2 border border-gray-300 rounded-lg">
+							<input type="text" name="waste_type[]" list="wasteTypesList" value="" placeholder="Sélectionner ou saisir un nouveau type" class="w-full p-2 border border-gray-300 rounded-lg">
+							<input type="number" min="0" step="0.1" name="quantity_kg[]" placeholder="Quantité (kg)" value="" class="w-full p-2 border border-gray-300 rounded-lg">
 							<button type="button" class="bg-cyan-950 remove-waste hover:bg-red-600 text-white px-2 py-1 rounded">
 								Supprimer
 							</button>
@@ -56,8 +58,8 @@
 					{% else %}
 						{% for waste in collectedWastesList %}
 							<div class="waste-item flex space-x-4 mb-2">
-								<input type="text" name="type_dechet[]" list="wasteTypesList" value="{{ waste.type_dechet|default('') }}" placeholder="Sélectionner ou saisir un nouveau type" class="w-full p-2 border border-gray-300 rounded-lg">
-								<input type="number" min="0" step="0.1" name="quantite_kg[]" placeholder="Quantité (kg)" value="{{ waste.quantite_kg|default('') }}" class="w-full p-2 border border-gray-300 rounded-lg">
+								<input type="text" name="waste_type[]" list="wasteTypesList" value="{{ waste.waste_type|default('') }}" placeholder="Sélectionner ou saisir un nouveau type" class="w-full p-2 border border-gray-300 rounded-lg">
+								<input type="number" min="0" step="0.1" name="quantity_kg[]" placeholder="Quantité (kg)" value="{{ waste.quantity_kg|default('') }}" class="w-full p-2 border border-gray-300 rounded-lg">
 								<button type="button" class="bg-cyan-950 remove-waste hover:bg-red-600 text-white px-2 py-1 rounded">
 									Supprimer
 								</button>
@@ -77,9 +79,8 @@
 			</div>
 
 			{% include 'Components/add_or_edit_buttons.twig' with {
-      cancelUrl: cancelUrl,
-      cancelTitle: cancelTitle,
-      buttonTitle: buttonTitle,
-      buttonTextContent: buttonTextContent
-  } %}
+      			cancelUrl: cancelUrl,
+      			cancelTitle: cancelTitle,
+      			buttonTitle: buttonTitle,
+      			buttonTextContent: buttonTextContent } %}
 		</form>

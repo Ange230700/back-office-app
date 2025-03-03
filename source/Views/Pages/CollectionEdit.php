@@ -6,7 +6,7 @@ use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
-use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
+use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Controllers\CollectedWasteDetails\CollectedWasteDetailsController;
 use Kouak\BackOfficeApp\Utilities\View;
 
@@ -40,7 +40,7 @@ class CollectionEdit
         $placesList = $collectionController->getCollectionPlacesList();
         $collectedWasteDetailsList = $collectedWasteController->getCollectedWasteDetailsList($collectionId);
         if (empty($collectedWasteDetailsList)) {
-            $collectedWasteDetailsList[] = ['type_dechet' => '', 'quantite_kg' => ''];
+            $collectedWasteDetailsList[] = ['waste_type' => '', 'quantity_kg' => ''];
         }
 
         $error = "";
@@ -49,10 +49,10 @@ class CollectionEdit
                 $error = "Le jeton CSRF est invalide. Veuillez réessayer.";
             } else {
                 $submittedDate = $_POST["date"] ?? '';
-                $submittedPlace = $_POST["lieu"] ?? '';
-                $volunteersAssigned = $_POST["benevoles"] ?? [];
-                $wasteTypesSubmitted = $_POST['type_dechet'] ?? [];
-                $quantitiesSubmitted = $_POST['quantite_kg'] ?? [];
+                $submittedPlace = $_POST["collection_place"] ?? '';
+                $volunteersAssigned = $_POST["Volunteer"] ?? [];
+                $wasteTypesSubmitted = $_POST['waste_type'] ?? [];
+                $quantitiesSubmitted = $_POST['quantity_kg'] ?? [];
 
                 try {
                     $collectionController->editCollection(
@@ -73,7 +73,7 @@ class CollectionEdit
 
         $actionUrl = $_SERVER['PHP_SELF'] . "?route=collection-edit&id=" . urlencode($collectionId);
         $cancelUrl = "/back-office-app/index.php?route=collection-list";
-        $cancelTitle = "Retour à la liste des collectes";
+        $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Modifier la collecte";
         $buttonTextContent = "Modifier la collecte";
 

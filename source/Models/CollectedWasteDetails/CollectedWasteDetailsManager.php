@@ -15,7 +15,7 @@ class CollectedWasteDetailsManager
 
     public function createCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted): ?int
     {
-        $sql = "INSERT INTO dechets_collectes (id_collecte, type_dechet, quantite_kg) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO Collected_waste (id_collection, waste_type, quantity_kg) VALUES (?, ?, ?)";
         $stmt = $this->pdo->prepare($sql);
         for ($i = 0; $i < count($wasteTypesSubmitted); $i++) {
             if (!empty($wasteTypesSubmitted[$i]) && is_numeric($quantitiesSubmitted[$i]) && !$stmt->execute([$collectionId, $wasteTypesSubmitted[$i], $quantitiesSubmitted[$i]])) {
@@ -27,7 +27,7 @@ class CollectedWasteDetailsManager
 
     public function readWasteTypesList(): ?array
     {
-        $sql = "SELECT DISTINCT type_dechet FROM dechets_collectes";
+        $sql = "SELECT DISTINCT waste_type FROM Collected_waste";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
@@ -37,7 +37,7 @@ class CollectedWasteDetailsManager
 
     public function readCollectedWasteDetailsList($collectionId): ?array
     {
-        $sql = "SELECT type_dechet, quantite_kg FROM dechets_collectes WHERE id_collecte = ?";
+        $sql = "SELECT waste_type, quantity_kg FROM Collected_waste WHERE id_collection = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$collectionId])) {
             return null;
@@ -55,7 +55,7 @@ class CollectedWasteDetailsManager
 
     public function deleteCollectedWasteDetails($collectionId): ?int
     {
-        $sql = "DELETE FROM dechets_collectes WHERE id_collecte = ?";
+        $sql = "DELETE FROM Collected_waste WHERE id_collection = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$collectionId])) {
             return null;

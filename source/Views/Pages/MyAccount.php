@@ -24,15 +24,15 @@ class MyAccount
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
                 $error = "Le jeton CSRF est invalide. Veuillez réessayer.";
             } else {
-                $nom = $_POST["nom"] ?? "";
+                $username = $_POST["username"] ?? "";
                 $email = $_POST["email"] ?? "";
                 $currentPassword = $_POST["current_password"] ?? "";
                 $newPassword = $_POST["new_password"] ?? "";
                 $confirmPassword = $_POST["confirm_password"] ?? "";
 
-                $error = $controller->editAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword);
+                $error = $controller->editAccount($userId, $username, $email, $currentPassword, $newPassword, $confirmPassword);
                 if ($error === null) {
-                    Session::setSession("nom", $nom);
+                    Session::setSession("username", $username);
                     Session::setSession("email", $email);
                     header("Location: /back-office-app/index.php?route=my-account");
                     exit;

@@ -16,7 +16,7 @@ class CollectionVolunteerManager
     public function createVolunteerParticipation($submittedParticipations, $volunteerId): void
     {
         if (!empty($submittedParticipations)) {
-            $sql = "INSERT INTO benevoles_collectes (id_benevole, id_collecte) VALUES (?, ?)";
+            $sql = "INSERT INTO Volunteer_Collection (id_volunteer, id_collection) VALUES (?, ?)";
             $stmt = $this->pdo->prepare($sql);
             foreach ($submittedParticipations as $collectionId) {
                 if (!$stmt->execute([$volunteerId, $collectionId])) {
@@ -26,9 +26,9 @@ class CollectionVolunteerManager
         }
     }
 
-    public function createVolunteersCollectionAssignment($collectionId, $volunteersAssigned): ?int
+    public function createVolunteerCollectionAssignment($collectionId, $volunteersAssigned): ?int
     {
-        $sql = "INSERT INTO benevoles_collectes (id_collecte, id_benevole) VALUES (?, ?)";
+        $sql = "INSERT INTO Volunteer_Collection (id_collection, id_volunteer) VALUES (?, ?)";
         $stmt = $this->pdo->prepare($sql);
         foreach ($volunteersAssigned as $volunteerId) {
             if (!$stmt->execute([$collectionId, $volunteerId])) {
@@ -40,7 +40,7 @@ class CollectionVolunteerManager
 
     public function readVolunteersListWhoAttendedCollection($collectionId): ?array
     {
-        $sql = "SELECT id_benevole FROM benevoles_collectes WHERE id_collecte = ?";
+        $sql = "SELECT id_volunteer FROM Volunteer_Collection WHERE id_collection = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$collectionId])) {
             return null;
@@ -50,20 +50,20 @@ class CollectionVolunteerManager
 
     public function readCollectionsListVolunteerAttended($volunteerId): ?array
     {
-        $sql = "SELECT id_collecte FROM benevoles_collectes WHERE id_benevole = ?";
+        $sql = "SELECT id_collection FROM Volunteer_Collection WHERE id_volunteer = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$volunteerId])) {
             return null;
         }
         $results = $stmt->fetchAll();
-        return array_column($results, 'id_collecte');
+        return array_column($results, 'id_collection');
     }
 
     public function updateVolunteersInCollection($collectionId, $volunteersAssigned): void
     {
         $this->deleteVolunteersFromCollection($collectionId);
         if (!empty($volunteersAssigned)) {
-            $this->createVolunteersCollectionAssignment($collectionId, $volunteersAssigned);
+            $this->createVolunteerCollectionAssignment($collectionId, $volunteersAssigned);
         }
     }
 
@@ -77,7 +77,7 @@ class CollectionVolunteerManager
 
     public function deleteVolunteersFromCollection($collectionId): ?int
     {
-        $sql = "DELETE FROM benevoles_collectes WHERE id_collecte = ?";
+        $sql = "DELETE FROM Volunteer_Collection WHERE id_collection = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$collectionId])) {
             return null;
@@ -87,7 +87,7 @@ class CollectionVolunteerManager
 
     public function deleteCollectionsVolunteerAttended($volunteerId): ?int
     {
-        $sql = "DELETE FROM benevoles_collectes WHERE id_benevole = ?";
+        $sql = "DELETE FROM Volunteer_Collection WHERE id_volunteer = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$volunteerId])) {
             return null;

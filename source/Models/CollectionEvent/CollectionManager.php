@@ -1,6 +1,6 @@
 <?php
 
-namespace Kouak\BackOfficeApp\Models\Collection;
+namespace Kouak\BackOfficeApp\Models\CollectionEvent;
 
 use PDO;
 use Kouak\BackOfficeApp\Models\CollectedWasteDetails\CollectedWasteDetailsManager;
@@ -27,7 +27,7 @@ class CollectionManager
             $this->pdo->rollBack();
             return null;
         }
-        $this->collectionVolunteerManager->createVolunteersCollectionAssignment($collectionId, $volunteersAssigned);
+        $this->collectionVolunteerManager->createVolunteerCollectionAssignment($collectionId, $volunteersAssigned);
         if (!empty($wasteTypesSubmitted) && !empty($quantitiesSubmitted)) {
             $this->collectedWasteDetailsManager->createCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted);
         }
@@ -37,7 +37,7 @@ class CollectionManager
 
     public function createCollection($submittedDate, $submittedPlace): ?int
     {
-        $sql = "INSERT INTO collectes (date_collecte, lieu) VALUES (?, ?)";
+        $sql = "INSERT INTO CollectionEvent (collection_date, collection_place) VALUES (?, ?)";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$submittedDate, $submittedPlace])) {
             return null;
@@ -47,7 +47,7 @@ class CollectionManager
 
     public function readCollection($collectionId): ?array
     {
-        $sql = "SELECT id, date_collecte, lieu FROM collectes WHERE id = ?";
+        $sql = "SELECT collection_id, collection_date, collection_place FROM CollectionEvent WHERE collection_id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$collectionId])) {
             return null;
@@ -57,7 +57,7 @@ class CollectionManager
 
     public function readCollectionPlacesList(): ?array
     {
-        $sql = "SELECT DISTINCT lieu FROM collectes ORDER BY lieu";
+        $sql = "SELECT DISTINCT collection_place FROM CollectionEvent ORDER BY collection_place";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
@@ -67,7 +67,7 @@ class CollectionManager
 
     public function readCollectionsList(): ?array
     {
-        $sql = "SELECT id, CONCAT(DATE_FORMAT(date_collecte, '%d/%m/%Y'), ' - ', lieu) AS collection_label FROM collectes ORDER BY date_collecte";
+        $sql = "SELECT collection_id, CONCAT(DATE_FORMAT(collection_date, '%d/%m/%Y'), ' - ', collection_place) AS collection_label FROM CollectionEvent ORDER BY collection_date";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
@@ -78,33 +78,33 @@ class CollectionManager
     public function readDetailedCollectionsList(int $limit, int $offset): ?array
     {
         $sql = "SELECT
-                collectes.id,
-                collectes.date_collecte,
-                collectes.lieu,
+                CollectionEvent.collection_id,
+                CollectionEvent.collection_date,
+                CollectionEvent.collection_place,
                 COALESCE(
-                       GROUP_CONCAT(DISTINCT benevoles.nom ORDER BY benevoles.nom SEPARATOR ', '),
+                       GROUP_CONCAT(DISTINCT Volunteer.username ORDER BY Volunteer.username SEPARATOR ', '),
                        'Aucun bénévole'
-                ) AS benevoles,
+                ) AS Volunteer,
                 COALESCE(
                     GROUP_CONCAT(
                         DISTINCT CONCAT(
-                            COALESCE(dechets_collectes.type_dechet, 'type (s) non défini(s)'),
-                            ' (', ROUND(COALESCE(dechets_collectes.quantite_kg, 0), 1), 'kg)'
+                            COALESCE(Collected_waste.waste_type, 'type (s) non défini(s)'),
+                            ' (', ROUND(COALESCE(Collected_waste.quantity_kg, 0), 1), 'kg)'
                         )
-                        ORDER BY dechets_collectes.type_dechet
+                        ORDER BY Collected_waste.waste_type
                         SEPARATOR ', '
                     ),
                     'Aucun déchet collecté'
                 ) AS wasteDetails
-            FROM collectes
-            LEFT JOIN benevoles_collectes
-                ON collectes.id = benevoles_collectes.id_collecte
-            LEFT JOIN benevoles
-                ON benevoles_collectes.id_benevole = benevoles.id
-            LEFT JOIN dechets_collectes
-                    ON collectes.id = dechets_collectes.id_collecte
-            GROUP BY collectes.id
-            ORDER BY collectes.date_collecte DESC
+            FROM CollectionEvent
+            LEFT JOIN Volunteer_Collection
+                ON CollectionEvent.collection_id = Volunteer_Collection.id_collection
+            LEFT JOIN Volunteer
+                ON Volunteer_Collection.id_volunteer = Volunteer.volunteer_id
+            LEFT JOIN Collected_waste
+                    ON CollectionEvent.collection_id = Collected_waste.id_collection
+            GROUP BY CollectionEvent.collection_id
+            ORDER BY CollectionEvent.collection_date DESC
             LIMIT ? OFFSET ?;";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$limit, $offset])) {
@@ -115,10 +115,10 @@ class CollectionManager
 
     public function readNumberOfCollections(): ?int
     {
-        $sql = "SELECT COUNT(DISTINCT benevoles_collectes.id_collecte) AS total
-                FROM benevoles
-                INNER JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole
-                INNER JOIN collectes ON collectes.id = benevoles_collectes.id_collecte";
+        $sql = "SELECT COUNT(DISTINCT Volunteer_Collection.id_collection) AS total
+                FROM Volunteer
+                INNER JOIN Volunteer_Collection ON Volunteer.volunteer_id = Volunteer_Collection.id_volunteer
+                INNER JOIN CollectionEvent ON CollectionEvent.collection_id = Volunteer_Collection.id_collection";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
@@ -139,9 +139,9 @@ class CollectionManager
 
     public function readCollectedWastesTotalQuantity(): ?int
     {
-        $sql = "SELECT COALESCE(ROUND(SUM(COALESCE(dechets_collectes.quantite_kg,0)),1), 0) AS quantite_total_des_dechets_collectes
-                FROM collectes
-                LEFT JOIN dechets_collectes ON collectes.id = dechets_collectes.id_collecte";
+        $sql = "SELECT COALESCE(ROUND(SUM(COALESCE(Collected_waste.quantity_kg,0)),1), 0) AS quantite_total_des_dechets_collectes
+                FROM CollectionEvent
+                LEFT JOIN Collected_waste ON CollectionEvent.collection_id = Collected_waste.id_collection";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
@@ -152,30 +152,32 @@ class CollectionManager
 
     public function readMostRecentCollection(): ?array
     {
-        $sql = "SELECT lieu, date_collecte
-                FROM collectes
-                WHERE date_collecte <= CURDATE()
-                ORDER BY date_collecte DESC
+        $sql = "SELECT collection_place, collection_date
+                FROM CollectionEvent
+                WHERE collection_date <= CURDATE()
+                ORDER BY collection_date DESC
                 LIMIT 1";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
         }
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result !== false ? $result : null;
     }
 
     public function readNextCollection(): ?array
     {
-        $sql = "SELECT lieu, date_collecte
-                FROM collectes
-                WHERE date_collecte > CURDATE()
-                ORDER BY date_collecte ASC
+        $sql = "SELECT collection_place, collection_date
+                FROM CollectionEvent
+                WHERE collection_date > CURDATE()
+                ORDER BY collection_date ASC
                 LIMIT 1";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
         }
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result !== false ? $result : null;
     }
 
     public function updateVolunteersInCollection($collectionId, $volunteersAssigned): void
@@ -190,9 +192,9 @@ class CollectionManager
 
     public function updateCollection($submittedDate, $submittedPlace, $collectionId): ?int
     {
-        $sql = "UPDATE collectes
-                SET date_collecte = COALESCE(?, date_collecte), lieu = COALESCE(?, lieu)
-                WHERE id = ?";
+        $sql = "UPDATE CollectionEvent
+                SET collection_date = COALESCE(?, collection_date), collection_place = COALESCE(?, collection_place)
+                WHERE collection_id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$submittedDate, $submittedPlace, $collectionId])) {
             return null;
@@ -202,7 +204,7 @@ class CollectionManager
 
     public function deleteCollection($collectionId): ?int
     {
-        $sql = "DELETE FROM collectes WHERE id = ?";
+        $sql = "DELETE FROM CollectionEvent WHERE collection_id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$collectionId])) {
             return null;

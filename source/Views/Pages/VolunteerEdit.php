@@ -7,7 +7,7 @@ use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
-use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
+use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Utilities\View;
 
 class VolunteerEdit

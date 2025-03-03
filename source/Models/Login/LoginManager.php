@@ -15,7 +15,7 @@ class LoginManager
 
     public function readUserByEmail(string $email): ?array
     {
-        $sql = "SELECT * FROM benevoles WHERE email = ?";
+        $sql = "SELECT * FROM Volunteer WHERE email = ?";
         $stmt = $this->pdo->prepare($sql);
         if ($stmt->execute([$email])) {
             $user = $stmt->fetch();

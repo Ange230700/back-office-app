@@ -11,8 +11,8 @@
 	<form method="POST" class="space-y-6">
 		<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 		<div>
-			<label for="nom" class="block text-sm font-medium text-gray-700">Nom</label>
-			<input type="text" name="nom" id="nom" value="{{ account.nom|e }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+			<label for="username" class="block text-sm font-medium text-gray-700">Nom</label>
+			<input type="text" name="username" id="username" value="{{ account.username|e }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
 		</div>
 		<div>
 			<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -38,7 +38,7 @@
 		</div>
 		<div class="flex justify-between items-center">
 			<a href="/back-office-app/index.php?route=collection-list" class="text-sm text-blue-600 hover:underline">
-				Retour à la liste des collectes
+				Retour à la liste des CollectionEvent
 			</a>
 			<button type="submit" class="bg-cyan-950 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md">
 				Mettre à jour

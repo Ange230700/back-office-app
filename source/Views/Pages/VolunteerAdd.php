@@ -8,7 +8,7 @@ use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
-use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
+use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Utilities\View;
 
 class VolunteerAdd
@@ -27,9 +27,9 @@ class VolunteerAdd
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
                 $error = "Le jeton CSRF est invalide. Veuillez réessayer.";
             } else {
-                $submittedName = $_POST['nom'] ?? '';
+                $submittedName = $_POST['username'] ?? '';
                 $submittedEmail = $_POST['email'] ?? '';
-                $submittedPassword = $_POST['mot_de_passe'] ?? '';
+                $submittedPassword = $_POST['password'] ?? '';
                 $hashedPassword = password_hash($submittedPassword, PASSWORD_DEFAULT);
                 $submittedRole = $_POST['role'] ?? 'participant';
                 $submittedParticipations = $_POST['attendances'] ?? [];

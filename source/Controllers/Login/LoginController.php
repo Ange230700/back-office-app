@@ -21,7 +21,7 @@ class LoginController
     {
         try {
             $user = $this->loginManager->readUserByEmail($email);
-            if ($user && password_verify($password, $user['mot_de_passe'])) {
+            if ($user && password_verify($password, $user['password'])) {
                 return $user;
             }
             return null;

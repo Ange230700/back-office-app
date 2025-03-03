@@ -4,7 +4,7 @@ namespace Kouak\BackOfficeApp\Utilities;
 
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
-use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
+use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 
 class CollectionDelete
 {

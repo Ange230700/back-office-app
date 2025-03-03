@@ -9,9 +9,9 @@
 
 	{% if volunteer is empty %}
 		<div>
-			<label for="nom" class="block text-sm font-medium text-gray-700">
+			<label for="username" class="block text-sm font-medium text-gray-700">
 				Nom
-				<input type="text" id="nom" name="nom" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nom du bénévole" required>
+				<input type="text" id="username" name="username" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nom du bénévole" required>
 			</label>
 		</div>
 		<div>
@@ -21,9 +21,9 @@
 			</label>
 		</div>
 		<div>
-			<label for="mot_de_passe" class="block text-sm font-medium text-gray-700">
+			<label for="password" class="block text-sm font-medium text-gray-700">
 				Mot de passe
-				<input type="password" id="mot_de_passe" name="mot_de_passe" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Mot de passe" required>
+				<input type="password" id="password" name="password" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Mot de passe" required>
 			</label>
 		</div>
 	{% endif %}

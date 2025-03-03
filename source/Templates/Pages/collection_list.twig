@@ -32,11 +32,11 @@
 		{% block table_body %}
 			{% for collection in collections %}
 				<tr class="hover:bg-gray-100 transition duration-200">
-					<td class="py-3 px-4">{{ collection.date_collecte|date(dateFormat) }}</td>
-					<td class="py-3 px-4">{{ collection.lieu|e }}</td>
+					<td class="py-3 px-4">{{ collection.collection_date|date(dateFormat) }}</td>
+					<td class="py-3 px-4">{{ collection.collection_place|e }}</td>
 					<td class="py-3 px-4">
-						{% if collection.benevoles %}
-							{{ collection.benevoles|e }}
+						{% if collection.Volunteer %}
+							{{ collection.Volunteer|e }}
 						{% else %}
 							Aucun bénévole
 						{% endif %}
@@ -45,11 +45,10 @@
 					{% if role == 'admin' %}
 						<td class="py-3 px-4">
 							{% include 'Components/action_buttons.twig' with {
-                  editUrl: '/back-office-app/index.php?route=collection-edit&id=' ~ collection.id,
-                  deleteUrl: '/back-office-app/index.php?route=collection-delete&id=' ~ collection.id,
-                  editTitle: 'Modifier la collecte du ' ~ collection.date_collecte|date(dateFormat) ~ ' à ' ~ collection.lieu,
-                  deleteTitle: 'Supprimer la collecte du ' ~ collection.date_collecte|date(dateFormat) ~ ' à ' ~ collection.lieu
-              } %}
+								editUrl: '/back-office-app/index.php?route=collection-edit&id=' ~ collection.id,
+								deleteUrl: '/back-office-app/index.php?route=collection-delete&id=' ~ collection.id,
+								editTitle: 'Modifier la collecte du ' ~ collection.collection_date|date(dateFormat) ~ ' à ' ~ collection.collection_place,
+								deleteTitle: 'Supprimer la collecte du ' ~ collection.collection_date|date(dateFormat) ~ ' à ' ~ collection.collection_place } %}
 						</td>
 					{% endif %}
 				</tr>

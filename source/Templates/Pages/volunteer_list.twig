@@ -22,7 +22,7 @@
 			<tbody class="divide-y divide-gray-300">
 				{% for volunteer in volunteers %}
 					<tr class="hover:bg-gray-100 transition duration-200">
-						<td class="py-3 px-4">{{ volunteer.nom|e }}</td>
+						<td class="py-3 px-4">{{ volunteer.username|e }}</td>
 						<td class="py-3 px-4">{{ volunteer.email|e }}</td>
 						<td class="py-3 px-4">{{ volunteer.role|e }}</td>
 						<td class="py-3 px-4">{{ volunteer.participations|e }}</td>
@@ -31,8 +31,8 @@
 								{% include 'Components/action_buttons.twig' with {
                   editUrl: '/back-office-app/index.php?route=volunteer-edit&id=' ~ volunteer.id,
                   deleteUrl: '/back-office-app/index.php?route=volunteer-delete&id=' ~ volunteer.id,
-                  editTitle: 'Modifier ' ~ volunteer.nom,
-                  deleteTitle: 'Supprimer ' ~ volunteer.nom
+                  editTitle: 'Modifier ' ~ volunteer.username,
+                  deleteTitle: 'Supprimer ' ~ volunteer.username
                 } %}
 							</td>
 						{% endif %}

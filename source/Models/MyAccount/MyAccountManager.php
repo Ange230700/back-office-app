@@ -16,7 +16,7 @@ class MyAccountManager
 
     public function readAccount($userId): ?array
     {
-        $sql = "SELECT nom, email, mot_de_passe FROM benevoles WHERE id = ?";
+        $sql = "SELECT username, email, password FROM Volunteer WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$userId])) {
             return null;
@@ -24,11 +24,11 @@ class MyAccountManager
         return $stmt->fetch();
     }
 
-    public function updateAccount($userId, $nom, $email): ?int
+    public function updateAccount($userId, $username, $email): ?int
     {
-        $sql = "UPDATE benevoles SET nom = COALESCE(?, nom), email = COALESCE(?, email) WHERE id = ?";
+        $sql = "UPDATE Volunteer SET username = COALESCE(?, username), email = COALESCE(?, email) WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
-        if (!$stmt->execute([$nom, $email, $userId])) {
+        if (!$stmt->execute([$username, $email, $userId])) {
             return null;
         }
         return $stmt->rowCount();
@@ -36,7 +36,7 @@ class MyAccountManager
 
     public function updatePassword($userId, $hashedPassword): ?int
     {
-        $sql = "UPDATE benevoles SET mot_de_passe = ? WHERE id = ?";
+        $sql = "UPDATE Volunteer SET password = ? WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$hashedPassword, $userId])) {
             return null;

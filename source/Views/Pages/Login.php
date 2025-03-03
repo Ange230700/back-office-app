@@ -26,10 +26,10 @@ class Login
                 $loginController = new LoginController($pdo);
                 $user = $loginController->getUserByEmail($email, $password);
 
-                if ($user && password_verify($password, $user['mot_de_passe'])) {
+                if ($user && password_verify($password, $user['password'])) {
                     Session::regenerateSessionId();
-                    Session::setSession("user_id", $user["id"]);
-                    Session::setSession("nom", $user["nom"]);
+                    Session::setSession("user_id", $user["volunteer_id"]);
+                    Session::setSession("username", $user["username"]);
                     Session::setSession("role", $user["role"]);
                     Session::setSession("email", $user["email"]);
                     header("Location: /back-office-app/index.php?route=collection-list");
