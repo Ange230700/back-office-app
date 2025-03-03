@@ -3,7 +3,7 @@
 namespace Kouak\BackOfficeApp\Models\Volunteer;
 
 use PDO;
-use PDOException;
+use \Kouak\BackOfficeApp\Utilities\Helpers;
 
 class VolunteerManager
 {
@@ -24,9 +24,9 @@ class VolunteerManager
         return $this->pdo->lastInsertId();
     }
 
-    public function readVolunteersFullDetailsPaginated(): array
+    public function readDetailedVolunteersList(): ?array
     {
-        $paginationParams = \Kouak\BackOfficeApp\Utilities\Helpers::getPaginationParams();
+        $paginationParams = Helpers::getPaginationParams();
         $sql = "SELECT
                     benevoles.id,
                     benevoles.nom,
@@ -48,20 +48,27 @@ class VolunteerManager
                 LEFT JOIN collectes ON collectes.id = benevoles_collectes.id_collecte
                 GROUP BY benevoles.id
                 ORDER BY benevoles.nom ASC
-                LIMIT :limit OFFSET :offset;";
+                LIMIT ? OFFSET ?;";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':limit', $paginationParams['limit'], PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $paginationParams['offset'], PDO::PARAM_INT);
-        $stmt->execute();
-        $volunteersList = $stmt->fetchAll();
+        $stmt->execute([$paginationParams['limit'], $paginationParams['offset']]);
+        return $stmt->fetchAll();
+    }
 
-        $sqlCount = "SELECT COUNT(*) AS total FROM benevoles";
-        $stmtCount = $this->pdo->prepare($sqlCount);
-        $stmtCount->execute();
-        $result = $stmtCount->fetch(PDO::FETCH_ASSOC);
-        $total = $result['total'];
-        $numberOfPages = ceil($total / $paginationParams['limit']);
+    public function readNumberOfVolunteers(): ?int
+    {
+        $sql = "SELECT COUNT(*) AS total FROM benevoles";
+        $stmt = $this->pdo->prepare($sql);
+        if (!$stmt->execute()) {
+            return null;
+        }
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'];
+    }
 
+    public function readVolunteersFullDetailsPaginated(): array
+    {
+        $volunteersList = $this->readDetailedVolunteersList();
+        $numberOfPages = ceil($this->readNumberOfVolunteers() / Helpers::getPaginationParams()['limit']);
         return [$volunteersList, $numberOfPages];
     }
 
@@ -75,31 +82,33 @@ class VolunteerManager
         return $stmt->fetchAll();
     }
 
-    public function readEditableFieldsOfVolunteer(int $volunteerId): array
+    public function readEditableFieldsOfVolunteer(int $volunteerId): ?array
     {
         $sql = "SELECT id, role FROM benevoles WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$volunteerId])) {
-            throw new PDOException("Erreur lors de la récupération du bénévole.");
+            return null;
         }
         return $stmt->fetch();
     }
 
-    public function updateVolunteer(string $submittedRole, int $volunteerId): void
+    public function updateVolunteer(string $submittedRole, int $volunteerId): ?int
     {
         $sql = "UPDATE benevoles SET role = COALESCE(?, role) WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$submittedRole, $volunteerId])) {
-            throw new PDOException("Erreur lors de la mise à jour du rôle.");
+            return null;
         }
+        return $stmt->rowCount();
     }
 
-    public function deleteVolunteer(int $volunteerId): void
+    public function deleteVolunteer(int $volunteerId): ?int
     {
         $sql = "DELETE FROM benevoles WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$volunteerId])) {
-            throw new PDOException("Erreur lors de la suppression du bénévole.");
+            return null;
         }
+        return $stmt->rowCount();
     }
 }

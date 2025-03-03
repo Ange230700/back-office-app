@@ -13,7 +13,7 @@ class LoginManager
         $this->pdo = $pdo;
     }
 
-    public function getUserByEmail(string $email): ?array
+    public function readUserByEmail(string $email): ?array
     {
         $sql = "SELECT * FROM benevoles WHERE email = ?";
         $stmt = $this->pdo->prepare($sql);

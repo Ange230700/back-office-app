@@ -13,7 +13,7 @@ class CollectedWasteDetailsManager
         $this->pdo = $pdo;
     }
 
-    public function createNewPotentialCollectedWastesDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted): ?int
+    public function createCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted): ?int
     {
         $sql = "INSERT INTO dechets_collectes (id_collecte, type_dechet, quantite_kg) VALUES (?, ?, ?)";
         $stmt = $this->pdo->prepare($sql);
@@ -49,7 +49,7 @@ class CollectedWasteDetailsManager
     {
         $this->deleteCollectedWasteDetails($collectionId);
         if (!empty($wasteTypesSubmitted) && !empty($quantitiesSubmitted)) {
-            $this->createNewPotentialCollectedWastesDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted);
+            $this->createCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted);
         }
     }
 

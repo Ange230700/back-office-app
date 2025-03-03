@@ -86,7 +86,7 @@ class CollectionController
     public function getPlacesList()
     {
         try {
-            return $this->collectionManager->readPlacesList();
+            return $this->collectionManager->readCollectionPlacesList();
         } catch (PDOException $e) {
             $this->pdo->rollBack();
             throw $e;
@@ -119,7 +119,7 @@ class CollectionController
         try {
             $this->pdo->beginTransaction();
             $this->collectionManager->updateCollection($submittedDate, $submittedPlace, $collectionId);
-            $this->collectionManager->updateVolunteersParticipation($collectionId, $volunteersAssigned);
+            $this->collectionManager->updateVolunteersInCollection($collectionId, $volunteersAssigned);
             $this->collectionManager->updateCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted);
             $this->pdo->commit();
         } catch (PDOException $e) {

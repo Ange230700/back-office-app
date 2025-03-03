@@ -21,7 +21,7 @@ class LoginController
     public function authenticate(string $email, string $password): ?array
     {
         try {
-            $user = $this->loginManager->getUserByEmail($email);
+            $user = $this->loginManager->readUserByEmail($email);
             if ($user && password_verify($password, $user['mot_de_passe'])) {
                 return $user;
             }

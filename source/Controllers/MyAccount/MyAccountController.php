@@ -19,13 +19,13 @@ class MyAccountController
 
     public function getAccount($userId)
     {
-        return $this->manager->getAccount($userId);
+        return $this->manager->readAccount($userId);
     }
 
     public function updateAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword)
     {
         $error = null;
-        $account = $this->manager->getAccount($userId);
+        $account = $this->manager->readAccount($userId);
         if (!$account) {
             $error = "Utilisateur introuvable.";
         } else {

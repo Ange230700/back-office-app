@@ -14,31 +14,33 @@ class MyAccountManager
         $this->pdo = $pdo;
     }
 
-    public function getAccount($userId)
+    public function readAccount($userId): ?array
     {
         $sql = "SELECT nom, email, mot_de_passe FROM benevoles WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$userId])) {
-            throw new PDOException("Erreur lors de la récupération des données de l'utilisateur.");
+            return null;
         }
         return $stmt->fetch();
     }
 
-    public function updateAccount($userId, $nom, $email)
+    public function updateAccount($userId, $nom, $email): ?int
     {
         $sql = "UPDATE benevoles SET nom = COALESCE(?, nom), email = COALESCE(?, email) WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$nom, $email, $userId])) {
-            throw new PDOException("Erreur lors de la mise à jour des données de l'utilisateur.");
+            return null;
         }
+        return $stmt->rowCount();
     }
 
-    public function updatePassword($userId, $hashedPassword)
+    public function updatePassword($userId, $hashedPassword): ?int
     {
         $sql = "UPDATE benevoles SET mot_de_passe = ? WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$hashedPassword, $userId])) {
-            throw new PDOException("Erreur lors de la mise à jour du mot de passe.");
+            return null;
         }
+        return $stmt->rowCount();
     }
 }

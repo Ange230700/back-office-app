@@ -9,14 +9,30 @@ use Kouak\BackOfficeApp\Models\CollectionVolunteer\CollectionVolunteerManager;
 class CollectionManager
 {
     private $pdo;
-    private $wasteDetailsManager;
-    private $volunteerManager;
+    private $collectedWasteDetailsManager;
+    private $collectionVolunteerManager;
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->wasteDetailsManager = new CollectedWasteDetailsManager($pdo);
-        $this->volunteerManager = new CollectionVolunteerManager($pdo);
+        $this->collectedWasteDetailsManager = new CollectedWasteDetailsManager($pdo);
+        $this->collectionVolunteerManager = new CollectionVolunteerManager($pdo);
+    }
+
+    public function createCollectionWithDetails($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted): ?int
+    {
+        $this->pdo->beginTransaction();
+        $collectionId = $this->createCollection($submittedDate, $submittedPlace);
+        if ($collectionId === null) {
+            $this->pdo->rollBack();
+            return null;
+        }
+        $this->collectionVolunteerManager->createVolunteersCollectionAssignment($collectionId, $volunteersAssigned);
+        if (!empty($wasteTypesSubmitted) && !empty($quantitiesSubmitted)) {
+            $this->collectedWasteDetailsManager->createCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted);
+        }
+        $this->pdo->commit();
+        return $collectionId;
     }
 
     public function createCollection($submittedDate, $submittedPlace): ?int
@@ -29,18 +45,6 @@ class CollectionManager
         return $this->pdo->lastInsertId();
     }
 
-    public function updateCollection($submittedDate, $submittedPlace, $collectionId): ?int
-    {
-        $sql = "UPDATE collectes
-                SET date_collecte = COALESCE(?, date_collecte), lieu = COALESCE(?, lieu)
-                WHERE id = ?";
-        $stmt = $this->pdo->prepare($sql);
-        if (!$stmt->execute([$submittedDate, $submittedPlace, $collectionId])) {
-            return null;
-        }
-        return $stmt->rowCount();
-    }
-
     public function readCollection($collectionId): ?array
     {
         $sql = "SELECT id, date_collecte, lieu FROM collectes WHERE id = ?";
@@ -51,7 +55,7 @@ class CollectionManager
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function readPlacesList(): ?array
+    public function readCollectionPlacesList(): ?array
     {
         $sql = "SELECT DISTINCT lieu FROM collectes ORDER BY lieu";
         $stmt = $this->pdo->prepare($sql);
@@ -101,11 +105,9 @@ class CollectionManager
                     ON collectes.id = dechets_collectes.id_collecte
             GROUP BY collectes.id
             ORDER BY collectes.date_collecte DESC
-            LIMIT :limit OFFSET :offset;";
+            LIMIT ? OFFSET ?;";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        if (!$stmt->execute()) {
+        if (!$stmt->execute([$limit, $offset])) {
             return null;
         }
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -114,9 +116,9 @@ class CollectionManager
     public function readNumberOfCollections(): ?int
     {
         $sql = "SELECT COUNT(DISTINCT benevoles_collectes.id_collecte) AS total
-            FROM benevoles
-            INNER JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole
-            INNER JOIN collectes ON collectes.id = benevoles_collectes.id_collecte";
+                FROM benevoles
+                INNER JOIN benevoles_collectes ON benevoles.id = benevoles_collectes.id_benevole
+                INNER JOIN collectes ON collectes.id = benevoles_collectes.id_collecte";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
@@ -151,10 +153,10 @@ class CollectionManager
     public function readMostRecentCollection(): ?array
     {
         $sql = "SELECT lieu, date_collecte
-            FROM collectes
-            WHERE date_collecte <= CURDATE()
-            ORDER BY date_collecte DESC
-            LIMIT 1";
+                FROM collectes
+                WHERE date_collecte <= CURDATE()
+                ORDER BY date_collecte DESC
+                LIMIT 1";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
@@ -165,15 +167,37 @@ class CollectionManager
     public function readNextCollection(): ?array
     {
         $sql = "SELECT lieu, date_collecte
-            FROM collectes
-            WHERE date_collecte > CURDATE()
-            ORDER BY date_collecte ASC
-            LIMIT 1";
+                FROM collectes
+                WHERE date_collecte > CURDATE()
+                ORDER BY date_collecte ASC
+                LIMIT 1";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             return null;
         }
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateVolunteersInCollection($collectionId, $volunteersAssigned): void
+    {
+        $this->collectionVolunteerManager->updateVolunteersInCollection($collectionId, $volunteersAssigned);
+    }
+
+    public function updateCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted): void
+    {
+        $this->collectedWasteDetailsManager->updateCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted);
+    }
+
+    public function updateCollection($submittedDate, $submittedPlace, $collectionId): ?int
+    {
+        $sql = "UPDATE collectes
+                SET date_collecte = COALESCE(?, date_collecte), lieu = COALESCE(?, lieu)
+                WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        if (!$stmt->execute([$submittedDate, $submittedPlace, $collectionId])) {
+            return null;
+        }
+        return $stmt->rowCount();
     }
 
     public function deleteCollection($collectionId): ?int
@@ -184,31 +208,5 @@ class CollectionManager
             return null;
         }
         return $stmt->rowCount();
-    }
-
-    public function createCollectionWithDetails($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted): ?int
-    {
-        $this->pdo->beginTransaction();
-        $collectionId = $this->createCollection($submittedDate, $submittedPlace);
-        if ($collectionId === null) {
-            $this->pdo->rollBack();
-            return null;
-        }
-        $this->volunteerManager->assignVolunteersToCollection($collectionId, $volunteersAssigned);
-        if (!empty($wasteTypesSubmitted) && !empty($quantitiesSubmitted)) {
-            $this->wasteDetailsManager->createNewPotentialCollectedWastesDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted);
-        }
-        $this->pdo->commit();
-        return $collectionId;
-    }
-
-    public function updateVolunteersParticipation($collectionId, $volunteersAssigned): void
-    {
-        $this->volunteerManager->updateVolunteersParticipation($collectionId, $volunteersAssigned);
-    }
-
-    public function updateCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted): void
-    {
-        $this->wasteDetailsManager->updateCollectedWasteDetails($collectionId, $wasteTypesSubmitted, $quantitiesSubmitted);
     }
 }
