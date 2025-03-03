@@ -51,7 +51,7 @@ class CollectionAdd
                         $wasteTypesSubmitted,
                         $quantitiesSubmitted
                     );
-                    header("Location: /back-office-app/index.php?route=collection-list");
+                    header("Location: /back-office-app/collection-list");
                     exit;
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
@@ -59,8 +59,8 @@ class CollectionAdd
             }
         }
 
-        $actionUrl = $_SERVER['PHP_SELF'] . "?route=collection-add";
-        $cancelUrl = "/back-office-app/index.php?route=collection-list";
+        $actionUrl = $_SERVER['PHP_SELF'] . "/collection-add";
+        $cancelUrl = "/back-office-app/collection-list";
         $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Ajouter la collecte";
         $buttonTextContent = "Ajouter la collecte";

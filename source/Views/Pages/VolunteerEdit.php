@@ -12,18 +12,18 @@ use Kouak\BackOfficeApp\Utilities\View;
 
 class VolunteerEdit
 {
-    public static function render()
+    public static function render($volunteer_id)
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
-        $destinationUrl = "Location: /back-office-app/index.php?route=volunteer-list";
+        $destinationUrl = "Location: /back-office-app/volunteer-list";
 
-        if (!isset($_GET['id']) || empty($_GET['id'])) {
+        if (empty($volunteer_id)) {
             header($destinationUrl);
             exit;
         }
-        $volunteerId = $_GET['id'];
+        $volunteerId = $volunteer_id;
 
         $volunteerController = new VolunteerController($pdo);
         $volunteer = $volunteerController->getEditableFieldsOfVolunteer($volunteerId);
@@ -53,8 +53,8 @@ class VolunteerEdit
             }
         }
 
-        $actionUrl = $_SERVER['PHP_SELF'] . "?route=volunteer-edit&id=" . urlencode($volunteerId);
-        $cancelUrl = "/back-office-app/index.php?route=volunteer-list";
+        $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-edit/" . urlencode($volunteerId);
+        $cancelUrl = "/back-office-app/volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Modifier le bénévole";
         $buttonTextContent = "Modifier le bénévole";

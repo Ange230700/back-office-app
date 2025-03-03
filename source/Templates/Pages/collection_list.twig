@@ -44,8 +44,8 @@
 					{% if role == 'admin' %}
 						<td class="py-3 px-4">
 							{% include 'Components/action_buttons.twig' with {
-								editUrl: '/back-office-app/index.php?route=collection-edit&id=' ~ collection.collection_id,
-								deleteUrl: '/back-office-app/index.php?route=collection-delete&id=' ~ collection.collection_id,
+								editUrl: '/back-office-app/collection-edit/' ~ collection.collection_id,
+								deleteUrl: '/back-office-app/collection-delete/' ~ collection.collection_id,
 								editTitle: 'Modifier la collecte du ' ~ collection.collection_date|date(dateFormat) ~ ' à ' ~ collection.collection_place,
 								deleteTitle: 'Supprimer la collecte du ' ~ collection.collection_date|date(dateFormat) ~ ' à ' ~ collection.collection_place } %}
 						</td>
@@ -55,7 +55,7 @@
 		{% endblock %}
 	{% endembed %}
 
-	{% set urlPrefix = route is defined and route ? '?route=' ~ route ~ '&' : '?' %}
+	{% set urlPrefix = route is defined and route ? '/' ~ route ~ '&' : '?' %}
 	{% include 'Components/pagination_buttons.twig' with {
       totalPages: totalPages,
       pageNumber: pageNumber,

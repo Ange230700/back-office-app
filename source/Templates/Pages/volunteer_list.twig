@@ -29,8 +29,8 @@
 						{% if role == 'admin' %}
 							<td class="py-3 px-4">
 								{% include 'Components/action_buttons.twig' with {
-									editUrl: '/back-office-app/index.php?route=volunteer-edit&id=' ~ volunteer.volunteer_id,
-									deleteUrl: '/back-office-app/index.php?route=volunteer-delete&id=' ~ volunteer.volunteer_id,
+									editUrl: '/back-office-app/volunteer-edit/' ~ volunteer.volunteer_id,
+									deleteUrl: '/back-office-app/volunteer-delete/' ~ volunteer.volunteer_id,
 									editTitle: 'Modifier ' ~ volunteer.username,
 									deleteTitle: 'Supprimer ' ~ volunteer.username } %}
 							</td>
@@ -41,7 +41,7 @@
 		</table>
 	</div>
 
-	{% set urlPrefix = route is defined and route ? '?route=' ~ route ~ '&' : '?' %}
+	{% set urlPrefix = route is defined and route ? '/' ~ route ~ '&' : '?' %}
 	{% include 'Components/pagination_buttons.twig' with {
       totalPages: totalPages,
       pageNumber: pageNumber,

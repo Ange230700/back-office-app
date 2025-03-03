@@ -12,18 +12,18 @@ use Kouak\BackOfficeApp\Utilities\View;
 
 class CollectionEdit
 {
-    public static function render()
+    public static function render($collection_id)
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
-        $destinationUrl = "Location: /back-office-app/index.php?route=collection-list";
-
-        if (!isset($_GET['id']) || empty($_GET['id'])) {
+        $destinationUrl = "Location: /back-office-app/collection-list";
+        
+        if (empty($collection_id)) {
             header($destinationUrl);
             exit;
         }
-        $collectionId = $_GET['id'];
+        $collectionId = $collection_id;
 
         $collectionController = new CollectionController($pdo);
         $collection = $collectionController->getCollection($collectionId);
@@ -71,8 +71,8 @@ class CollectionEdit
             }
         }
 
-        $actionUrl = $_SERVER['PHP_SELF'] . "?route=collection-edit&id=" . urlencode($collectionId);
-        $cancelUrl = "/back-office-app/index.php?route=collection-list";
+        $actionUrl = $_SERVER['PHP_SELF'] . "/collection-edit/" . urlencode($collectionId);
+        $cancelUrl = "/back-office-app/collection-list";
         $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Modifier la collecte";
         $buttonTextContent = "Modifier la collecte";

@@ -34,7 +34,7 @@ class MyAccount
                 if ($error === null) {
                     Session::setSession("username", $username);
                     Session::setSession("email", $email);
-                    header("Location: /back-office-app/index.php?route=my-account");
+                    header("Location: /back-office-app/my-account");
                     exit;
                 }
             }

@@ -8,19 +8,20 @@ use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 
 class VolunteerDelete
 {
-    public static function runVolunteerDeletion()
+    public static function runVolunteerDeletion($volunteer_id)
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
-        if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-            $id = (int)$_GET['id'];
-            $controller = new VolunteerController($pdo);
-            $controller->eraseVolunteer($id);
-            header("Location: /back-office-app/index.php?route=volunteer-list");
-            exit();
-        } else {
-            echo "ID invalide.";
+        if (empty($volunteer_id)) {
+            header("Location: /back-office-app/volunteer-list");
+            exit;
         }
+
+        $volunteerId = $volunteer_id;
+        $controller = new VolunteerController($pdo);
+        $controller->eraseVolunteer($volunteerId);
+        header("Location: /back-office-app/volunteer-list");
+        exit();
     }
 }
