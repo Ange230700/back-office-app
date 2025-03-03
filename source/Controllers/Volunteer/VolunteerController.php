@@ -22,7 +22,7 @@ class VolunteerController
         $this->collectionVolunteerManager = new CollectionVolunteerManager($pdo);
     }
 
-    public function addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations)
+    public function addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations): ?int
     {
         try {
             $volunteerId = $this->volunteerManager->createVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole);
@@ -33,7 +33,7 @@ class VolunteerController
         }
     }
 
-    public function getVolunteersFullDetailsPaginated()
+    public function getVolunteersFullDetailsPaginated(): array
     {
         try {
             return $this->volunteerManager->readVolunteersFullDetailsPaginated();
@@ -42,7 +42,7 @@ class VolunteerController
         }
     }
 
-    public function getVolunteersList()
+    public function getVolunteersList(): ?array
     {
         try {
             return $this->volunteerManager->readVolunteersList();
@@ -51,7 +51,7 @@ class VolunteerController
         }
     }
 
-    public function getCollectionsListVolunteerAttended($volunteerId)
+    public function getCollectionsListVolunteerAttended($volunteerId): ?array
     {
         try {
             return $this->collectionVolunteerManager->readCollectionsListVolunteerAttended($volunteerId);
@@ -60,7 +60,7 @@ class VolunteerController
         }
     }
 
-    public function getEditableFieldsOfVolunteer($volunteerId)
+    public function getEditableFieldsOfVolunteer($volunteerId): ?array
     {
         try {
             return $this->volunteerManager->readEditableFieldsOfVolunteer($volunteerId);
@@ -69,7 +69,7 @@ class VolunteerController
         }
     }
 
-    public function editVolunteer($submittedRole, $volunteerId, $submittedParticipations)
+    public function editVolunteer($submittedRole, $volunteerId, $submittedParticipations): void
     {
         try {
             $this->volunteerManager->updateVolunteer($submittedRole, $volunteerId);
@@ -79,7 +79,7 @@ class VolunteerController
         }
     }
 
-    public function eraseVolunteer($volunteerId)
+    public function eraseVolunteer($volunteerId): void
     {
         try {
             $this->volunteerManager->deleteVolunteer($volunteerId);

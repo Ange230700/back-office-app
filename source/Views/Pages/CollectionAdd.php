@@ -26,7 +26,7 @@ class CollectionAdd
         $wasteTypesList = $collectedWasteController->getWasteTypesList();
 
         $collectionController = new CollectionController($pdo);
-        $placesList = $collectionController->getPlacesList();
+        $placesList = $collectionController->getCollectionPlacesList();
 
         $collection = [];
         $selectedVolunteersList = [];

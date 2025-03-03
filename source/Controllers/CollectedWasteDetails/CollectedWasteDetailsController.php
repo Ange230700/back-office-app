@@ -9,27 +9,27 @@ use Kouak\BackOfficeApp\Models\CollectedWasteDetails\CollectedWasteDetailsManage
 class CollectedWasteDetailsController
 {
     private $pdo;
-    private $manager;
+    private $collectedWasteDetailsManager;
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->manager = new CollectedWasteDetailsManager($pdo);
+        $this->collectedWasteDetailsManager = new CollectedWasteDetailsManager($pdo);
     }
 
-    public function getWasteTypesList()
+    public function getWasteTypesList(): ?array
     {
         try {
-            return $this->manager->readWasteTypesList();
+            return $this->collectedWasteDetailsManager->readWasteTypesList();
         } catch (PDOException $e) {
             throw new PDOException("Erreur de la base de données : " . $e->getMessage());
         }
     }
 
-    public function getCollectedWasteDetailsList($collectionId)
+    public function getCollectedWasteDetailsList($collectionId): ?array
     {
         try {
-            return $this->manager->readCollectedWasteDetailsList($collectionId);
+            return $this->collectedWasteDetailsManager->readCollectedWasteDetailsList($collectionId);
         } catch (PDOException $e) {
             throw new PDOException("Erreur de base de données : " . $e->getMessage());
         }

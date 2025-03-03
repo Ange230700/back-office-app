@@ -30,7 +30,7 @@ class MyAccount
                 $newPassword = $_POST["new_password"] ?? "";
                 $confirmPassword = $_POST["confirm_password"] ?? "";
 
-                $error = $controller->updateAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword);
+                $error = $controller->editAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword);
                 if ($error === null) {
                     Session::set("nom", $nom);
                     Session::set("email", $email);

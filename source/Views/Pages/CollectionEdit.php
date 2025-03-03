@@ -37,7 +37,7 @@ class CollectionEdit
         $volunteersList = $volunteerController->getVolunteersList();
         $collectedWasteController = new CollectedWasteDetailsController($pdo);
         $wasteTypesList = $collectedWasteController->getWasteTypesList();
-        $placesList = $collectionController->getPlacesList();
+        $placesList = $collectionController->getCollectionPlacesList();
         $collectedWasteDetailsList = $collectedWasteController->getCollectedWasteDetailsList($collectionId);
         if (empty($collectedWasteDetailsList)) {
             $collectedWasteDetailsList[] = ['type_dechet' => '', 'quantite_kg' => ''];

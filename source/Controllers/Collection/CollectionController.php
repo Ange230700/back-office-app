@@ -11,9 +11,7 @@ use Kouak\BackOfficeApp\Utilities\Helpers;
 class CollectionController
 {
     private $pdo;
-
     private $collectionManager;
-
     private $collectionVolunteerManager;
 
     public function __construct(PDO $pdo)
@@ -23,7 +21,7 @@ class CollectionController
         $this->collectionVolunteerManager = new CollectionVolunteerManager($pdo);
     }
 
-    public function addNewCollection($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted): int
+    public function addNewCollection($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted): ?int
     {
         try {
             return $this->collectionManager->createCollectionWithDetails($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted);
@@ -33,7 +31,7 @@ class CollectionController
         }
     }
 
-    public function getCollectedWastesTotalQuantity()
+    public function getCollectedWastesTotalQuantity(): ?int
     {
         try {
             return $this->collectionManager->readCollectedWastesTotalQuantity();
@@ -43,7 +41,7 @@ class CollectionController
         }
     }
 
-    public function getMostRecentCollection()
+    public function getMostRecentCollection(): ?array
     {
         try {
             return $this->collectionManager->readMostRecentCollection();
@@ -53,7 +51,7 @@ class CollectionController
         }
     }
 
-    public function getNextCollection()
+    public function getNextCollection(): ?array
     {
         try {
             return $this->collectionManager->readNextCollection();
@@ -63,7 +61,7 @@ class CollectionController
         }
     }
 
-    public function getCollection($collectionId)
+    public function getCollection($collectionId): ?array
     {
         try {
             return $this->collectionManager->readCollection($collectionId);
@@ -73,7 +71,7 @@ class CollectionController
         }
     }
 
-    public function getVolunteersListWhoAttendedCollection($collectionId)
+    public function getVolunteersListWhoAttendedCollection($collectionId): ?array
     {
         try {
             return $this->collectionVolunteerManager->readVolunteersListWhoAttendedCollection($collectionId);
@@ -83,7 +81,7 @@ class CollectionController
         }
     }
 
-    public function getPlacesList()
+    public function getCollectionPlacesList(): ?array
     {
         try {
             return $this->collectionManager->readCollectionPlacesList();
@@ -93,7 +91,7 @@ class CollectionController
         }
     }
 
-    public function getCollectionsList()
+    public function getCollectionsList(): ?array
     {
         try {
             return $this->collectionManager->readCollectionsList();
@@ -103,7 +101,7 @@ class CollectionController
         }
     }
 
-    public function getCollectionsListPaginated()
+    public function getCollectionsListPaginated(): ?array
     {
         try {
             $paginationParams = Helpers::getPaginationParams();
@@ -114,7 +112,7 @@ class CollectionController
         }
     }
 
-    public function editCollection($submittedDate, $submittedPlace, $collectionId, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted)
+    public function editCollection($submittedDate, $submittedPlace, $collectionId, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted): void
     {
         try {
             $this->pdo->beginTransaction();
@@ -128,7 +126,7 @@ class CollectionController
         }
     }
 
-    public function eraseCollection($collectionId)
+    public function eraseCollection($collectionId): void
     {
         try {
             $this->collectionManager->deleteCollection($collectionId);

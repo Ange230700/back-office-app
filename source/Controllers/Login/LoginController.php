@@ -9,7 +9,6 @@ use Kouak\BackOfficeApp\Models\Login\LoginManager;
 class LoginController
 {
     private $pdo;
-
     private $loginManager;
 
     public function __construct(PDO $pdo)
@@ -18,7 +17,7 @@ class LoginController
         $this->loginManager = new LoginManager($pdo);
     }
 
-    public function authenticate(string $email, string $password): ?array
+    public function getUserByEmail(string $email, string $password): ?array
     {
         try {
             $user = $this->loginManager->readUserByEmail($email);

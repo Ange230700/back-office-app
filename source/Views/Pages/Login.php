@@ -24,7 +24,7 @@ class Login
 
                 $pdo = Configuration::getPdo();
                 $loginController = new LoginController($pdo);
-                $user = $loginController->authenticate($email, $password);
+                $user = $loginController->getUserByEmail($email, $password);
 
                 if ($user && password_verify($password, $user['mot_de_passe'])) {
                     Session::regenerate();
