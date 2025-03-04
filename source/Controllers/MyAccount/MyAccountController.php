@@ -5,6 +5,7 @@ namespace Kouak\BackOfficeApp\Controllers\MyAccount;
 use PDO;
 use PDOException;
 use Kouak\BackOfficeApp\Models\MyAccount\MyAccountManager;
+use Kouak\BackOfficeApp\Utilities\Session;
 
 class MyAccountController
 {
@@ -48,6 +49,13 @@ class MyAccountController
                     $this->myAccountManager->updateAccount($userId, $username, $email);
                 }
             }
+
+            if (!$error) {
+                Session::setSession("flash_success", "Votre compte a été mis à jour avec succès.");
+            } else {
+                Session::setSession("flash_error", "Une erreur est survenue lors de la mise à jour de votre compte.");
+            }
+
             return $error;
         } catch (PDOException $e) {
             throw new PDOException("Erreur de la base de données : " . $e->getMessage());
