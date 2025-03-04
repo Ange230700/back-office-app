@@ -9,11 +9,14 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
-// Create a new RouteCollection instance
+$logger = new Logger('app');
+$logger->pushHandler(new StreamHandler(BASE_PATH . '/logs/app.log', Logger::ERROR));
+
 $routes = new RouteCollection();
 
-// Define your routes. The '_controller' parameter holds the fully qualified method to call.
 $routes->add('login', new Route('/login', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\Login::render']));
 $routes->add('collection-list', new Route('/collection-list', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\CollectionList::render']));
 $routes->add('collection-add', new Route('/collection-add', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\CollectionAdd::render']));
@@ -27,14 +30,11 @@ $routes->add('logout', new Route('/logout', ['_controller' => 'Kouak\BackOfficeA
 $routes->add('my-account', new Route('/my-account', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\MyAccount::render']));
 $routes->add('home', new Route('/', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\Home::render']));
 
-// Create a Request object from the globals
 $request = Request::createFromGlobals();
 
-// Build a RequestContext using the current request
 $context = new RequestContext();
 $context->fromRequest($request);
 
-// Instantiate the UrlMatcher with the routes and context
 $matcher = new UrlMatcher($routes, $context);
 
 try {
@@ -43,9 +43,11 @@ try {
     unset($parameters['_controller'], $parameters['_route']);
     call_user_func_array($controller, $parameters);
 } catch (ResourceNotFoundException $e) {
+    $logger->error('Route not found', ['exception' => $e]);
     $response = new Response('Not Found', 404);
     $response->send();
 } catch (Exception $e) {
+    $logger->error('An error occurred', ['exception' => $e]);
     $response = new Response('An error occurred: ' . $e->getMessage(), 500);
     $response->send();
 }
