@@ -1,0 +1,33 @@
+{# source\Templates\Pages\collection_edit.twig #}
+
+
+{% extends 'Pages/main.twig' %}
+
+{% block title %}Modifier une collecte
+{% endblock %}
+
+{% block content %}
+	<h1 class="text-4xl font-bold text-cyan-950 mb-6">Modifier une collecte</h1>
+
+	{% if error is defined and error %}
+		<div class="text-red-600 mb-4">{{ error }}</div>
+	{% endif %}
+
+	{% include 'Components/collection_form.twig' with {
+      actionUrl: actionUrl,
+      cancelUrl: cancelUrl,
+      cancelTitle: cancelTitle,
+      buttonTitle: buttonTitle,
+      buttonTextContent: buttonTextContent,
+      volunteersList: volunteersList,
+      wasteTypesList: wasteTypesList,
+      placesList: placesList,
+      collection: collection,
+      selectedVolunteersList: selectedVolunteersList,
+      collectedWastesList: collectedWastesList,
+      session: session
+  } %}
+
+	<script src="/back-office-app/source/Views/javascript/collection.js"></script>
+{% endblock %}
+

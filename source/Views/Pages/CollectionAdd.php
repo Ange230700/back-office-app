@@ -2,73 +2,72 @@
 
 namespace Kouak\BackOfficeApp\Views\Pages;
 
+use PDOException;
+
+use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
-use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
+use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Controllers\CollectedWasteDetails\CollectedWasteDetailsController;
-use Kouak\BackOfficeApp\Views\Components\CollectionForm;
-use Kouak\BackOfficeApp\Views\Pages\Main;
+use Kouak\BackOfficeApp\Utilities\View;
 
 class CollectionAdd
 {
     public static function render()
     {
-        // Ensure only admin users can add a collection
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
-        // Retrieve necessary data from respective controllers.
         $volunteerController = new VolunteerController($pdo);
-        $volunteersList = $volunteerController->getVolunteersList(); // Assume this returns an array of volunteers
+        $volunteersList = $volunteerController->getVolunteersList();
 
         $collectedWasteController = new CollectedWasteDetailsController($pdo);
-        $wasteTypesList = $collectedWasteController->getWasteTypesList(); // Assume this returns an array of waste types
+        $wasteTypesList = $collectedWasteController->getWasteTypesList();
 
         $collectionController = new CollectionController($pdo);
-        $placesList = $collectionController->getPlacesList(); // Assume this method exists in your OOP controller
+        $placesList = $collectionController->getCollectionPlacesList();
 
-        // Initialize empty/default data for add mode.
-        $collection = []; // No pre-existing collection data.
+        $collection = [];
         $selectedVolunteersList = [];
-        $collectedWastesList = []; // No existing waste entries.
+        $collectedWastesList = [];
 
-        // Process POST submission
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $submittedDate = $_POST["date"] ?? '';
-            $submittedPlace = $_POST["lieu"] ?? '';
-            $volunteersAssigned = $_POST["benevoles"] ?? [];
-            $wasteTypesSubmitted = $_POST['type_dechet'] ?? [];
-            $quantitiesSubmitted = $_POST['quantite_kg'] ?? [];
+            if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
+                $error = "Le jeton CSRF est invalide. Veuillez réessayer.";
+            } else {
+                $submittedDate = $_POST["date"] ?? '';
+                $submittedPlace = $_POST["collection_place"] ?? '';
+                $volunteersAssigned = $_POST["Volunteer"] ?? [];
+                $wasteTypesSubmitted = $_POST['waste_type'] ?? [];
+                $quantitiesSubmitted = $_POST['quantity_kg'] ?? [];
 
-            try {
-                $collectionController->addNewCollection(
-                    $submittedDate,
-                    $submittedPlace,
-                    $volunteersAssigned,
-                    $wasteTypesSubmitted,
-                    $quantitiesSubmitted
-                );
-                header("Location: /back-office-app/index.php?route=collection-list");
-                exit;
-            } catch (\PDOException $e) {
-                $error = "Erreur de base de données : " . $e->getMessage();
+                try {
+                    $collectionController->addNewCollection(
+                        $submittedDate,
+                        $submittedPlace,
+                        $volunteersAssigned,
+                        $wasteTypesSubmitted,
+                        $quantitiesSubmitted
+                    );
+                    header("Location: /back-office-app/collection-list");
+                    exit;
+                } catch (PDOException $e) {
+                    $error = "Erreur de base de données : " . $e->getMessage();
+                }
             }
         }
 
-        // Set page variables
-        $pageTitle = "Ajouter une collecte";
-        $pageHeader = "Ajouter une collecte";
-        $actionUrl = $_SERVER['PHP_SELF'] . "?route=collection-add"; // route-based URL
-        $cancelUrl = "/back-office-app/index.php?route=collection-list";
-        $cancelTitle = "Retour à la liste des collectes";
+        $actionUrl = $_SERVER['PHP_SELF'] . "/collection-add";
+        $cancelUrl = "/back-office-app/collection-list";
+        $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Ajouter la collecte";
         $buttonTextContent = "Ajouter la collecte";
 
-        // Render the collection form using our OOP component.
-        ob_start();
-        CollectionForm::render([
+        $twig = View::getTwig();
+        echo $twig->render('Pages/collection_add.twig', [
+            'error'                 => $error,
             'actionUrl'             => $actionUrl,
             'cancelUrl'             => $cancelUrl,
             'cancelTitle'           => $cancelTitle,
@@ -80,11 +79,8 @@ class CollectionAdd
             'collection'            => $collection,
             'selectedVolunteersList' => $selectedVolunteersList,
             'collectedWastesList'   => $collectedWastesList,
-            'error'                 => $error
+            'error'                 => $error,
+            'session'               => $_SESSION,
         ]);
-        $content = ob_get_clean();
-
-        // Render the page using the Main layout.
-        Main::render($pageTitle, $pageHeader, $content);
     }
 }

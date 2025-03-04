@@ -5,128 +5,87 @@ namespace Kouak\BackOfficeApp\Controllers\Volunteer;
 use PDO;
 use PDOException;
 use Kouak\BackOfficeApp\Models\Volunteer\VolunteerManager;
+use Kouak\BackOfficeApp\Models\CollectionVolunteer\CollectionVolunteerManager;
+
 
 class VolunteerController
 {
     private $pdo;
     private $volunteerManager;
+    private $collectionVolunteerManager;
+
+    const ERROR_MSG = "Erreur de la base de données : ";
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
         $this->volunteerManager = new VolunteerManager($pdo);
+        $this->collectionVolunteerManager = new CollectionVolunteerManager($pdo);
     }
 
-    /**
-     * Add a new volunteer.
-     *
-     * @param string $submittedName
-     * @param string $submittedEmail
-     * @param string $hashedPassword
-     * @param string $submittedRole
-     * @param array  $submittedParticipations
-     * @return int The ID of the newly created volunteer.
-     * @throws PDOException
-     */
-    public function addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations)
+    public function addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations): ?int
     {
         try {
             $volunteerId = $this->volunteerManager->createVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole);
-            $this->volunteerManager->createVolunteerParticipation($submittedParticipations, $volunteerId);
+            $this->collectionVolunteerManager->createVolunteerParticipation($submittedParticipations, $volunteerId);
             return $volunteerId;
         } catch (PDOException $e) {
-            throw new PDOException("Erreur de base de données : " . $e->getMessage());
+            throw new PDOException(self::ERROR_MSG . $e->getMessage());
         }
     }
 
-    /**
-     * Retrieve full details of volunteers with pagination.
-     *
-     * @return array [volunteersList, numberOfPages]
-     * @throws PDOException
-     */
-    public function getVolunteersFullDetailsPaginated()
+    public function getVolunteersFullDetailsPaginated(): array
     {
-        return $this->volunteerManager->readVolunteersFullDetailsPaginated();
+        try {
+            return $this->volunteerManager->readVolunteersFullDetailsPaginated();
+        } catch (PDOException $e) {
+            throw new PDOException(self::ERROR_MSG . $e->getMessage());
+        }
     }
 
-    /**
-     * Retrieve the list of volunteers.
-     *
-     * @return array
-     * @throws PDOException
-     */
-    public function getVolunteersList()
+    public function getVolunteersList(): ?array
     {
         try {
             return $this->volunteerManager->readVolunteersList();
         } catch (PDOException $e) {
-            throw new PDOException("Erreur de la base de données : " . $e->getMessage());
+            throw new PDOException(self::ERROR_MSG . $e->getMessage());
         }
     }
 
-    /**
-     * Retrieve the list of collection IDs that the volunteer attended.
-     *
-     * @param int $volunteerId
-     * @return array
-     * @throws PDOException
-     */
-    public function getCollectionsListVolunteerAttended($volunteerId)
+    public function getCollectionsListVolunteerAttended($volunteerId): ?array
     {
         try {
-            return $this->volunteerManager->readCollectionsListVolunteerAttended($volunteerId);
+            return $this->collectionVolunteerManager->readCollectionsListVolunteerAttended($volunteerId);
         } catch (PDOException $e) {
-            throw new PDOException("Erreur de la base de données : " . $e->getMessage());
+            throw new PDOException(self::ERROR_MSG . $e->getMessage());
         }
     }
 
-    /**
-     * Retrieve editable fields of a volunteer.
-     *
-     * @param int $volunteerId
-     * @return array
-     * @throws PDOException
-     */
-    public function getEditableFieldsOfVolunteer($volunteerId)
+    public function getEditableFieldsOfVolunteer($volunteerId): ?array
     {
         try {
             return $this->volunteerManager->readEditableFieldsOfVolunteer($volunteerId);
         } catch (PDOException $e) {
-            throw new PDOException("Erreur de la base de données : " . $e->getMessage());
+            throw new PDOException(self::ERROR_MSG . $e->getMessage());
         }
     }
 
-    /**
-     * Update volunteer data.
-     *
-     * @param string $submittedRole
-     * @param int    $volunteerId
-     * @param array  $submittedParticipations
-     * @throws PDOException
-     */
-    public function editVolunteer($submittedRole, $volunteerId, $submittedParticipations)
+    public function editVolunteer($submittedRole, $volunteerId, $submittedParticipations): void
     {
         try {
             $this->volunteerManager->updateVolunteer($submittedRole, $volunteerId);
-            $this->volunteerManager->updateVolunteerParticipations($volunteerId, $submittedParticipations);
+            $this->collectionVolunteerManager->updateCollectionsVolunteerAttended($volunteerId, $submittedParticipations);
         } catch (PDOException $e) {
-            throw new PDOException("Erreur de base de données : " . $e->getMessage());
+            throw new PDOException(self::ERROR_MSG . $e->getMessage());
         }
     }
 
-    /**
-     * Delete a volunteer.
-     *
-     * @param int $volunteerId
-     * @throws PDOException
-     */
-    public function eraseVolunteer($volunteerId)
+    public function eraseVolunteer($volunteerId): void
     {
         try {
             $this->volunteerManager->deleteVolunteer($volunteerId);
         } catch (PDOException $e) {
-            throw new PDOException("Erreur de la base de données : " . $e->getMessage());
+            throw new PDOException(self::ERROR_MSG . $e->getMessage());
         }
     }
 }

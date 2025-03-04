@@ -1,0 +1,35 @@
+{# source/Templates/Components/dashboard_section.twig #}
+
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+	<div class="bg-white p-6 rounded-lg shadow-lg">
+		<h3 class="text-xl font-semibold text-gray-800 mb-3">Total des Collectes</h3>
+		<p class="text-3xl font-bold text-blue-600">
+			{{ dashboard.totalCollections }}
+		</p>
+	</div>
+	<div class="bg-white p-6 rounded-lg shadow-lg">
+		<h3 class="text-xl font-semibold text-gray-800 mb-3">Total des déchets collectés</h3>
+		<p class="text-3xl font-bold text-blue-600">
+			{{ dashboard.collectedWasteTotalQuantity|number_format(1, ',', '') }}
+			kg
+		</p>
+	</div>
+	<div class="bg-white p-6 rounded-lg shadow-lg">
+		<h3 class="text-xl font-semibold text-gray-800 mb-3">Dernière Collecte</h3>
+		{% if dashboard.mostRecentCollection %}
+			<p class="text-lg text-gray-600">{{ dashboard.mostRecentCollection.collection_place|e }}</p>
+			<p class="text-lg text-gray-600">{{ dashboard.mostRecentCollection.collection_date|date(dateFormat) }}</p>
+		{% else %}
+			<p class="text-lg text-gray-600">Aucune collecte pour le moment</p>
+		{% endif %}
+	</div>
+	<div class="bg-white p-6 rounded-lg shadow-lg">
+		<h3 class="text-xl font-semibold text-gray-800 mb-3">Prochaine Collecte</h3>
+		{% if dashboard.nextCollection %}
+			<p class="text-lg text-gray-600">{{ dashboard.nextCollection.collection_place|e }}</p>
+			<p class="text-lg text-gray-600">{{ dashboard.nextCollection.collection_date|date(dateFormat) }}</p>
+		{% else %}
+			<p class="text-lg text-gray-600">Aucune collecte à venir</p>
+		{% endif %}
+	</div>
+</section>

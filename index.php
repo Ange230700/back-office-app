@@ -2,51 +2,52 @@
 define('BASE_PATH', __DIR__);
 require_once BASE_PATH . '/vendor/autoload.php';
 
-use Kouak\BackOfficeApp\Views\Pages\Login;
-use Kouak\BackOfficeApp\Views\Pages\Main;
-use Kouak\BackOfficeApp\Views\Pages\CollectionList;
-use Kouak\BackOfficeApp\Views\Pages\CollectionAdd;
-use Kouak\BackOfficeApp\Views\Pages\CollectionEdit;
-use Kouak\BackOfficeApp\Utilities\CollectionDelete;
-use Kouak\BackOfficeApp\Views\Pages\VolunteerList;
-use Kouak\BackOfficeApp\Views\Pages\VolunteerAdd;
-use Kouak\BackOfficeApp\Views\Pages\VolunteerEdit;
-use Kouak\BackOfficeApp\Utilities\VolunteerDelete;
-use Kouak\BackOfficeApp\Utilities\Logout;
-use Kouak\BackOfficeApp\Views\Pages\MyAccount;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
-$route = $_GET['route'] ?? 'home';
+$logger = new Logger('app');
+$logger->pushHandler(new StreamHandler(BASE_PATH . '/logs/app.log', Logger::ERROR));
 
-if ($route === 'login') {
-    Login::render();
-} elseif ($route === 'collection-list') {
-    CollectionList::render();
-} elseif ($route === 'collection-add') {
-    CollectionAdd::render();
-} elseif ($route === 'collection-edit') {
-    CollectionEdit::render();
-} elseif ($route === 'collection-delete') {
-    CollectionDelete::run();
-} elseif ($route === 'volunteer-list') {
-    VolunteerList::render();
-} elseif ($route === 'volunteer-add') {
-    VolunteerAdd::render();
-} elseif ($route === 'volunteer-edit') {
-    VolunteerEdit::render();
-} elseif ($route === 'volunteer-delete') {
-    VolunteerDelete::run();
-} elseif ($route === 'logout') {
-    Logout::run();
-} elseif ($route === 'my-account') {
-    MyAccount::render();
-} else {
-    // Default home page
-    $pageTitle = "Accueil";
-    $pageHeader = "Bienvenue chez 'Littoral propre' !";
-    ob_start();
-?>
-    <p>Il faut se connecter pour accéder aux informations de l'association.</p>
-<?php
-    $content = ob_get_clean();
-    Main::render($pageTitle, $pageHeader, $content);
+$routes = new RouteCollection();
+
+$routes->add('login', new Route('/login', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\Login::render']));
+$routes->add('collection-list', new Route('/collection-list', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\CollectionList::render']));
+$routes->add('collection-add', new Route('/collection-add', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\CollectionAdd::render']));
+$routes->add('collection-edit', new Route('/collection-edit/{collection_id}', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\CollectionEdit::render']));
+$routes->add('collection-delete', new Route('/collection-delete/{collection_id}', ['_controller' => 'Kouak\BackOfficeApp\Utilities\CollectionDelete::runCollectionDeletion']));
+$routes->add('volunteer-list', new Route('/volunteer-list', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\VolunteerList::render']));
+$routes->add('volunteer-add', new Route('/volunteer-add', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\VolunteerAdd::render']));
+$routes->add('volunteer-edit', new Route('/volunteer-edit/{volunteer_id}', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\VolunteerEdit::render']));
+$routes->add('volunteer-delete', new Route('/volunteer-delete/{volunteer_id}', ['_controller' => 'Kouak\BackOfficeApp\Utilities\VolunteerDelete::runVolunteerDeletion']));
+$routes->add('logout', new Route('/logout', ['_controller' => 'Kouak\BackOfficeApp\Utilities\Logout::run']));
+$routes->add('my-account', new Route('/my-account', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\MyAccount::render']));
+$routes->add('home', new Route('/', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\Home::render']));
+
+$request = Request::createFromGlobals();
+
+$context = new RequestContext();
+$context->fromRequest($request);
+
+$matcher = new UrlMatcher($routes, $context);
+
+try {
+    $parameters = $matcher->match($request->getPathInfo());
+    $controller = $parameters['_controller'];
+    unset($parameters['_controller'], $parameters['_route']);
+    call_user_func_array($controller, $parameters);
+} catch (ResourceNotFoundException $e) {
+    $logger->error('Route not found', ['exception' => $e]);
+    $response = new Response('Not Found', 404);
+    $response->send();
+} catch (Exception $e) {
+    $logger->error('An error occurred', ['exception' => $e]);
+    $response = new Response('An error occurred: ' . $e->getMessage(), 500);
+    $response->send();
 }

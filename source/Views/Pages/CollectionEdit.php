@@ -2,89 +2,84 @@
 
 namespace Kouak\BackOfficeApp\Views\Pages;
 
+use Kouak\BackOfficeApp\Utilities\Session;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
-use Kouak\BackOfficeApp\Controllers\Collection\CollectionController;
+use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Controllers\CollectedWasteDetails\CollectedWasteDetailsController;
-use Kouak\BackOfficeApp\Views\Components\CollectionForm;
-use Kouak\BackOfficeApp\Views\Pages\Main;
+use Kouak\BackOfficeApp\Utilities\View;
 
 class CollectionEdit
 {
-    public static function render()
+    public static function render($collection_id)
     {
-        // Ensure admin privileges
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
-        // Get collection ID from GET parameters
-        if (!isset($_GET['id']) || empty($_GET['id'])) {
-            header("Location: /back-office-app/index.php?route=collection-list");
+        $destinationUrl = "Location: /back-office-app/collection-list";
+        
+        if (empty($collection_id)) {
+            header($destinationUrl);
             exit;
         }
-        $collectionId = $_GET['id'];
+        $collectionId = $collection_id;
 
-        // Create a CollectionController instance
         $collectionController = new CollectionController($pdo);
-        // Retrieve the collection
         $collection = $collectionController->getCollection($collectionId);
         if (!$collection) {
-            header("Location: /back-office-app/index.php?route=collection-list");
+            header($destinationUrl);
             exit;
         }
 
-        // Retrieve pre-selected volunteers and waste details
         $volunteerController = new VolunteerController($pdo);
-
-        // Get lists from controllers
         $selectedVolunteersList = $collectionController->getVolunteersListWhoAttendedCollection($collectionId);
         $volunteersList = $volunteerController->getVolunteersList();
         $collectedWasteController = new CollectedWasteDetailsController($pdo);
         $wasteTypesList = $collectedWasteController->getWasteTypesList();
-        $placesList = $collectionController->getPlacesList();
+        $placesList = $collectionController->getCollectionPlacesList();
         $collectedWasteDetailsList = $collectedWasteController->getCollectedWasteDetailsList($collectionId);
         if (empty($collectedWasteDetailsList)) {
-            $collectedWasteDetailsList[] = ['type_dechet' => '', 'quantite_kg' => ''];
+            $collectedWasteDetailsList[] = ['waste_type' => '', 'quantity_kg' => ''];
         }
 
-        // Process POST submission
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $submittedDate = $_POST["date"] ?? '';
-            $submittedPlace = $_POST["lieu"] ?? '';
-            $volunteersAssigned = $_POST["benevoles"] ?? [];
-            $wasteTypesSubmitted = $_POST['type_dechet'] ?? [];
-            $quantitiesSubmitted = $_POST['quantite_kg'] ?? [];
+            if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
+                $error = "Le jeton CSRF est invalide. Veuillez réessayer.";
+            } else {
+                $submittedDate = $_POST["date"] ?? '';
+                $submittedPlace = $_POST["collection_place"] ?? '';
+                $volunteersAssigned = $_POST["Volunteer"] ?? [];
+                $wasteTypesSubmitted = $_POST['waste_type'] ?? [];
+                $quantitiesSubmitted = $_POST['quantity_kg'] ?? [];
 
-            try {
-                $collectionController->editCollection(
-                    $submittedDate,
-                    $submittedPlace,
-                    $collectionId,
-                    $volunteersAssigned,
-                    $wasteTypesSubmitted,
-                    $quantitiesSubmitted
-                );
-                header("Location: /back-office-app/index.php?route=collection-list");
-                exit;
-            } catch (\PDOException $e) {
-                $error = "Erreur de base de données : " . $e->getMessage();
+                try {
+                    $collectionController->editCollection(
+                        $submittedDate,
+                        $submittedPlace,
+                        $collectionId,
+                        $volunteersAssigned,
+                        $wasteTypesSubmitted,
+                        $quantitiesSubmitted
+                    );
+                    header($destinationUrl);
+                    exit;
+                } catch (\PDOException $e) {
+                    $error = "Erreur de base de données : " . $e->getMessage();
+                }
             }
         }
 
-        // Set page variables
-        $pageTitle = "Modifier une collecte";
-        $pageHeader = "Modifier une collecte";
-        $actionUrl = $_SERVER['PHP_SELF'] . "?route=collection-edit&id=" . urlencode($collectionId);
-        $cancelUrl = "/back-office-app/index.php?route=collection-list";
-        $cancelTitle = "Retour à la liste des collectes";
+        $actionUrl = $_SERVER['PHP_SELF'] . "/collection-edit/" . urlencode($collectionId);
+        $cancelUrl = "/back-office-app/collection-list";
+        $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Modifier la collecte";
         $buttonTextContent = "Modifier la collecte";
 
-        // Render the collection form using the CollectionForm component
-        ob_start();
-        CollectionForm::render([
+        $twig = View::getTwig();
+        echo $twig->render('Pages/collection_edit.twig', [
+            'error'                 => $error,
             'actionUrl'             => $actionUrl,
             'cancelUrl'             => $cancelUrl,
             'cancelTitle'           => $cancelTitle,
@@ -96,11 +91,8 @@ class CollectionEdit
             'collection'            => $collection,
             'selectedVolunteersList' => $selectedVolunteersList,
             'collectedWastesList'   => $collectedWasteDetailsList,
-            'error'                 => $error
+            'error'                 => $error,
+            'session'               => $_SESSION,
         ]);
-        $content = ob_get_clean();
-
-        // Render the page using the Main layout
-        Main::render($pageTitle, $pageHeader, $content);
     }
 }
