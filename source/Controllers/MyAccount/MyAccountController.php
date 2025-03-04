@@ -5,71 +5,60 @@ namespace Kouak\BackOfficeApp\Controllers\MyAccount;
 use PDO;
 use PDOException;
 use Kouak\BackOfficeApp\Models\MyAccount\MyAccountManager;
+use Kouak\BackOfficeApp\Utilities\Session;
 
 class MyAccountController
 {
-    /**
-     * @var PDO
-     */
     private $pdo;
-
-    /**
-     * @var MyAccountManager
-     */
-    private $manager;
+    private $myAccountManager;
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->manager = new MyAccountManager($pdo);
+        $this->myAccountManager = new MyAccountManager($pdo);
     }
 
-    /**
-     * Retrieve account details.
-     *
-     * @param int $userId
-     * @return array
-     */
-    public function getAccount($userId)
+    public function getAccount($userId): ?array
     {
-        return $this->manager->getAccount($userId);
+        try {
+            return $this->myAccountManager->readAccount($userId);
+        } catch (PDOException $e) {
+            throw new PDOException("Erreur de la base de données : " . $e->getMessage());
+        }
     }
 
-    /**
-     * Update account information, including password if provided.
-     *
-     * @param int    $userId
-     * @param string $nom
-     * @param string $email
-     * @param string $currentPassword  (plain text; if empty, password update is skipped)
-     * @param string $newPassword      (plain text)
-     * @param string $confirmPassword  (plain text)
-     *
-     * @return string|null  Returns an error message if any, or null on success.
-     */
-    public function updateAccount($userId, $nom, $email, $currentPassword, $newPassword, $confirmPassword)
+    public function editAccount($userId, $username, $email, $currentPassword, $newPassword, $confirmPassword): ?string
     {
-        // Retrieve current account information (including stored hash)
-        $account = $this->manager->getAccount($userId);
-        if (!$account) {
-            return "Utilisateur introuvable.";
-        }
-
-        // If passwords are provided, validate them.
-        if (!empty($currentPassword) && !empty($newPassword) && !empty($confirmPassword)) {
-            if (!password_verify($currentPassword, $account['mot_de_passe'])) {
-                return "Le mot de passe actuel est incorrect.";
+        try {
+            $error = null;
+            $account = $this->myAccountManager->readAccount($userId);
+            if (!$account) {
+                $error = "Utilisateur introuvable.";
+            } else {
+                if (!empty($currentPassword) && !empty($newPassword) && !empty($confirmPassword)) {
+                    if (!password_verify($currentPassword, $account['password'])) {
+                        $error = "Le mot de passe actuel est incorrect.";
+                    } elseif ($newPassword !== $confirmPassword) {
+                        $error = "Le nouveau mot de passe et la confirmation ne correspondent pas.";
+                    } else {
+                        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+                        $this->myAccountManager->updatePassword($userId, $hashedPassword);
+                    }
+                }
+                if (!$error) {
+                    $this->myAccountManager->updateAccount($userId, $username, $email);
+                }
             }
-            if ($newPassword !== $confirmPassword) {
-                return "Le nouveau mot de passe et la confirmation ne correspondent pas.";
-            }
-            // Hash new password and update.
-            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-            $this->manager->updatePassword($userId, $hashedPassword);
-        }
 
-        // Update name and email
-        $this->manager->updateAccount($userId, $nom, $email);
-        return null;
+            if (!$error) {
+                Session::setSession("flash_success", "Votre compte a été mis à jour avec succès.");
+            } else {
+                Session::setSession("flash_error", "Une erreur est survenue lors de la mise à jour de votre compte.");
+            }
+
+            return $error;
+        } catch (PDOException $e) {
+            throw new PDOException("Erreur de la base de données : " . $e->getMessage());
+        }
     }
 }

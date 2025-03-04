@@ -1,0 +1,27 @@
+{# source\Templates\Pages\volunteer_edit.twig #}
+
+{% extends 'Pages/main.twig' %}
+
+{% block title %}Modifier un bénévole
+{% endblock %}
+
+{% block content %}
+	<h1 class="text-4xl font-bold text-cyan-950 mb-6">Modifier un Bénévole</h1>
+
+	{% if error is defined and error %}
+		<div class="text-red-600 mb-4">{{ error }}</div>
+	{% endif %}
+
+	{% include 'Components/volunteer_form.twig' with {
+      actionUrl: actionUrl,
+      cancelUrl: cancelUrl,
+      cancelTitle: cancelTitle,
+      buttonTitle: buttonTitle,
+      buttonTextContent: buttonTextContent,
+      volunteer: volunteer,
+      collectionsList: collectionsList,
+      selectedCollections: selectedCollections,
+      session: session
+  } %}
+{% endblock %}
+

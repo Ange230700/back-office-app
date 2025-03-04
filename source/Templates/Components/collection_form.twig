@@ -1,0 +1,85 @@
+{# source\Templates\Components\collection_form.twig #}
+
+
+<form method="POST" class="space-y-4" action="{{ actionUrl }}">
+	<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+	<div>
+		<label for="date" class="block text-sm font-medium text-gray-700">
+			Date
+			<input type="date" id="date" name="date" value="{{ collection.collection_date|default('') }}" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required/>
+		</label>
+	</div>
+
+	<div>
+		<label for="collection_place" class="block text-sm font-medium text-gray-700">
+			Lieu
+			<input type="text" id="collection_place" name="collection_place" value="{{ collection.collection_place|default('') }}" list="lieuxList" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Lieu de la collecte" required/>
+		</label>
+		<datalist id="lieuxList">
+			{% for place in placesList %}
+				<option value="{{ place|e }}">
+				{% endfor %}
+			</datalist>
+		</div>
+
+		<div>
+			<label class="block text-sm font-medium text-gray-700 mb-2">
+				Bénévoles
+				{% if volunteersList is not empty %}
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+						{% for volunteer in volunteersList %}
+							<div class="flex items-center">
+								<input type="checkbox" name="Volunteer[]" value="{{ volunteer.volunteer_id }}" id="volunteer_{{ volunteer.volunteer_id }}" class="appearance-none h-4 w-4 border border-gray-500 rounded-sm bg-white hover:border-blue-400 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2" {% if volunteer.volunteer_id in selectedVolunteersList %} checked {% endif %}/>
+
+								<label for="volunteer_{{ volunteer.volunteer_id }}" class="text-gray-700">{{ volunteer.username|e }}</label>
+							</div>
+						{% endfor %}
+					</div>
+				{% else %}
+					<p class="text-gray-500">Aucun bénévole n'est disponible pour l'instant.</p>
+				{% endif %}
+			</label>
+		</div>
+
+		<div>
+			<label class="block text-sm font-medium text-gray-700 mb-2">
+				Déchets collectés
+				<div id="waste-container" class="mt-2">
+					{% if collectedWastesList is empty %}
+						<div class="waste-item flex space-x-4 mb-2">
+							<input type="text" name="waste_type[]" list="wasteTypesList" value="" placeholder="Sélectionner ou saisir un nouveau type" class="w-full p-2 border border-gray-300 rounded-lg">
+							<input type="number" min="0" step="0.1" name="quantity_kg[]" placeholder="Quantité (kg)" value="" class="w-full p-2 border border-gray-300 rounded-lg">
+							<button type="button" class="bg-cyan-950 remove-waste hover:bg-red-600 text-white px-2 py-1 rounded">
+								Supprimer
+							</button>
+						</div>
+					{% else %}
+						{% for waste in collectedWastesList %}
+							<div class="waste-item flex space-x-4 mb-2">
+								<input type="text" name="waste_type[]" list="wasteTypesList" value="{{ waste.waste_type|default('') }}" placeholder="Sélectionner ou saisir un nouveau type" class="w-full p-2 border border-gray-300 rounded-lg">
+								<input type="number" min="0" step="0.1" name="quantity_kg[]" placeholder="Quantité (kg)" value="{{ waste.quantity_kg|default('') }}" class="w-full p-2 border border-gray-300 rounded-lg">
+								<button type="button" class="bg-cyan-950 remove-waste hover:bg-red-600 text-white px-2 py-1 rounded">
+									Supprimer
+								</button>
+							</div>
+						{% endfor %}
+					{% endif %}
+				</div>
+				<datalist id="wasteTypesList">
+					{% for wasteType in wasteTypesList %}
+						<option value="{{ wasteType|e }}">
+						{% endfor %}
+					</datalist>
+					<button type="button" id="add-waste" class="bg-cyan-950 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mt-2">
+						Ajouter un déchet
+					</button>
+				</label>
+			</div>
+
+			{% include 'Components/add_or_edit_buttons.twig' with {
+      			cancelUrl: cancelUrl,
+      			cancelTitle: cancelTitle,
+      			buttonTitle: buttonTitle,
+      			buttonTextContent: buttonTextContent } %}
+		</form>

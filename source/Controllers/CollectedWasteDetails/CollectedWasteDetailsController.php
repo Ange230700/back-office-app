@@ -8,60 +8,30 @@ use Kouak\BackOfficeApp\Models\CollectedWasteDetails\CollectedWasteDetailsManage
 
 class CollectedWasteDetailsController
 {
-    /**
-     * @var PDO
-     */
     private $pdo;
+    private $collectedWasteDetailsManager;
 
-    /**
-     * @var CollectedWasteDetailsManager
-     */
-    private $manager;
-
-    /**
-     * Constructor.
-     *
-     * @param PDO $pdo
-     */
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->manager = new CollectedWasteDetailsManager($pdo);
+        $this->collectedWasteDetailsManager = new CollectedWasteDetailsManager($pdo);
     }
 
-    /**
-     * Retrieve a distinct list of waste types.
-     *
-     * @return array
-     *
-     * @throws PDOException
-     */
-    public function getWasteTypesList()
+    public function getWasteTypesList(): ?array
     {
         try {
-            return $this->manager->readWasteTypesList();
+            return $this->collectedWasteDetailsManager->readWasteTypesList();
         } catch (PDOException $e) {
             throw new PDOException("Erreur de la base de données : " . $e->getMessage());
         }
     }
 
-    /**
-     * Retrieve the collected waste details for a given collection.
-     *
-     * @param int $collectionId
-     *
-     * @return array
-     *
-     * @throws PDOException
-     */
-    public function getCollectedWasteDetailsList($collectionId)
+    public function getCollectedWasteDetailsList($collectionId): ?array
     {
         try {
-            return $this->manager->readCollectedWasteDetailsList($collectionId);
+            return $this->collectedWasteDetailsManager->readCollectedWasteDetailsList($collectionId);
         } catch (PDOException $e) {
             throw new PDOException("Erreur de base de données : " . $e->getMessage());
         }
     }
-
-    // Optionally, you could add create, update, or delete methods if needed.
 }
