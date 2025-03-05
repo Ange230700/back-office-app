@@ -6,6 +6,7 @@ namespace Kouak\BackOfficeApp\Controllers\Volunteer;
 
 use PDO;
 use PDOException;
+use \Kouak\BackOfficeApp\Exceptions\DatabaseException;
 use Kouak\BackOfficeApp\Models\Volunteer\VolunteerManager;
 use Kouak\BackOfficeApp\Models\CollectionVolunteer\CollectionVolunteerManager;
 
@@ -32,7 +33,7 @@ class VolunteerController
             $this->collectionVolunteerManager->createVolunteerParticipation($submittedParticipations, $volunteerId);
             return $volunteerId;
         } catch (PDOException $e) {
-            throw new PDOException(self::ERROR_MSG . $e->getMessage());
+            throw new DatabaseException("Une erreur est survenue lors de l'ajout du bénévole.", 0, $e);
         }
     }
 

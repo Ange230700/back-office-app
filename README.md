@@ -4,7 +4,7 @@ Below is a detailed code review of this project along with suggestions for impro
 
 ## Model
 
-![Model](./source/Assets/Images/model.png)
+![Model](./public/Assets/Images/model.png)
 
 ---
 

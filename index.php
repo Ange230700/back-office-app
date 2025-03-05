@@ -12,10 +12,13 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Monolog\Logger;
+use Monolog\Level;
 use Monolog\Handler\StreamHandler;
+use \Kouak\BackOfficeApp\Exceptions\DatabaseException;
+use \Kouak\BackOfficeApp\Exceptions\ValidationException;
 
 $logger = new Logger('app');
-$logger->pushHandler(new StreamHandler(BASE_PATH . '/logs/app.log', Logger::ERROR));
+$logger->pushHandler(new StreamHandler(BASE_PATH . '/logs/app.log', Level::Error));
 
 $routes = new RouteCollection();
 
@@ -47,6 +50,14 @@ try {
 } catch (ResourceNotFoundException $e) {
     $logger->error('Route not found', ['exception' => $e]);
     $response = new Response('Not Found', 404);
+    $response->send();
+} catch (DatabaseException $e) {
+    $logger->error('Database error', ['exception' => $e]);
+    $response = new Response('Une erreur est survenue lors de la mise à jour des données. Veuillez réessayer plus tard.', 500);
+    $response->send();
+} catch (ValidationException $e) {
+    $logger->warning('Validation error', ['exception' => $e]);
+    $response = new Response($e->getMessage(), 400);
     $response->send();
 } catch (Exception $e) {
     $logger->error('An error occurred', ['exception' => $e]);
