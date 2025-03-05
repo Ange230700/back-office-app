@@ -1,5 +1,7 @@
 <?php
 
+// source\Models\MyAccount\MyAccountManager.php
+
 namespace Kouak\BackOfficeApp\Models\MyAccount;
 
 use PDO;

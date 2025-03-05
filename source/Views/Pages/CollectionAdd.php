@@ -1,5 +1,7 @@
 <?php
 
+// source\Views\Pages\CollectionAdd.php
+
 namespace Kouak\BackOfficeApp\Views\Pages;
 
 use PDOException;
