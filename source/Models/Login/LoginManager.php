@@ -1,5 +1,7 @@
 <?php
 
+// source\Models\Login\LoginManager.php
+
 namespace Kouak\BackOfficeApp\Models\Login;
 
 use PDO;

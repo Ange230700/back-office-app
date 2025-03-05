@@ -1,5 +1,7 @@
 <?php
 
+// source\Views\Pages\Home.php
+
 namespace Kouak\BackOfficeApp\Views\Pages;
 
 use Kouak\BackOfficeApp\Utilities\View;

@@ -1,5 +1,7 @@
 <?php
 
+// source\Views\Pages\MyAccount.php
+
 namespace Kouak\BackOfficeApp\Views\Pages;
 
 use Kouak\BackOfficeApp\Utilities\Session;
