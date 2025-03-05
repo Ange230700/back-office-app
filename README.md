@@ -1,4 +1,4 @@
-# Projet_Collectif_Template
+# Back-Office-App
 
 Below is a detailed code review of this project along with suggestions for improvement. Overall, the project shows a good understanding of using components such as Symfony Routing, Twig for templating, PDO with prepared statements, and Monolog for logging. The project’s structure with controllers, models, views (Twig templates), and utilities is a good start toward a modular MVC‐like design. However, there are some areas where improvements could help increase maintainability, consistency, and security. Here are the key points:
 
