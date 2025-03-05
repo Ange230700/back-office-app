@@ -1,6 +1,6 @@
 # Projet_Collectif_Template
 
-Below is a detailed code review of your project along with suggestions for improvement. Overall, the project shows a good understanding of using components such as Symfony Routing, Twig for templating, PDO with prepared statements, and Monolog for logging. The project’s structure—with controllers, models, views (Twig templates), and utilities—is a good start toward a modular MVC‐like design. However, there are some areas where improvements could help increase maintainability, consistency, and security. Here are the key points:
+Below is a detailed code review of this project along with suggestions for improvement. Overall, the project shows a good understanding of using components such as Symfony Routing, Twig for templating, PDO with prepared statements, and Monolog for logging. The project’s structure with controllers, models, views (Twig templates), and utilities is a good start toward a modular MVC‐like design. However, there are some areas where improvements could help increase maintainability, consistency, and security. Here are the key points:
 
 ## Model
 
@@ -80,6 +80,4 @@ Below is a detailed code review of your project along with suggestions for impro
 
 ### Conclusion
 
-Your project demonstrates a solid foundation using modern PHP practices. With some refactoring to eliminate duplication, enforce naming consistency, improve error handling, and consider dependency injection, the project will become more maintainable and scalable. Addressing these suggestions will help streamline development and improve the overall code quality.
-
-If you have any questions or need further details on any of these points, feel free to ask!
+The project demonstrates a solid foundation using modern PHP practices. With some refactoring to eliminate duplication, enforce naming consistency, improve error handling, and consider dependency injection, the project will become more maintainable and scalable. Addressing these suggestions will help streamline development and improve the overall code quality.
