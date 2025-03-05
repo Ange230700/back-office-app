@@ -1,5 +1,7 @@
 <?php
 
+// source\Models\CollectionEvent\CollectionManager.php
+
 namespace Kouak\BackOfficeApp\Models\CollectionEvent;
 
 use PDO;
@@ -88,7 +90,7 @@ class CollectionManager
                 COALESCE(
                     GROUP_CONCAT(
                         DISTINCT CONCAT(
-                            COALESCE(Collected_waste.waste_type, 'type (s) non défini(s)'),
+                            COALESCE(Collected_waste.waste_type, 'type(s) non défini(s)'),
                             ' (', REPLACE(FORMAT(COALESCE(Collected_waste.quantity_kg, 0), 1, 'fr_FR'), CHAR(160), ''), 'kg)'
                         )
                         ORDER BY Collected_waste.waste_type

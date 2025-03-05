@@ -1,5 +1,7 @@
 <?php
 
+// source\Database\Configuration.php
+
 declare(strict_types=1);
 
 namespace Kouak\BackOfficeApp\Database;

@@ -1,5 +1,7 @@
 <?php
 
+// source\Controllers\CollectionEvent\CollectionController.php
+
 namespace Kouak\BackOfficeApp\Controllers\CollectionEvent;
 
 use PDO;

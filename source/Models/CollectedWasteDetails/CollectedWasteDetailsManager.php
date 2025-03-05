@@ -1,5 +1,7 @@
 <?php
 
+// source\Models\CollectedWasteDetails\CollectedWasteDetailsManager.php
+
 namespace Kouak\BackOfficeApp\Models\CollectedWasteDetails;
 
 use PDO;

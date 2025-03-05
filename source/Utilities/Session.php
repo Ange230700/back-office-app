@@ -1,5 +1,7 @@
 <?php
 
+// source\Utilities\Session.php
+
 namespace Kouak\BackOfficeApp\Utilities;
 
 class Session

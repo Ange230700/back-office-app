@@ -11,7 +11,10 @@
 			<thead class="bg-cyan-950 text-white">
 				<tr>
 					<th class="py-3 px-4 text-left">Nom</th>
-					<th class="py-3 px-4 text-left">Email</th>
+					{% if role == 'admin' %}
+						<th class="py-3 px-4 text-left">Email</th>
+					{% endif %}
+
 					<th class="py-3 px-4 text-left">Rôle</th>
 					<th class="py-3 px-4 text-left">Participations</th>
 					{% if role == 'admin' %}
@@ -23,7 +26,9 @@
 				{% for volunteer in volunteers %}
 					<tr class="hover:bg-gray-100 transition duration-200">
 						<td class="py-3 px-4">{{ volunteer.username|e }}</td>
-						<td class="py-3 px-4">{{ volunteer.email|e }}</td>
+						{% if role == 'admin' %}
+							<td class="py-3 px-4">{{ volunteer.email|e }}</td>
+						{% endif %}
 						<td class="py-3 px-4">{{ volunteer.role|e }}</td>
 						<td class="py-3 px-4">{{ volunteer.participations|e }}</td>
 						{% if role == 'admin' %}
