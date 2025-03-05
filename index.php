@@ -14,8 +14,8 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Monolog\Logger;
 use Monolog\Level;
 use Monolog\Handler\StreamHandler;
-use \Kouak\BackOfficeApp\Exceptions\DatabaseException;
-use \Kouak\BackOfficeApp\Exceptions\ValidationException;
+use \Kouak\BackOfficeApp\Errors\DatabaseException;
+use \Kouak\BackOfficeApp\Errors\ValidationException;
 
 $logger = new Logger('app');
 $logger->pushHandler(new StreamHandler(BASE_PATH . '/logs/app.log', Level::Error));

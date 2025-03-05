@@ -16,8 +16,8 @@ class MyAccount
     {
         Helpers::checkUserLoggedIn();
         $pdo = Configuration::getPdo();
-        $flash_success = Session::getSession("flash_success");
-        $flash_error = Session::getSession("flash_error");
+        // $flash_success = Session::getSession("flash_success");
+        // $flash_error = Session::getSession("flash_error");
 
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
@@ -52,8 +52,8 @@ class MyAccount
             'account'   => $account,
             'error'     => $error,
             'session'   => $_SESSION,
-            'flash_success' => $flash_success,
-            'flash_error' => $flash_error,
+            // 'flash_success' => $flash_success,
+            // 'flash_error' => $flash_error,
         ]);
     }
 }

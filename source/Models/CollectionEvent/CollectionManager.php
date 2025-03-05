@@ -136,14 +136,14 @@ class CollectionManager
         return [$collectionsList, $numberOfPages];
     }
 
-    public function readCollectedWastesTotalQuantity(): float
+    public function readCollectedWastesTotalQuantity(): ?float
     {
         $sql = "SELECT COALESCE(ROUND(SUM(quantity_kg), 1), 0.0)
                 AS collected_waste_total_quantity
                 FROM Collected_waste";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
-            return 0.0;
+            return null;
         }
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (float) ($result['collected_waste_total_quantity'] ?? 0.0);

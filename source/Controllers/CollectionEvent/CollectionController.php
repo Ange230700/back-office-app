@@ -6,6 +6,7 @@ namespace Kouak\BackOfficeApp\Controllers\CollectionEvent;
 
 use PDO;
 use PDOException;
+use \Kouak\BackOfficeApp\Errors\DatabaseException;
 use Kouak\BackOfficeApp\Models\CollectionEvent\CollectionManager;
 use Kouak\BackOfficeApp\Models\CollectionVolunteer\CollectionVolunteerManager;
 use Kouak\BackOfficeApp\Utilities\Helpers;
@@ -29,7 +30,7 @@ class CollectionController
             return $this->collectionManager->createCollectionWithDetails($submittedDate, $submittedPlace, $volunteersAssigned, $wasteTypesSubmitted, $quantitiesSubmitted);
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de l'ajout d'une collecte.", 0, $e);
         }
     }
 
@@ -39,7 +40,7 @@ class CollectionController
             return $this->collectionManager->readCollectedWastesTotalQuantity();
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la récupération du total des déchets collectés.", 0, $e);
         }
     }
 
@@ -49,7 +50,7 @@ class CollectionController
             return $this->collectionManager->readMostRecentCollection();
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la récupération de la collecte la plus récente.", 0, $e);
         }
     }
 
@@ -59,7 +60,7 @@ class CollectionController
             return $this->collectionManager->readNextCollection();
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la récupération de la collecte suivante.", 0, $e);
         }
     }
 
@@ -69,7 +70,7 @@ class CollectionController
             return $this->collectionManager->readCollection($collectionId);
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la récupération de la collecte.", 0, $e);
         }
     }
 
@@ -79,7 +80,7 @@ class CollectionController
             return $this->collectionVolunteerManager->readVolunteersListWhoAttendedCollection($collectionId);
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la récupération des bénévoles.", 0, $e);
         }
     }
 
@@ -89,7 +90,7 @@ class CollectionController
             return $this->collectionManager->readCollectionPlacesList();
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la récupération des lieux.", 0, $e);
         }
     }
 
@@ -99,7 +100,7 @@ class CollectionController
             return $this->collectionManager->readCollectionsList();
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la récupération des CollectionEvent.", 0, $e);
         }
     }
 
@@ -110,13 +111,18 @@ class CollectionController
             return $this->collectionManager->readCollectionsListPaginated($paginationParams);
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la récupération des CollectionEvent.", 0, $e);
         }
     }
 
     public function getTotalCollections(): ?int
     {
-        return $this->collectionManager->readNumberOfCollections();
+        try {
+            return $this->collectionManager->readNumberOfCollections();
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw new DatabaseException("Une erreur est survenue lors de la récupération du nombre de CollectionEvent.", 0, $e);
+        }
     }
 
 
@@ -130,7 +136,7 @@ class CollectionController
             $this->pdo->commit();
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la mise à jour de la collecte.", 0, $e);
         }
     }
 
@@ -140,7 +146,7 @@ class CollectionController
             $this->collectionManager->deleteCollection($collectionId);
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la suppression de la collecte.", 0, $e);
         }
     }
 }
