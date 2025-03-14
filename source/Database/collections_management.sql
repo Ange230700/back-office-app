@@ -29,7 +29,7 @@ CREATE TABLE
     `username` VARCHAR(100) NOT NULL,
     `email` VARCHAR(100) NOT NULL UNIQUE KEY,
     `password` VARCHAR(255) NOT NULL,
-    `role` ENUM ('admin', 'participant') NOT NULL,
+    `role` ENUM ('admin', 'participant', 'superAdmin') NOT NULL,
     INDEX `idx_username` (`username`)
   ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 

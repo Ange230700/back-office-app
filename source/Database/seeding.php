@@ -12,6 +12,9 @@ use Kouak\BackOfficeApp\Database\Configuration;
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
 
+// Get database connection settings from .env
+$superAdminPassword = $_ENV['SUPER_ADMIN_PASSWORD'];
+
 // Create a Faker instance (you can choose your locale)
 $faker = FakerFactory::create('fr_FR');
 
@@ -31,10 +34,20 @@ try {
 
     // Insert sample volunteers
     $insertVolunteerStmt = $pdo->prepare("INSERT INTO Volunteer (username, email, password, role) VALUES (?, ?, ?, ?)");
-    // Insert admin volunteer
-    $adminPasswordHash = password_hash('admin', PASSWORD_DEFAULT);
-    $insertVolunteerStmt->execute(['Admin', 'admin@admin.admin', $adminPasswordHash, 'admin']);
-    echo "Inserted admin volunteer\n";
+    // Insert super admin volunteer
+    $superAdminPasswordHash = password_hash($superAdminPassword, PASSWORD_DEFAULT);
+    $insertVolunteerStmt->execute(['SuperAdmin', 'superAdmin@superAdmin.superAdmin', $superAdminPasswordHash, 'superAdmin']);
+    echo "Inserted super admin volunteer\n";
+
+    // Insert default admin (example credentials: admin/admin123)
+    $pdo->exec("INSERT INTO Volunteer (username, email, password, role) VALUES ('admin', 'admin@admin.admin', '" . password_hash('admin123', PASSWORD_DEFAULT) . "', 'admin')");
+    echo "Inserted default admin\n";
+
+    // Insert default user (example credentials: user/user123)
+    $pdo->exec("INSERT INTO Volunteer (username, email, password, role) VALUES ('user', 'user@user.user', '" . password_hash('user123', PASSWORD_DEFAULT) . "', 'user')");
+    echo "Inserted default user\n";
+
+
 
     // Insert several participant volunteers
     $volunteerIds = [];

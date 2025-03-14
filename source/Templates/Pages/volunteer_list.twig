@@ -37,7 +37,9 @@
 									editUrl: '/back-office-app/volunteer-edit/' ~ volunteer.volunteer_id,
 									deleteUrl: '/back-office-app/volunteer-delete/' ~ volunteer.volunteer_id,
 									editTitle: 'Modifier ' ~ volunteer.username,
-									deleteTitle: 'Supprimer ' ~ volunteer.username } %}
+									deleteTitle: 'Supprimer ' ~ volunteer.username,
+									volunteer_email: volunteer.email } %}
+
 							</td>
 						{% endif %}
 					</tr>
