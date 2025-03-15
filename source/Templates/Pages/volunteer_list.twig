@@ -11,13 +11,13 @@
 			<thead class="bg-cyan-950 text-white">
 				<tr>
 					<th class="py-3 px-4 text-left">Nom</th>
-					{% if role == 'admin' %}
+					{% if role == 'superAdmin' %}
 						<th class="py-3 px-4 text-left">Email</th>
 					{% endif %}
 
 					<th class="py-3 px-4 text-left">Rôle</th>
 					<th class="py-3 px-4 text-left">Participations</th>
-					{% if role == 'admin' %}
+					{% if role == 'admin' or role == 'superAdmin' %}
 						<th class="py-3 px-4 text-left">Actions</th>
 					{% endif %}
 				</tr>
@@ -26,18 +26,20 @@
 				{% for volunteer in volunteers %}
 					<tr class="hover:bg-gray-100 transition duration-200">
 						<td class="py-3 px-4">{{ volunteer.username|e }}</td>
-						{% if role == 'admin' %}
+						{% if role == 'superAdmin' %}
 							<td class="py-3 px-4">{{ volunteer.email|e }}</td>
 						{% endif %}
 						<td class="py-3 px-4">{{ volunteer.role|e }}</td>
 						<td class="py-3 px-4">{{ volunteer.participations|e }}</td>
-						{% if role == 'admin' %}
+						{% if role == 'admin' or role == 'superAdmin' %}
 							<td class="py-3 px-4">
 								{% include 'Components/action_buttons.twig' with {
 									editUrl: '/back-office-app/volunteer-edit/' ~ volunteer.volunteer_id,
 									deleteUrl: '/back-office-app/volunteer-delete/' ~ volunteer.volunteer_id,
 									editTitle: 'Modifier ' ~ volunteer.username,
-									deleteTitle: 'Supprimer ' ~ volunteer.username } %}
+									deleteTitle: 'Supprimer ' ~ volunteer.username,
+									volunteer_email: volunteer.email,
+									volunteer_role: volunteer.role } %}
 							</td>
 						{% endif %}
 					</tr>

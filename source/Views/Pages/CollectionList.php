@@ -50,5 +50,9 @@ class CollectionList
             'route'       => 'collection-list',
             'session'     => $_SESSION,
         ]);
+
+        // Remove flash_error after the view has been rendered so it doesn't persist
+        Session::removeSessionVariable("flash_success");
+        Session::removeSessionVariable("flash_error");
     }
 }

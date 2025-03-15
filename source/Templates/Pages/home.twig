@@ -2,8 +2,32 @@
 
 {% extends 'Pages/main.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}Accueil
+{% endblock %}
 
 {% block content %}
-  <p>Il faut se connecter pour accéder aux informations de l'association.</p>
+	<h1>Welcome to the Back-Office App</h1>
+	<p>Il faut se connecter pour accéder aux informations de l'association.</p>
+	<div class="demo-credentials" style="background: #eef; padding: 1rem; margin: 1rem 0;">
+		<h2>Données d'identification de la démo</h2>
+		<p>Vous pouvez vous connecter en utilisant les informations d'identification suivantes à des fins de démonstration :</p>
+		<ul>
+			<li>
+				<strong>Admin:</strong>
+				Email:
+				<code>admin@admin.admin</code>, Password:
+				<code>admin123</code>
+			</li>
+			<li>
+				<strong>User:</strong>
+				Email:
+				<code>user@user.user</code>, Password:
+				<code>user123</code>
+			</li>
+		</ul>
+		<p>
+<em>Remarque : ces informations d'identification ne sont données qu'à titre de démonstration et ne peuvent pas être modifiés ou supprimés.</em>
+
+		</p>
+	</div>
 {% endblock %}

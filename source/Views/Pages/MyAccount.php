@@ -15,13 +15,24 @@ class MyAccount
     public static function render()
     {
         Helpers::checkUserLoggedIn();
+
+        // Retrieve necessary session information
+        $email = Session::getSession("email");
+        $role = Session::getSession("role");
+
+        // Define demo accounts (based on your provided demo credentials)
+        $demoUsers = ['admin@admin.admin', 'user@user.user'];
+
+        // Block access for demo accounts and superAdmin
+        if (in_array($email, $demoUsers)) {
+            // Optionally set a flash message
+            Session::setSession("flash_error", "Accès refusé pour ce compte.");
+            // Redirect to a safe page (e.g., home or collection-list)
+            header("Location: /back-office-app/collection-list");
+            exit;
+        }
+        
         $pdo = Configuration::getPdo();
-        $flash_success = Session::getSession("flash_success");
-        $flash_error = Session::getSession("flash_error");
-
-        Session::removeSessionVariable("flash_success");
-        Session::removeSessionVariable("flash_error");
-
         $controller = new MyAccountController($pdo);
         $userId = Session::getSession("user_id");
         $account = $controller->getAccount($userId);
@@ -52,8 +63,12 @@ class MyAccount
             'account'   => $account,
             'error'     => $error,
             'session'   => $_SESSION,
-            'flash_success' => $flash_success,
-            'flash_error' => $flash_error,
+            // 'flash_success' => $flash_success,
+            // 'flash_error' => $flash_error,
         ]);
+
+        // Remove flash_error after the view has been rendered so it doesn't persist
+        Session::removeSessionVariable("flash_success");
+        Session::removeSessionVariable("flash_error");
     }
 }

@@ -6,6 +6,7 @@ namespace Kouak\BackOfficeApp\Controllers\MyAccount;
 
 use PDO;
 use PDOException;
+use \Kouak\BackOfficeApp\Errors\DatabaseException;
 use Kouak\BackOfficeApp\Models\MyAccount\MyAccountManager;
 use Kouak\BackOfficeApp\Utilities\Session;
 
@@ -60,7 +61,7 @@ class MyAccountController
 
             return $error;
         } catch (PDOException $e) {
-            throw new PDOException("Erreur de la base de données : " . $e->getMessage());
+            throw new DatabaseException("Une erreur est survenue lors de la mise à jour de votre compte.", 0, $e);
         }
     }
 }

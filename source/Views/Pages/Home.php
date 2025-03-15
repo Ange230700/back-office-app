@@ -5,6 +5,7 @@
 namespace Kouak\BackOfficeApp\Views\Pages;
 
 use Kouak\BackOfficeApp\Utilities\View;
+use Kouak\BackOfficeApp\Utilities\Session;
 
 class Home
 {
@@ -12,5 +13,9 @@ class Home
     {
         $twig = View::getTwig();
         echo $twig->render('Pages/home.twig');
+
+        // Remove flash_error after the view has been rendered so it doesn't persist
+        Session::removeSessionVariable("flash_success");
+        Session::removeSessionVariable("flash_error");
     }
 }
