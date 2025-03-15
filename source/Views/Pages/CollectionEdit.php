@@ -19,6 +19,10 @@ class CollectionEdit
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
+        // Clear any existing flash messages before processing
+        Session::removeSessionVariable("flash_success");
+        Session::removeSessionVariable("flash_error");
+
         $destinationUrl = "Location: /back-office-app/collection-list";
         
         if (empty($collection_id)) {
@@ -96,5 +100,9 @@ class CollectionEdit
             'error'                 => $error,
             'session'               => $_SESSION,
         ]);
+
+        // Remove flash_error after the view has been rendered so it doesn't persist
+        Session::removeSessionVariable("flash_success");
+        Session::removeSessionVariable("flash_error");
     }
 }

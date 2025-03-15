@@ -16,8 +16,6 @@ class MyAccount
     {
         Helpers::checkUserLoggedIn();
         $pdo = Configuration::getPdo();
-        // $flash_success = Session::getSession("flash_success");
-        // $flash_error = Session::getSession("flash_error");
 
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
@@ -55,5 +53,9 @@ class MyAccount
             // 'flash_success' => $flash_success,
             // 'flash_error' => $flash_error,
         ]);
+
+        // Remove flash_error after the view has been rendered so it doesn't persist
+        Session::removeSessionVariable("flash_success");
+        Session::removeSessionVariable("flash_error");
     }
 }
