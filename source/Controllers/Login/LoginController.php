@@ -6,6 +6,7 @@ namespace Kouak\BackOfficeApp\Controllers\Login;
 
 use PDO;
 use PDOException;
+use \Kouak\BackOfficeApp\Errors\DatabaseException;
 use Kouak\BackOfficeApp\Models\Login\LoginManager;
 
 class LoginController
@@ -29,7 +30,7 @@ class LoginController
             return null;
         } catch (PDOException $e) {
             $this->pdo->rollBack();
-            throw $e;
+            throw new DatabaseException("Une erreur est survenue lors de la connexion.", 0, $e);
         }
     }
 }

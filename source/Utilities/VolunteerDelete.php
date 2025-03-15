@@ -22,7 +22,24 @@ class VolunteerDelete
 
         $volunteerId = $volunteer_id;
         $controller = new VolunteerController($pdo);
+
+        // Retrieve volunteer details to check if the account is protected
+        $volunteerDetails = $controller->getEditableFieldsOfVolunteer($volunteerId);
+        if ($volunteerDetails) {
+            // Prevent deletion of demo accounts and superAdmin accounts
+            if (in_array($volunteerDetails['email'], ['admin@admin.admin', 'user@user.user']) || ($volunteerDetails['role'] === 'superAdmin')) {
+                Session::setSession("flash_error", "Vous ne pouvez pas supprimer ce compte.");
+                header("Location: /back-office-app/volunteer-list");
+                exit;
+            }
+        } else {
+            // If the volunteer details cannot be found, just redirect
+            header("Location: /back-office-app/volunteer-list");
+            exit;
+        }
+
         $controller->eraseVolunteer($volunteerId);
+        Session::setSession("flash_success", "Le bénévole a été supprimé avec succès.");
         header("Location: /back-office-app/volunteer-list");
         exit();
     }

@@ -6,6 +6,7 @@ namespace Kouak\BackOfficeApp\Controllers\CollectedWasteDetails;
 
 use PDO;
 use PDOException;
+use \Kouak\BackOfficeApp\Errors\DatabaseException;
 use Kouak\BackOfficeApp\Models\CollectedWasteDetails\CollectedWasteDetailsManager;
 
 class CollectedWasteDetailsController
@@ -24,7 +25,7 @@ class CollectedWasteDetailsController
         try {
             return $this->collectedWasteDetailsManager->readWasteTypesList();
         } catch (PDOException $e) {
-            throw new PDOException("Erreur de la base de données : " . $e->getMessage());
+            throw new DatabaseException("Une erreur est survenue lors de l'ajout d'une collecte.", 0, $e);
         }
     }
 
@@ -33,7 +34,7 @@ class CollectedWasteDetailsController
         try {
             return $this->collectedWasteDetailsManager->readCollectedWasteDetailsList($collectionId);
         } catch (PDOException $e) {
-            throw new PDOException("Erreur de base de données : " . $e->getMessage());
+            throw new DatabaseException("Une erreur est survenue lors de la récupération des déchets collectés.", 0, $e);
         }
     }
 }

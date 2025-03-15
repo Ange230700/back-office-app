@@ -19,6 +19,8 @@ class View
                 'cache' => BASE_PATH . '/cache/twig',
                 'debug' => true,
             ]);
+            self::$twig->addGlobal('flash_success', Session::getSession("flash_success"));
+            self::$twig->addGlobal('flash_error', Session::getSession("flash_error"));
         }
         return self::$twig;
     }

@@ -15,29 +15,31 @@ class CollectionVolunteerManager
         $this->pdo = $pdo;
     }
 
-    public function createVolunteerParticipation($submittedParticipations, $volunteerId): void
+    public function createVolunteerParticipation($submittedParticipations, $volunteerId): bool
     {
         if (!empty($submittedParticipations)) {
             $sql = "INSERT INTO Volunteer_Collection (id_volunteer, id_collection) VALUES (?, ?)";
             $stmt = $this->pdo->prepare($sql);
             foreach ($submittedParticipations as $collectionId) {
                 if (!$stmt->execute([$volunteerId, $collectionId])) {
-                    return;
+                    return false;
                 }
             }
         }
+
+        return true;
     }
 
-    public function createVolunteerCollectionAssignment($collectionId, $volunteersAssigned): ?int
+    public function createVolunteerCollectionAssignment($collectionId, $volunteersAssigned): bool
     {
         $sql = "INSERT INTO Volunteer_Collection (id_collection, id_volunteer) VALUES (?, ?)";
         $stmt = $this->pdo->prepare($sql);
         foreach ($volunteersAssigned as $volunteerId) {
             if (!$stmt->execute([$collectionId, $volunteerId])) {
-                return null;
+                return false;
             }
         }
-        return $stmt->rowCount();
+        return true;
     }
 
     public function readVolunteersListWhoAttendedCollection($collectionId): ?array
@@ -77,23 +79,23 @@ class CollectionVolunteerManager
         }
     }
 
-    public function deleteVolunteersFromCollection($collectionId): ?int
+    public function deleteVolunteersFromCollection($collectionId): bool
     {
         $sql = "DELETE FROM Volunteer_Collection WHERE id_collection = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$collectionId])) {
-            return null;
+            return false;
         }
-        return $stmt->rowCount();
+        return true;
     }
 
-    public function deleteCollectionsVolunteerAttended($volunteerId): ?int
+    public function deleteCollectionsVolunteerAttended($volunteerId): bool
     {
         $sql = "DELETE FROM Volunteer_Collection WHERE id_volunteer = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$volunteerId])) {
-            return null;
+            return false;
         }
-        return $stmt->rowCount();
+        return true;
     }
 }

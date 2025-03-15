@@ -2,9 +2,24 @@
 
 Below is a detailed code review of this project along with suggestions for improvement. Overall, the project shows a good understanding of using components such as Symfony Routing, Twig for templating, PDO with prepared statements, and Monolog for logging. The project’s structure with controllers, models, views (Twig templates), and utilities is a good start toward a modular MVC‐like design. However, there are some areas where improvements could help increase maintainability, consistency, and security. Here are the key points:
 
+## Demo Credentials
+
+For demo purposes only, you can use the following credentials to explore the application:
+
+- **Admin Account:**  
+  Email: `admin@admin.admin`
+  Password: `admin123`
+
+- **User Account:**  
+  Email: `user@user.user`
+  Password: `user123`
+
+> **Note:** These credentials are provided for testing and demonstration purposes only. These demo accounts are protected: they cannot be edited or deleted and do not have access to the "MyAccount" page.
+
+
 ## Model
 
-![Model](./source/Assets/Images/model.png)
+![Model](./public/Assets/Images/model.png)
 
 ---
 

@@ -17,10 +17,16 @@ class VolunteerList
         Helpers::checkUserLoggedIn();
         $pdo = Configuration::getPdo();
 
-        $volunteerController = new VolunteerController($pdo);
-        list($volunteersList, $numberOfPages) = $volunteerController->getVolunteersFullDetailsPaginated();
-
         $role = Session::getSession("role");
+        $volunteerController = new VolunteerController($pdo);
+        list($volunteersList, $numberOfPages) = $volunteerController->getVolunteersFullDetailsPaginated($role);
+
+        // Remove emails if the user is not superAdmin
+        if ($role !== 'superAdmin') {
+            foreach ($volunteersList as &$volunteer) {
+                unset($volunteer['email']);
+            }
+        }
 
         $pageNumber = $_GET['pageNumber'] ?? 1;
 
@@ -33,5 +39,9 @@ class VolunteerList
             'route'       => 'volunteer-list',
             'session'     => $_SESSION,
         ]);
+
+        // Remove flash_error after the view has been rendered so it doesn't persist
+        Session::removeSessionVariable("flash_success");
+        Session::removeSessionVariable("flash_error");
     }
 }

@@ -22,7 +22,7 @@
 				<th scope="col" class="py-3 px-4 text-left">Lieu</th>
 				<th scope="col" class="py-3 px-4 text-left">Bénévoles</th>
 				<th scope="col" class="py-3 px-4 text-left">Types de déchets (quantité en kg)</th>
-				{% if role == 'admin' %}
+				{% if role == 'admin' or role == 'superAdmin' %}
 					<th scope="col" class="py-3 px-4 text-left">Actions</th>
 				{% endif %}
 			</tr>
@@ -41,7 +41,7 @@
 						{% endif %}
 					</td>
 					<td class="py-3 px-4">{{ collection.wasteDetails|raw }}</td>
-					{% if role == 'admin' %}
+					{% if role == 'admin' or role == 'superAdmin' %}
 						<td class="py-3 px-4">
 							{% include 'Components/action_buttons.twig' with {
 								editUrl: '/back-office-app/collection-edit/' ~ collection.collection_id,

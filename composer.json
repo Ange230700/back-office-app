@@ -23,7 +23,6 @@
   "scripts": {
     "migrate": "php source/Database/migration.php",
     "seed": "php source/Database/seeding.php",
-    "build": "composer migrate seed",
     "deploy": [
       "@migrate",
       "@seed"
