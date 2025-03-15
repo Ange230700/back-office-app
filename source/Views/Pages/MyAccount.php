@@ -15,11 +15,27 @@ class MyAccount
     public static function render()
     {
         Helpers::checkUserLoggedIn();
-        $pdo = Configuration::getPdo();
+
+        // Retrieve necessary session information
+        $email = Session::getSession("email");
+        $role = Session::getSession("role");
+
+        // Define demo accounts (based on your provided demo credentials)
+        $demoUsers = ['admin@admin.admin', 'user@user.user'];
+
+        // Block access for demo accounts and superAdmin
+        if ((in_array($email, $demoUsers)) || ($role === 'superAdmin')) {
+            // Optionally set a flash message
+            Session::setSession("flash_error", "Accès refusé pour ce compte.");
+            // Redirect to a safe page (e.g., home or collection-list)
+            header("Location: /back-office-app/collection-list");
+            exit;
+        }
 
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
-
+        
+        $pdo = Configuration::getPdo();
         $controller = new MyAccountController($pdo);
         $userId = Session::getSession("user_id");
         $account = $controller->getAccount($userId);

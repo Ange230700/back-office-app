@@ -7,11 +7,11 @@ Below is a detailed code review of this project along with suggestions for impro
 For demo purposes only, you can use the following credentials to explore the application:
 
 - **Admin Account:**  
-  Username: `admin`  
+  Email: `admin@admin.admin`
   Password: `admin123`
 
 - **User Account:**  
-  Username: `user`  
+  Email: `user@user.user`
   Password: `user123`
 
 > **Note:** These credentials are provided for testing and demonstration purposes only. These demo accounts are protected: they cannot be edited or deleted and do not have access to the "MyAccount" page.
