@@ -16,7 +16,7 @@
 					Tableau de bord
 				</a>
 			</li>
-			{% if session.role == 'admin' %}
+			{% if session.role == 'admin' or session.role == 'superAdmin' %}
 				<li>
 					<a href="/back-office-app/collection-add" class="flex items-center py-2 px-3 hover:bg-blue-600 rounded-lg">
 						<i class="fas fa-plus-circle mr-3"></i>
@@ -30,7 +30,7 @@
 					Liste des bénévoles
 				</a>
 			</li>
-			{% if session.role == 'admin' %}
+			{% if session.role == 'admin' or session.role == 'superAdmin' %}
 				<li>
 					<a href="/back-office-app/volunteer-add" class="flex items-center py-2 px-3 hover:bg-blue-600 rounded-lg">
 						<i class="fas fa-user-plus mr-3"></i>

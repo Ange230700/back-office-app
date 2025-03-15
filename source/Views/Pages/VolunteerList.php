@@ -21,10 +21,16 @@ class VolunteerList
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
 
-        $volunteerController = new VolunteerController($pdo);
-        list($volunteersList, $numberOfPages) = $volunteerController->getVolunteersFullDetailsPaginated();
-
         $role = Session::getSession("role");
+        $volunteerController = new VolunteerController($pdo);
+        list($volunteersList, $numberOfPages) = $volunteerController->getVolunteersFullDetailsPaginated($role);
+
+        // Remove emails if the user is not superAdmin
+        if ($role !== 'superAdmin') {
+            foreach ($volunteersList as &$volunteer) {
+                unset($volunteer['email']);
+            }
+        }
 
         $pageNumber = $_GET['pageNumber'] ?? 1;
 

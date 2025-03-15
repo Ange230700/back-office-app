@@ -24,7 +24,7 @@ class MyAccount
         $demoUsers = ['admin@admin.admin', 'user@user.user'];
 
         // Block access for demo accounts and superAdmin
-        if ((in_array($email, $demoUsers)) || ($role === 'superAdmin')) {
+        if (in_array($email, $demoUsers)) {
             // Optionally set a flash message
             Session::setSession("flash_error", "Accès refusé pour ce compte.");
             // Redirect to a safe page (e.g., home or collection-list)

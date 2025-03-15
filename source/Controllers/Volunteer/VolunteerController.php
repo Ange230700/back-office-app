@@ -35,10 +35,12 @@ class VolunteerController
         }
     }
 
-    public function getVolunteersFullDetailsPaginated(): array
+    public function getVolunteersFullDetailsPaginated(string $role): array
     {
         try {
-            return $this->volunteerManager->readVolunteersFullDetailsPaginated();
+            // Pass a boolean flag: true if role is superAdmin, false otherwise.
+            $isSuperAdmin = ($role === 'superAdmin');
+            return $this->volunteerManager->readVolunteersFullDetailsPaginated($isSuperAdmin);
         } catch (PDOException $e) {
             throw new DatabaseException("Une erreur est survenue lors de la récupération des bénévoles.", 0, $e);
         }

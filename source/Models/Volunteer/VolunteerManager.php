@@ -26,10 +26,13 @@ class VolunteerManager
         return $this->pdo->lastInsertId();
     }
 
-    public function readDetailedVolunteersList(): ?array
+    public function readDetailedVolunteersList(bool $isSuperAdmin): ?array
     {
         $paginationParams = Helpers::getPaginationParams();
-        $sql = "SELECT
+
+        if ($isSuperAdmin) {
+            // Include the email column if the user is superAdmin.
+            $sql = "SELECT
                     Volunteer.volunteer_id,
                     Volunteer.username,
                     Volunteer.email,
@@ -51,6 +54,31 @@ class VolunteerManager
                 GROUP BY Volunteer.volunteer_id
                 ORDER BY Volunteer.username ASC
                 LIMIT ? OFFSET ?;";
+        } else {
+            // Do NOT select the email column if the user is not superAdmin.
+            $sql = "SELECT
+                    Volunteer.volunteer_id,
+                    Volunteer.username,
+                    Volunteer.role,
+                    COALESCE(
+                        GROUP_CONCAT(
+                            CONCAT(
+                                CollectionEvent.collection_place, ' (',
+                                DATE_FORMAT(CollectionEvent.collection_date, '%d/%m/%Y'),
+                                ')'
+                            )
+                            SEPARATOR ', '
+                        ),
+                        'Aucune participation pour le moment'
+                    ) AS participations
+                FROM Volunteer
+                LEFT JOIN Volunteer_Collection ON Volunteer.volunteer_id = Volunteer_Collection.id_volunteer
+                LEFT JOIN CollectionEvent ON CollectionEvent.collection_id = Volunteer_Collection.id_collection
+                GROUP BY Volunteer.volunteer_id
+                ORDER BY Volunteer.username ASC
+                LIMIT ? OFFSET ?;";
+        }
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$paginationParams['limit'], $paginationParams['offset']]);
         return $stmt->fetchAll();
@@ -67,9 +95,9 @@ class VolunteerManager
         return $result['total'];
     }
 
-    public function readVolunteersFullDetailsPaginated(): array
+    public function readVolunteersFullDetailsPaginated(bool $isSuperAdmin): array
     {
-        $volunteersList = $this->readDetailedVolunteersList();
+        $volunteersList = $this->readDetailedVolunteersList($isSuperAdmin);
         $numberOfPages = ceil($this->readNumberOfVolunteers() / Helpers::getPaginationParams()['limit']);
         return [$volunteersList, $numberOfPages];
     }
