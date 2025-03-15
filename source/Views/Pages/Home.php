@@ -11,10 +11,6 @@ class Home
 {
     public static function render()
     {
-        // Clear any existing flash messages before processing
-        Session::removeSessionVariable("flash_success");
-        Session::removeSessionVariable("flash_error");
-
         $twig = View::getTwig();
         echo $twig->render('Pages/home.twig');
 

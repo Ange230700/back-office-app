@@ -31,9 +31,6 @@ class MyAccount
             header("Location: /back-office-app/collection-list");
             exit;
         }
-
-        Session::removeSessionVariable("flash_success");
-        Session::removeSessionVariable("flash_error");
         
         $pdo = Configuration::getPdo();
         $controller = new MyAccountController($pdo);

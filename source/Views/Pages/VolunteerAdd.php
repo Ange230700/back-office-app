@@ -20,10 +20,6 @@ class VolunteerAdd
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
-        // Clear any existing flash messages before processing
-        Session::removeSessionVariable("flash_success");
-        Session::removeSessionVariable("flash_error");
-
         $volunteerController = new VolunteerController($pdo);
         $collectionController = new CollectionController($pdo);
         $collectionsList = $collectionController->getCollectionsList();

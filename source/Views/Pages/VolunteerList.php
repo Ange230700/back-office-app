@@ -17,10 +17,6 @@ class VolunteerList
         Helpers::checkUserLoggedIn();
         $pdo = Configuration::getPdo();
 
-        // Clear any existing flash messages before processing
-        Session::removeSessionVariable("flash_success");
-        Session::removeSessionVariable("flash_error");
-
         $role = Session::getSession("role");
         $volunteerController = new VolunteerController($pdo);
         list($volunteersList, $numberOfPages) = $volunteerController->getVolunteersFullDetailsPaginated($role);

@@ -17,10 +17,6 @@ class CollectionList
         Helpers::checkUserLoggedIn();
         $pdo = Configuration::getPdo();
 
-        // Clear any existing flash messages before processing
-        Session::removeSessionVariable("flash_success");
-        Session::removeSessionVariable("flash_error");
-
         $collectionController = new CollectionController($pdo);
         $collectedWasteTotalQuantity = $collectionController->getCollectedWastesTotalQuantity();
         $mostRecentCollection = $collectionController->getMostRecentCollection();
