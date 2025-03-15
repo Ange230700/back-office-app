@@ -86,7 +86,7 @@ class VolunteerManager
 
     public function readEditableFieldsOfVolunteer(int $volunteerId): ?array
     {
-        $sql = "SELECT volunteer_id, role FROM Volunteer WHERE volunteer_id = ?";
+        $sql = "SELECT volunteer_id, email, role FROM Volunteer WHERE volunteer_id = ?";
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute([$volunteerId])) {
             return null;
