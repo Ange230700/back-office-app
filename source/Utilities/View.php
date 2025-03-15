@@ -14,9 +14,9 @@ class View
     public static function getTwig(): Environment
     {
         if (self::$twig === null) {
-            $loader = new FilesystemLoader(BASE_PATH . '/source/Templates/');
+            $loader = new FilesystemLoader(BASE_PATH . '/../source/Templates/');
             self::$twig = new Environment($loader, [
-                'cache' => BASE_PATH . '/cache/twig',
+                'cache' => BASE_PATH . '/../cache/twig',
                 'debug' => true,
             ]);
             self::$twig->addGlobal('flash_success', Session::getSession("flash_success"));
