@@ -9,11 +9,7 @@
 			{% block title %}Mon Application
 			{% endblock %}
 		</title>
-		<link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet"/>
-		<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-		<script src="https://cdn.tailwindcss.com"></script>
-		<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="/back-office-app/public/styles/style.css">
+		<link rel="stylesheet" href="/back-office-app/dist/style.css">
 	</head>
 	<body class="bg-gray-100 text-gray-900 flex h-screen">
 		<div class="flex flex-col flex-1">
@@ -63,6 +59,6 @@
 			</div>
 			{% include 'Components/footer.twig' %}
 		</div>
-		{# <script type="module" src="/back-office-app/source/Views/javascript/script.js"></script> #}
+		<script src="/back-office-app/dist/flowbite.min.js"></script>
 	</body>
 </html>

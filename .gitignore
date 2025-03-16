@@ -1,5 +1,9 @@
+# .gitignore
+
 .vscode/
 /vendor/
 .env
-/cache/
+cache/
 /logs/
+node_modules/
+dist/
