@@ -34,8 +34,8 @@
 						{% if role == 'admin' or role == 'superAdmin' %}
 							<td class="py-3 px-4">
 								{% include 'Components/action_buttons.twig' with {
-									editUrl: '/back-office-app/volunteer-edit/' ~ volunteer.volunteer_id,
-									deleteUrl: '/back-office-app/volunteer-delete/' ~ volunteer.volunteer_id,
+									editUrl: '/back-office-app/public/volunteer-edit/' ~ volunteer.volunteer_id,
+									deleteUrl: '/back-office-app/public/volunteer-delete/' ~ volunteer.volunteer_id,
 									editTitle: 'Modifier ' ~ volunteer.username,
 									deleteTitle: 'Supprimer ' ~ volunteer.username,
 									volunteer_email: volunteer.email,

@@ -19,8 +19,8 @@ class CollectionEdit
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
-        $destinationUrl = "Location: /back-office-app/collection-list";
-        
+        $destinationUrl = "Location: /back-office-app/public/collection-list";
+
         if (empty($collection_id)) {
             header($destinationUrl);
             exit;
@@ -74,7 +74,7 @@ class CollectionEdit
         }
 
         $actionUrl = $_SERVER['PHP_SELF'] . "/collection-edit/" . urlencode($collectionId);
-        $cancelUrl = "/back-office-app/collection-list";
+        $cancelUrl = "/back-office-app/public/collection-list";
         $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Modifier la collecte";
         $buttonTextContent = "Modifier la collecte";

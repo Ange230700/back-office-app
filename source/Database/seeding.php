@@ -44,7 +44,7 @@ try {
     echo "Inserted default admin\n";
 
     // Insert default user (example credentials: user/user123)
-    $pdo->exec("INSERT INTO Volunteer (username, email, password, role) VALUES ('user', 'user@user.user', '" . password_hash('user123', PASSWORD_DEFAULT) . "', 'user')");
+    $pdo->exec("INSERT INTO Volunteer (username, email, password, role) VALUES ('user', 'user@user.user', '" . password_hash('user123', PASSWORD_DEFAULT) . "', 'participant')");
     echo "Inserted default user\n";
 
 

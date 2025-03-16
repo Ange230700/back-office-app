@@ -16,13 +16,13 @@ class CollectionDelete
         $pdo = Configuration::getPdo();
 
         if (empty($collection_id)) {
-            header("Location: /back-office-app/collection-list");
+            header("Location: /back-office-app/public/collection-list");
             exit;
         }
         $collectionId = $collection_id;
         $controller = new CollectionController($pdo);
         $controller->eraseCollection($collectionId);
-        header("Location: /back-office-app/collection-list");
+        header("Location: /back-office-app/public/collection-list");
         exit;
     }
 }

@@ -19,7 +19,7 @@ class VolunteerEdit
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
 
-        $destinationUrl = "Location: /back-office-app/volunteer-list";
+        $destinationUrl = "Location: /back-office-app/public/volunteer-list";
 
         if (empty($volunteer_id)) {
             header($destinationUrl);
@@ -56,7 +56,7 @@ class VolunteerEdit
         }
 
         $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-edit/" . urlencode($volunteerId);
-        $cancelUrl = "/back-office-app/volunteer-list";
+        $cancelUrl = "/back-office-app/public/volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Modifier le bénévole";
         $buttonTextContent = "Modifier le bénévole";

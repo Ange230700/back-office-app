@@ -28,10 +28,10 @@ class MyAccount
             // Optionally set a flash message
             Session::setSession("flash_error", "Accès refusé pour ce compte.");
             // Redirect to a safe page (e.g., home or collection-list)
-            header("Location: /back-office-app/collection-list");
+            header("Location: /back-office-app/public/collection-list");
             exit;
         }
-        
+
         $pdo = Configuration::getPdo();
         $controller = new MyAccountController($pdo);
         $userId = Session::getSession("user_id");
@@ -52,7 +52,7 @@ class MyAccount
                 if ($error === null) {
                     Session::setSession("username", $username);
                     Session::setSession("email", $email);
-                    header("Location: /back-office-app/my-account");
+                    header("Location: /back-office-app/public/my-account");
                     exit;
                 }
             }

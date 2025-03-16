@@ -38,7 +38,7 @@ class VolunteerAdd
 
                 try {
                     $volunteerController->addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations);
-                    header("Location: /back-office-app/volunteer-list");
+                    header("Location: /back-office-app/public/volunteer-list");
                     exit;
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
@@ -47,7 +47,7 @@ class VolunteerAdd
         }
 
         $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-add";
-        $cancelUrl = "/back-office-app/volunteer-list";
+        $cancelUrl = "/back-office-app/public/volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Ajouter le bénévole";
         $buttonTextContent = "Ajouter le bénévole";

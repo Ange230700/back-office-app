@@ -17,7 +17,7 @@ class Helpers
 
         $userId = Session::getSession("user_id");
         if (!isset($userId)) {
-            header('Location: /back-office-app/login');
+            header('Location: /back-office-app/public/login');
             exit();
         }
     }
@@ -28,7 +28,7 @@ class Helpers
 
         $role = Session::getSession("role");
         if ($role !== "admin") {
-            header("Location: /back-office-app/collection-list");
+            header("Location: /back-office-app/public/collection-list");
             exit();
         }
     }

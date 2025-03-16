@@ -10,7 +10,7 @@ class Logout
     {
         Session::destroySession();
 
-        header("Location: /back-office-app");
+        header("Location: /back-office-app/public/");
         exit;
     }
 }

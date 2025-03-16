@@ -34,7 +34,7 @@ class Login
                     Session::setSession("username", $user["username"]);
                     Session::setSession("role", $user["role"]);
                     Session::setSession("email", $user["email"]);
-                    header("Location: /back-office-app/collection-list");
+                    header("Location: /back-office-app/public/collection-list");
                     exit;
                 } else {
                     $error = "Identifiants incorrects";
