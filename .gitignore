@@ -7,3 +7,5 @@ cache/
 /logs/
 node_modules/
 dist/
+.DS_Store
+webfonts/

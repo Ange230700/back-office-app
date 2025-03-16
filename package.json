@@ -8,12 +8,16 @@
     "watch:css": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./dist/style.css --watch",
     "copy:js": "cp ./node_modules/flowbite/dist/flowbite.min.js ./dist/flowbite.min.js",
     "copy:css-base": "cp ./public/styles/base.css ./dist/base.css",
-    "build": "npm run build:css && npm run copy:js && npm run copy:css-base"
+    "copy:fontawesome": "cp ./node_modules/@fortawesome/fontawesome-free/css/all.min.css ./dist/fontawesome.min.css && cp -R ./node_modules/@fortawesome/fontawesome-free/webfonts ./",
+    "build": "npm run build:css && npm run copy:js && npm run copy:css-base && npm run copy:fontawesome",
+    "clean": "rm -rf ./dist ./cache ./node_modules",
+    "setup": "npm install && npm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "@tailwindcss/cli": "^4.0.14",
     "flowbite": "^3.1.2",
     "tailwindcss": "^4.0.14"
