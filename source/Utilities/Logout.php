@@ -9,8 +9,8 @@ class Logout
     public static function run()
     {
         Session::destroySession();
-
-        header("Location: /back-office-app/public/");
+        $baseUrl = Helpers::getBaseUrl();
+        header("Location: " . $baseUrl);
         exit;
     }
 }

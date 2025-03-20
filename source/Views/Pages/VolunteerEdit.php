@@ -18,26 +18,22 @@ class VolunteerEdit
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-
-        $destinationUrl = "Location: /back-office-app/public/volunteer-list";
-
+        $baseUrl = Helpers::getBaseUrl();
+        $destinationUrl = "Location: " . $baseUrl . "/volunteer-list";
         if (empty($volunteer_id)) {
             header($destinationUrl);
             exit;
         }
         $volunteerId = $volunteer_id;
-
         $volunteerController = new VolunteerController($pdo);
         $volunteer = $volunteerController->getEditableFieldsOfVolunteer($volunteerId);
         if (!$volunteer) {
             header($destinationUrl);
             exit;
         }
-
         $collectionController = new CollectionController($pdo);
         $collectionsList = $collectionController->getCollectionsList();
         $selectedCollections = $volunteerController->getCollectionsListVolunteerAttended($volunteerId);
-
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -54,7 +50,6 @@ class VolunteerEdit
                 }
             }
         }
-
         $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-edit/" . urlencode($volunteerId);
         $cancelUrl = "/back-office-app/public/volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";
@@ -74,8 +69,6 @@ class VolunteerEdit
             'selectedCollections' => $selectedCollections,
             'session'             => $_SESSION,
         ]);
-
-        // Remove flash_error after the view has been rendered so it doesn't persist
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
     }

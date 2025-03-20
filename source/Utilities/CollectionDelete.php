@@ -14,15 +14,15 @@ class CollectionDelete
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-
+        $baseUrl = Helpers::getBaseUrl();
         if (empty($collection_id)) {
-            header("Location: /back-office-app/public/collection-list");
+            header("Location: " . $baseUrl . "/collection-list");
             exit;
         }
         $collectionId = $collection_id;
         $controller = new CollectionController($pdo);
         $controller->eraseCollection($collectionId);
-        header("Location: /back-office-app/public/collection-list");
+        header("Location: " . $baseUrl . "/collection-list");
         exit;
     }
 }

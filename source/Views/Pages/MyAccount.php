@@ -15,28 +15,18 @@ class MyAccount
     public static function render()
     {
         Helpers::checkUserLoggedIn();
-
-        // Retrieve necessary session information
         $email = Session::getSession("email");
-        $role = Session::getSession("role");
-
-        // Define demo accounts (based on your provided demo credentials)
         $demoUsers = ['admin@admin.admin', 'user@user.user'];
-
-        // Block access for demo accounts and superAdmin
+        $baseUrl = Helpers::getBaseUrl();
         if (in_array($email, $demoUsers)) {
-            // Optionally set a flash message
             Session::setSession("flash_error", "Accès refusé pour ce compte.");
-            // Redirect to a safe page (e.g., home or collection-list)
-            header("Location: /back-office-app/public/collection-list");
+            header("Location: " . $baseUrl . "/collection-list");
             exit;
         }
-
         $pdo = Configuration::getPdo();
         $controller = new MyAccountController($pdo);
         $userId = Session::getSession("user_id");
         $account = $controller->getAccount($userId);
-
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -47,27 +37,21 @@ class MyAccount
                 $currentPassword = $_POST["current_password"] ?? "";
                 $newPassword = $_POST["new_password"] ?? "";
                 $confirmPassword = $_POST["confirm_password"] ?? "";
-
                 $error = $controller->editAccount($userId, $username, $email, $currentPassword, $newPassword, $confirmPassword);
                 if ($error === null) {
                     Session::setSession("username", $username);
                     Session::setSession("email", $email);
-                    header("Location: /back-office-app/public/my-account");
+                    header("Location: " . $baseUrl . "/my-account");
                     exit;
                 }
             }
         }
-
         $twig = View::getTwig();
         echo $twig->render('Pages/my_account.twig', [
             'account'   => $account,
             'error'     => $error,
             'session'   => $_SESSION,
-            // 'flash_success' => $flash_success,
-            // 'flash_error' => $flash_error,
         ]);
-
-        // Remove flash_error after the view has been rendered so it doesn't persist
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
     }

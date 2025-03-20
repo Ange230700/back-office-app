@@ -14,10 +14,10 @@ class Helpers
     public static function checkUserLoggedIn(): void
     {
         self::initSession();
-
         $userId = Session::getSession("user_id");
         if (!isset($userId)) {
-            header('Location: /back-office-app/public/login');
+            $baseUrl = Helpers::getBaseUrl();
+            header('Location: ' . $baseUrl . '/login');
             exit();
         }
     }
@@ -25,10 +25,10 @@ class Helpers
     public static function checkUserAdmin(): void
     {
         self::checkUserLoggedIn();
-
         $role = Session::getSession("role");
         if ($role !== "admin") {
-            header("Location: /back-office-app/public/collection-list");
+            $baseUrl = Helpers::getBaseUrl();
+            header("Location: " . $baseUrl . "/collection-list");
             exit();
         }
     }
@@ -39,5 +39,17 @@ class Helpers
         $pageNumber = isset($_GET["pageNumber"]) ? (int)$_GET["pageNumber"] : 1;
         $offset = ($pageNumber - 1) * $limit;
         return compact('limit', 'pageNumber', 'offset');
+    }
+
+    public static function getBaseUrl(): string
+    {
+        return (Helpers::isDevelopment())
+            ? '/back-office-app/public'
+            : '';
+    }
+
+    public static function isDevelopment(): bool
+    {
+        return (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'development');
     }
 }

@@ -20,20 +20,16 @@ class CollectionAdd
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-
         $volunteerController = new VolunteerController($pdo);
         $volunteersList = $volunteerController->getVolunteersList();
-
         $collectedWasteController = new CollectedWasteDetailsController($pdo);
         $wasteTypesList = $collectedWasteController->getWasteTypesList();
-
         $collectionController = new CollectionController($pdo);
         $placesList = $collectionController->getCollectionPlacesList();
-
         $collection = [];
         $selectedVolunteersList = [];
         $collectedWastesList = [];
-
+        $baseUrl = Helpers::getBaseUrl();
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -44,7 +40,6 @@ class CollectionAdd
                 $volunteersAssigned = $_POST["Volunteer"] ?? [];
                 $wasteTypesSubmitted = $_POST['waste_type'] ?? [];
                 $quantitiesSubmitted = $_POST['quantity_kg'] ?? [];
-
                 try {
                     $collectionController->addNewCollection(
                         $submittedDate,
@@ -53,20 +48,18 @@ class CollectionAdd
                         $wasteTypesSubmitted,
                         $quantitiesSubmitted
                     );
-                    header("Location: /back-office-app/public/collection-list");
+                    header("Location: " . $baseUrl . "/collection-list");
                     exit;
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
-
         $actionUrl = $_SERVER['PHP_SELF'] . "/collection-add";
-        $cancelUrl = "/back-office-app/public/collection-list";
+        $cancelUrl = $baseUrl . "/collection-list";
         $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Ajouter la collecte";
         $buttonTextContent = "Ajouter la collecte";
-
         $twig = View::getTwig();
         echo $twig->render('Pages/collection_add.twig', [
             'error'                 => $error,
@@ -84,9 +77,6 @@ class CollectionAdd
             'error'                 => $error,
             'session'               => $_SESSION,
         ]);
-
-
-        // Remove flash_error after the view has been rendered so it doesn't persist
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
     }

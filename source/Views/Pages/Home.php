@@ -4,8 +4,8 @@
 
 namespace Kouak\BackOfficeApp\Views\Pages;
 
-use Kouak\BackOfficeApp\Utilities\View;
 use Kouak\BackOfficeApp\Utilities\Session;
+use Kouak\BackOfficeApp\Utilities\View;
 
 class Home
 {

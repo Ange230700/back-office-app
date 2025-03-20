@@ -18,22 +18,19 @@ class CollectionEdit
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-
-        $destinationUrl = "Location: /back-office-app/public/collection-list";
-
+        $baseUrl = Helpers::getBaseUrl();
+        $destinationUrl = "Location: " . $baseUrl . "/collection-list";
         if (empty($collection_id)) {
             header($destinationUrl);
             exit;
         }
         $collectionId = $collection_id;
-
         $collectionController = new CollectionController($pdo);
         $collection = $collectionController->getCollection($collectionId);
         if (!$collection) {
             header($destinationUrl);
             exit;
         }
-
         $volunteerController = new VolunteerController($pdo);
         $selectedVolunteersList = $collectionController->getVolunteersListWhoAttendedCollection($collectionId);
         $volunteersList = $volunteerController->getVolunteersList();
@@ -44,7 +41,6 @@ class CollectionEdit
         if (empty($collectedWasteDetailsList)) {
             $collectedWasteDetailsList[] = ['waste_type' => '', 'quantity_kg' => ''];
         }
-
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -55,7 +51,6 @@ class CollectionEdit
                 $volunteersAssigned = $_POST["Volunteer"] ?? [];
                 $wasteTypesSubmitted = $_POST['waste_type'] ?? [];
                 $quantitiesSubmitted = $_POST['quantity_kg'] ?? [];
-
                 try {
                     $collectionController->editCollection(
                         $submittedDate,
@@ -72,13 +67,11 @@ class CollectionEdit
                 }
             }
         }
-
         $actionUrl = $_SERVER['PHP_SELF'] . "/collection-edit/" . urlencode($collectionId);
         $cancelUrl = "/back-office-app/public/collection-list";
         $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Modifier la collecte";
         $buttonTextContent = "Modifier la collecte";
-
         $twig = View::getTwig();
         echo $twig->render('Pages/collection_edit.twig', [
             'error'                 => $error,
@@ -96,8 +89,6 @@ class CollectionEdit
             'error'                 => $error,
             'session'               => $_SESSION,
         ]);
-
-        // Remove flash_error after the view has been rendered so it doesn't persist
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
     }

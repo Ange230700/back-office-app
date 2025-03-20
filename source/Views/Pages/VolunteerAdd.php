@@ -19,11 +19,9 @@ class VolunteerAdd
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-
         $volunteerController = new VolunteerController($pdo);
         $collectionController = new CollectionController($pdo);
         $collectionsList = $collectionController->getCollectionsList();
-
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -35,26 +33,23 @@ class VolunteerAdd
                 $hashedPassword = password_hash($submittedPassword, PASSWORD_DEFAULT);
                 $submittedRole = $_POST['role'] ?? 'participant';
                 $submittedParticipations = $_POST['attendances'] ?? [];
-
                 try {
                     $volunteerController->addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations);
-                    header("Location: /back-office-app/public/volunteer-list");
+                    $baseUrl = Helpers::getBaseUrl();
+                    header("Location: " . $baseUrl . "/volunteer-list");
                     exit;
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
-
         $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-add";
         $cancelUrl = "/back-office-app/public/volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Ajouter le bénévole";
         $buttonTextContent = "Ajouter le bénévole";
-
         $volunteer = [];
         $selectedCollections = [];
-
         $twig = View::getTwig();
         echo $twig->render('Pages/volunteer_add.twig', [
             'error'               => $error,
@@ -68,8 +63,6 @@ class VolunteerAdd
             'selectedCollections' => $selectedCollections,
             'session'             => $_SESSION,
         ]);
-
-        // Remove flash_error after the view has been rendered so it doesn't persist
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
     }
