@@ -2,24 +2,18 @@
   "name": "back-office-app",
   "version": "1.0.0",
   "description": "Below is a detailed code review of this project along with suggestions for improvement. Overall, the project shows a good understanding of using components such as Symfony Routing, Twig for templating, PDO with prepared statements, and Monolog for logging. The project’s structure with controllers, models, views (Twig templates), and utilities is a good start toward a modular MVC‐like design. However, there are some areas where improvements could help increase maintainability, consistency, and security. Here are the key points:",
-  "main": "index.js",
   "scripts": {
-    "build:css": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./dist/style.css --minify",
-    "watch:css": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./dist/style.css --watch",
-    "copy:js": "cp ./node_modules/flowbite/dist/flowbite.min.js ./dist/flowbite.min.js",
-    "copy:css-base": "cp ./public/styles/base.css ./dist/base.css",
-    "copy:fontawesome": "cp ./node_modules/@fortawesome/fontawesome-free/css/all.min.css ./dist/fontawesome.min.css && cp -R ./node_modules/@fortawesome/fontawesome-free/webfonts ./",
-    "build": "npm run build:css && npm run copy:js && npm run copy:css-base && npm run copy:fontawesome",
-    "clean": "rm -rf ./dist ./cache ./node_modules",
-    "setup": "npm install && npm run build"
+    "clean": "rm -rf ./cache ./node_modules",
+    "build": "tailwindcss -i ./source/css/style.css -o ./public/css/tailwind.css --minify",
+    "setup": "npm run clean && npm install && npm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
-    "@tailwindcss/cli": "^4.0.14",
+    "@tailwindcss/cli": "^4.0.15",
     "flowbite": "^3.1.2",
-    "tailwindcss": "^4.0.14"
+    "tailwindcss": "^4.0.15"
   }
 }

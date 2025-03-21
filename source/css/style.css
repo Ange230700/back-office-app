@@ -1,0 +1,8 @@
+/* source\css\style.css */
+
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+
+* {
+  font-family: "Niramit", sans-serif;
+}

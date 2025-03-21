@@ -1,4 +1,4 @@
-// source\Views\javascript\collection.js
+// public\javascript\collection.js
 
 function waitForPageLoading() {
     document.addEventListener('DOMContentLoaded', function () {
@@ -28,4 +28,4 @@ function waitForPageLoading() {
     });
 }
 
-export { waitForPageLoading };
+waitForPageLoading();
