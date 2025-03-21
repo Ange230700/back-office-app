@@ -48,6 +48,13 @@ class Helpers
             : '';
     }
 
+    public static function getAppUrl(): string
+    {
+        return (self::isDevelopment())
+            ? '/back-office-app'
+            : '';
+    }
+
     public static function isDevelopment(): bool
     {
         return !isset($_ENV['APP_ENV']) || $_ENV['APP_ENV'] === 'development';

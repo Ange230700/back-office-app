@@ -22,6 +22,7 @@ class View
             self::$twig->addGlobal('flash_success', Session::getSession("flash_success"));
             self::$twig->addGlobal('flash_error', Session::getSession("flash_error"));
             self::$twig->addGlobal('baseUrl', Helpers::getBaseUrl());
+            self::$twig->addGlobal('appUrl', Helpers::getAppUrl());
         }
         return self::$twig;
     }
