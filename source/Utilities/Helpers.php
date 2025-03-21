@@ -50,6 +50,6 @@ class Helpers
 
     public static function isDevelopment(): bool
     {
-        return (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'development');
+        return !isset($_ENV['APP_ENV']) || $_ENV['APP_ENV'] === 'development';
     }
 }

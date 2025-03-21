@@ -10,7 +10,7 @@ class Logout
     {
         Session::destroySession();
         $baseUrl = Helpers::getBaseUrl();
-        header("Location: " . $baseUrl . "/home" );
+        header("Location: " . $baseUrl . "/");
         exit;
     }
 }

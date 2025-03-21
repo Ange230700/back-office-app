@@ -51,7 +51,7 @@ class VolunteerEdit
             }
         }
         $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-edit/" . urlencode($volunteerId);
-        $cancelUrl = "/back-office-app/public/volunteer-list";
+        $cancelUrl = $baseUrl . "/volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Modifier le bénévole";
         $buttonTextContent = "Modifier le bénévole";

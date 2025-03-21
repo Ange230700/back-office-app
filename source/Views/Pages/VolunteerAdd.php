@@ -19,6 +19,7 @@ class VolunteerAdd
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
+        $baseUrl = Helpers::getBaseUrl();
         $volunteerController = new VolunteerController($pdo);
         $collectionController = new CollectionController($pdo);
         $collectionsList = $collectionController->getCollectionsList();
@@ -44,7 +45,7 @@ class VolunteerAdd
             }
         }
         $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-add";
-        $cancelUrl = "/back-office-app/public/volunteer-list";
+        $cancelUrl = $baseUrl . "/volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Ajouter le bénévole";
         $buttonTextContent = "Ajouter le bénévole";

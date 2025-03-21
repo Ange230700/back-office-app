@@ -1,15 +1,14 @@
 <?php
 // source\Database\seeding.php
 
-define('BASE_PATH', __DIR__ . '/../../');
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
 use Faker\Factory as FakerFactory;
 use Kouak\BackOfficeApp\Database\Configuration;
 
 // Load environment variables
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
 $dotenv->load();
 
 // Get database connection settings from .env

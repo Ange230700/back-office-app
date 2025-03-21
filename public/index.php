@@ -1,8 +1,7 @@
 <?php
 // public\index.php
 
-define('BASE_PATH', dirname(__DIR__));
-require_once BASE_PATH . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Route;
@@ -18,7 +17,7 @@ use \Kouak\BackOfficeApp\Errors\DatabaseException;
 use \Kouak\BackOfficeApp\Errors\ValidationException;
 
 $logger = new Logger('app');
-$logger->pushHandler(new StreamHandler(BASE_PATH . '/logs/app.log', Level::Error));
+$logger->pushHandler(new StreamHandler(dirname(__DIR__) . '/logs/app.log', Level::Error));
 
 $routes = new RouteCollection();
 

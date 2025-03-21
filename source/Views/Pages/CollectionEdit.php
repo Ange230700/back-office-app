@@ -68,7 +68,7 @@ class CollectionEdit
             }
         }
         $actionUrl = $_SERVER['PHP_SELF'] . "/collection-edit/" . urlencode($collectionId);
-        $cancelUrl = "/back-office-app/public/collection-list";
+        $cancelUrl = $baseUrl . "/collection-list";
         $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Modifier la collecte";
         $buttonTextContent = "Modifier la collecte";
