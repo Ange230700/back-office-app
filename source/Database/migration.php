@@ -16,7 +16,7 @@ $dbPassword = $_ENV['DB_PASS'];
 $dbName = $_ENV['DB_NAME'];
 
 // Path to your SQL schema file
-$schemaFile = __DIR__ . '\\collections_management.sql';
+$schemaFile = __DIR__ . '/collections_management.sql';
 if (!file_exists($schemaFile)) {
     die("Schema file not found: $schemaFile\n");
 }
