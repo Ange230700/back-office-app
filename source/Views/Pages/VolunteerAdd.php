@@ -12,6 +12,8 @@ use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Utilities\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class VolunteerAdd
 {
@@ -19,7 +21,6 @@ class VolunteerAdd
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-        $baseUrl = Helpers::getBaseUrl();
         $volunteerController = new VolunteerController($pdo);
         $collectionController = new CollectionController($pdo);
         $collectionsList = $collectionController->getCollectionsList();
@@ -36,23 +37,21 @@ class VolunteerAdd
                 $submittedParticipations = $_POST['attendances'] ?? [];
                 try {
                     $volunteerController->addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations);
-                    $baseUrl = Helpers::getBaseUrl();
-                    header("Location: " . $baseUrl . "/volunteer-list");
-                    exit;
+                    return new RedirectResponse("/back-office-app/public/volunteer-list");
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
         $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-add";
-        $cancelUrl = $baseUrl . "/volunteer-list";
+        $cancelUrl = "volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Ajouter le bénévole";
         $buttonTextContent = "Ajouter le bénévole";
         $volunteer = [];
         $selectedCollections = [];
         $twig = View::getTwig();
-        echo $twig->render('Pages/volunteer_add.twig', [
+        $content = $twig->render('Pages/volunteer_add.twig', [
             'error'               => $error,
             'actionUrl'           => $actionUrl,
             'cancelUrl'           => $cancelUrl,
@@ -66,5 +65,6 @@ class VolunteerAdd
         ]);
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
+        return new Response($content);
     }
 }

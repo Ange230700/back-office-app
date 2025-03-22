@@ -9,6 +9,7 @@ use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Utilities\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class CollectionList
 {
@@ -40,7 +41,7 @@ class CollectionList
         $pageNumber = $_GET['pageNumber'] ?? 1;
 
         $twig = View::getTwig();
-        echo $twig->render('Pages/collection_list.twig', [
+        $content = $twig->render('Pages/collection_list.twig', [
             'collections' => $collectionsList,
             'totalPages'  => $totalPages,
             'dateFormat'  => $dateFormat,
@@ -54,5 +55,6 @@ class CollectionList
         // Remove flash_error after the view has been rendered so it doesn't persist
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
+        return new Response($content);
     }
 }

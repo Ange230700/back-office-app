@@ -4,6 +4,8 @@
 
 namespace Kouak\BackOfficeApp\Utilities;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 class Helpers
 {
     public static function initSession(): void
@@ -16,8 +18,8 @@ class Helpers
         self::initSession();
         $userId = Session::getSession("user_id");
         if (!isset($userId)) {
-            $baseUrl = Helpers::getBaseUrl();
-            header('Location: ' . $baseUrl . '/login');
+            $response = new RedirectResponse('/back-office-app/public/login');
+            $response->send();
             exit();
         }
     }
@@ -27,8 +29,8 @@ class Helpers
         self::checkUserLoggedIn();
         $role = Session::getSession("role");
         if ($role !== "admin") {
-            $baseUrl = Helpers::getBaseUrl();
-            header("Location: " . $baseUrl . "/collection-list");
+            $response = new RedirectResponse('/back-office-app/public/collection-list');
+            $response->send();
             exit();
         }
     }
@@ -39,20 +41,6 @@ class Helpers
         $pageNumber = isset($_GET["pageNumber"]) ? (int)$_GET["pageNumber"] : 1;
         $offset = ($pageNumber - 1) * $limit;
         return compact('limit', 'pageNumber', 'offset');
-    }
-
-    public static function getBaseUrl(): string
-    {
-        return (Helpers::isDevelopment())
-            ? '/back-office-app/public'
-            : '';
-    }
-
-    public static function getAppUrl(): string
-    {
-        return (self::isDevelopment())
-            ? '/back-office-app'
-            : '';
     }
 
     public static function isDevelopment(): bool

@@ -7,6 +7,7 @@ namespace Kouak\BackOfficeApp\Utilities;
 use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class VolunteerDelete
 {
@@ -14,11 +15,9 @@ class VolunteerDelete
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-        $baseUrl = Helpers::getBaseUrl();
-        $destinationUrl = "Location: " . $baseUrl . "/volunteer-list";
+        $destinationUrl = "/back-office-app/public/volunteer-list";
         if (empty($volunteer_id)) {
-            header($destinationUrl);
-            exit;
+            return new RedirectResponse($destinationUrl);
         }
         $volunteerId = $volunteer_id;
         $controller = new VolunteerController($pdo);
@@ -26,16 +25,13 @@ class VolunteerDelete
         if ($volunteerDetails) {
             if (in_array($volunteerDetails['email'], ['admin@admin.admin', 'user@user.user']) || ($volunteerDetails['role'] === 'superAdmin')) {
                 Session::setSession("flash_error", "Vous ne pouvez pas supprimer ce compte.");
-                header($destinationUrl);
-                exit;
+                return new RedirectResponse($destinationUrl);
             }
         } else {
-            header($destinationUrl);
-            exit;
+            return new RedirectResponse($destinationUrl);
         }
         $controller->eraseVolunteer($volunteerId);
         Session::setSession("flash_success", "Le bénévole a été supprimé avec succès.");
-        header($destinationUrl);
-        exit();
+        return new RedirectResponse($destinationUrl);
     }
 }

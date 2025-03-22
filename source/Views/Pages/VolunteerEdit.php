@@ -11,6 +11,8 @@ use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Utilities\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class VolunteerEdit
 {
@@ -18,18 +20,15 @@ class VolunteerEdit
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-        $baseUrl = Helpers::getBaseUrl();
-        $destinationUrl = "Location: " . $baseUrl . "/volunteer-list";
+        $destinationUrl = "/back-office-app/public/volunteer-list";
         if (empty($volunteer_id)) {
-            header($destinationUrl);
-            exit;
+            return new RedirectResponse($destinationUrl);
         }
         $volunteerId = $volunteer_id;
         $volunteerController = new VolunteerController($pdo);
         $volunteer = $volunteerController->getEditableFieldsOfVolunteer($volunteerId);
         if (!$volunteer) {
-            header($destinationUrl);
-            exit;
+            return new RedirectResponse($destinationUrl);
         }
         $collectionController = new CollectionController($pdo);
         $collectionsList = $collectionController->getCollectionsList();
@@ -43,21 +42,20 @@ class VolunteerEdit
                 $submittedParticipations = $_POST['attendances'] ?? [];
                 try {
                     $volunteerController->editVolunteer($submittedRole, $volunteerId, $submittedParticipations);
-                    header($destinationUrl);
-                    exit;
+                    return new RedirectResponse($destinationUrl);
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
         $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-edit/" . urlencode($volunteerId);
-        $cancelUrl = $baseUrl . "/volunteer-list";
+        $cancelUrl = "volunteer-list";
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Modifier le bénévole";
         $buttonTextContent = "Modifier le bénévole";
 
         $twig = View::getTwig();
-        echo $twig->render('Pages/volunteer_edit.twig', [
+        $content = $twig->render('Pages/volunteer_edit.twig', [
             'error'               => $error,
             'actionUrl'           => $actionUrl,
             'cancelUrl'           => $cancelUrl,
@@ -71,5 +69,6 @@ class VolunteerEdit
         ]);
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
+        return new Response($content);
     }
 }

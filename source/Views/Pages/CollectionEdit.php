@@ -11,6 +11,8 @@ use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Controllers\CollectedWasteDetails\CollectedWasteDetailsController;
 use Kouak\BackOfficeApp\Utilities\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class CollectionEdit
 {
@@ -18,18 +20,15 @@ class CollectionEdit
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-        $baseUrl = Helpers::getBaseUrl();
-        $destinationUrl = "Location: " . $baseUrl . "/collection-list";
+        $destinationUrl = "/back-office-app/public/collection-list";
         if (empty($collection_id)) {
-            header($destinationUrl);
-            exit;
+            return new RedirectResponse($destinationUrl);
         }
         $collectionId = $collection_id;
         $collectionController = new CollectionController($pdo);
         $collection = $collectionController->getCollection($collectionId);
         if (!$collection) {
-            header($destinationUrl);
-            exit;
+            return new RedirectResponse($destinationUrl);
         }
         $volunteerController = new VolunteerController($pdo);
         $selectedVolunteersList = $collectionController->getVolunteersListWhoAttendedCollection($collectionId);
@@ -60,20 +59,19 @@ class CollectionEdit
                         $wasteTypesSubmitted,
                         $quantitiesSubmitted
                     );
-                    header($destinationUrl);
-                    exit;
+                    return new RedirectResponse($destinationUrl);
                 } catch (\PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
         $actionUrl = $_SERVER['PHP_SELF'] . "/collection-edit/" . urlencode($collectionId);
-        $cancelUrl = $baseUrl . "/collection-list";
+        $cancelUrl = "collection-list";
         $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Modifier la collecte";
         $buttonTextContent = "Modifier la collecte";
         $twig = View::getTwig();
-        echo $twig->render('Pages/collection_edit.twig', [
+        $content = $twig->render('Pages/collection_edit.twig', [
             'error'                 => $error,
             'actionUrl'             => $actionUrl,
             'cancelUrl'             => $cancelUrl,
@@ -91,5 +89,6 @@ class CollectionEdit
         ]);
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
+        return new Response($content);
     }
 }

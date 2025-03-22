@@ -13,6 +13,8 @@ use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Controllers\CollectedWasteDetails\CollectedWasteDetailsController;
 use Kouak\BackOfficeApp\Utilities\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class CollectionAdd
 {
@@ -29,7 +31,6 @@ class CollectionAdd
         $collection = [];
         $selectedVolunteersList = [];
         $collectedWastesList = [];
-        $baseUrl = Helpers::getBaseUrl();
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -48,20 +49,19 @@ class CollectionAdd
                         $wasteTypesSubmitted,
                         $quantitiesSubmitted
                     );
-                    header("Location: " . $baseUrl . "/collection-list");
-                    exit;
+                    return new RedirectResponse('/back-office-app/public/collection-list');
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
         $actionUrl = $_SERVER['PHP_SELF'] . "/collection-add";
-        $cancelUrl = $baseUrl . "/collection-list";
+        $cancelUrl = "collection-list";
         $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Ajouter la collecte";
         $buttonTextContent = "Ajouter la collecte";
         $twig = View::getTwig();
-        echo $twig->render('Pages/collection_add.twig', [
+        $content = $twig->render('Pages/collection_add.twig', [
             'error'                 => $error,
             'actionUrl'             => $actionUrl,
             'cancelUrl'             => $cancelUrl,
@@ -79,5 +79,6 @@ class CollectionAdd
         ]);
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
+        return new Response($content);
     }
 }

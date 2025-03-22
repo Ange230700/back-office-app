@@ -9,6 +9,8 @@ use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\MyAccount\MyAccountController;
 use Kouak\BackOfficeApp\Utilities\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class MyAccount
 {
@@ -17,11 +19,9 @@ class MyAccount
         Helpers::checkUserLoggedIn();
         $email = Session::getSession("email");
         $demoUsers = ['admin@admin.admin', 'user@user.user'];
-        $baseUrl = Helpers::getBaseUrl();
         if (in_array($email, $demoUsers)) {
             Session::setSession("flash_error", "Accès refusé pour ce compte.");
-            header("Location: " . $baseUrl . "/collection-list");
-            exit;
+            return new RedirectResponse("/back-office-app/public/collection-list");
         }
         $pdo = Configuration::getPdo();
         $controller = new MyAccountController($pdo);
@@ -41,18 +41,18 @@ class MyAccount
                 if ($error === null) {
                     Session::setSession("username", $username);
                     Session::setSession("email", $email);
-                    header("Location: " . $baseUrl . "/my-account");
-                    exit;
+                    return new RedirectResponse("/back-office-app/public/my-account");
                 }
             }
         }
         $twig = View::getTwig();
-        echo $twig->render('Pages/my_account.twig', [
+        $content = $twig->render('Pages/my_account.twig', [
             'account'   => $account,
             'error'     => $error,
             'session'   => $_SESSION,
         ]);
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
+        return new Response($content);
     }
 }

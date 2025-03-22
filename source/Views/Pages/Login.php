@@ -5,10 +5,11 @@
 namespace Kouak\BackOfficeApp\Views\Pages;
 
 use Kouak\BackOfficeApp\Utilities\Session;
-use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Login\LoginController;
 use Kouak\BackOfficeApp\Utilities\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class Login
 {
@@ -33,19 +34,18 @@ class Login
                     Session::setSession("username", $user["username"]);
                     Session::setSession("role", $user["role"]);
                     Session::setSession("email", $user["email"]);
-                    $baseUrl = Helpers::getBaseUrl();
-                    header("Location: " . $baseUrl . "/collection-list");
-                    exit;
+                    return new RedirectResponse('/back-office-app/public/collection-list');
                 } else {
                     $error = "Identifiants incorrects";
                 }
             }
         }
         $twig = View::getTwig();
-        echo $twig->render('/Pages/login.twig', [
+        $content = $twig->render('/Pages/login.twig', [
             'error'       => $error,
             'csrf_token'  => Session::getCsrfToken(),
             'session'     => $_SESSION,
         ]);
+        return new Response($content);
     }
 }
