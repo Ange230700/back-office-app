@@ -10,7 +10,6 @@ use \Kouak\BackOfficeApp\Errors\DatabaseException;
 use Kouak\BackOfficeApp\Models\Volunteer\VolunteerManager;
 use Kouak\BackOfficeApp\Models\CollectionVolunteer\CollectionVolunteerManager;
 
-
 class VolunteerController
 {
     private $pdo;
