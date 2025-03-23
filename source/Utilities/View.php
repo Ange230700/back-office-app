@@ -23,6 +23,7 @@ class View
             self::$twig->addGlobal('flash_success', Session::getSession("flash_success"));
             self::$twig->addGlobal('flash_error', Session::getSession("flash_error"));
             self::$twig->addGlobal('baseUrl', UrlGenerator::getBaseUrl());
+            self::$twig->addGlobal('appUrl', UrlGenerator::getAppUrl());
             self::$twig->addFunction(new TwigFunction('getUrl', function ($path) {
                 return UrlGenerator::generate($path);
             }));

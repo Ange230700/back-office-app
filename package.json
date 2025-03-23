@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Below is a detailed code review of this project along with suggestions for improvement. Overall, the project shows a good understanding of using components such as Symfony Routing, Twig for templating, PDO with prepared statements, and Monolog for logging. The project’s structure with controllers, models, views (Twig templates), and utilities is a good start toward a modular MVC‐like design. However, there are some areas where improvements could help increase maintainability, consistency, and security. Here are the key points:",
   "scripts": {
-    "clean": "truncate -s 0 ./logs/app.log && rm -rf ./cache ./node_modules",
+    "clean": "truncate -s 0 ./logs/app.log ./public/css/tailwind.css && rm -rf ./cache ./node_modules ./public/javascript/node_modules ./public/css/node_modules",
     "build": "tailwindcss -i ./public/css/style.css -o ./public/css/tailwind.css --minify",
     "copy-fontawesome-js": "copyfiles \"node_modules/@fortawesome/fontawesome-free/js/all.min.js\" public/javascript/",
     "copy-fontawesome-css": "copyfiles \"node_modules/@fortawesome/fontawesome-free/css/all.min.css\" public/css/",
