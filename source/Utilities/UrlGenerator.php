@@ -4,11 +4,16 @@
 
 namespace Kouak\BackOfficeApp\Utilities;
 
+use Dotenv\Dotenv;
+
 class UrlGenerator
 {
     public static function getBaseUrl(): string
     {
-        $environment = getenv('APP_ENV');
+        $projectRoot = dirname(__DIR__, 2);
+        $dotenv = Dotenv::createImmutable($projectRoot);
+        $dotenv->load();
+        $environment = $_ENV['APP_ENV'];
         return $environment === 'production' ? '' : '/back-office-app/public';
     }
 
