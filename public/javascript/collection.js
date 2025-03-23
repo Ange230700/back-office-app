@@ -1,8 +1,9 @@
-// source\Views\javascript\collection.js
+// public\javascript\collection.js
 
 function waitForPageLoading() {
     document.addEventListener('DOMContentLoaded', function () {
         const container = document.getElementById('waste-container');
+        const addWasteButton = document.getElementById('add-waste');
 
         const wasteRowTemplate = document.createElement('template');
         wasteRowTemplate.innerHTML = `
@@ -13,16 +14,18 @@ function waitForPageLoading() {
     </div>
     `.trim();
 
-        document.getElementById('add-waste').addEventListener('click', function () {
-            container.insertAdjacentHTML('beforeend', wasteRowTemplate.innerHTML);
-        });
+        if (addWasteButton && container) {
+            document.getElementById('add-waste').addEventListener('click', function () {
+                container.insertAdjacentHTML('beforeend', wasteRowTemplate.innerHTML);
+            });
 
-        container.addEventListener('click', function (e) {
-            if (e.target?.matches('button.remove-waste')) {
-                e.target.parentNode.remove();
-            }
-        });
+            container.addEventListener('click', function (e) {
+                if (e.target?.matches('button.remove-waste')) {
+                    e.target.parentNode.remove();
+                }
+            });
+        }
     });
 }
 
-export { waitForPageLoading };
+waitForPageLoading();

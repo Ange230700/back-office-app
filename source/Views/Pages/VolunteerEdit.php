@@ -11,6 +11,9 @@ use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Utilities\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Kouak\BackOfficeApp\Utilities\UrlGenerator;
 
 class VolunteerEdit
 {
@@ -18,26 +21,19 @@ class VolunteerEdit
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-
-        $destinationUrl = "Location: /back-office-app/volunteer-list";
-
+        $destinationUrl = UrlGenerator::generate('/volunteer-list');
         if (empty($volunteer_id)) {
-            header($destinationUrl);
-            exit;
+            return new RedirectResponse($destinationUrl);
         }
         $volunteerId = $volunteer_id;
-
         $volunteerController = new VolunteerController($pdo);
         $volunteer = $volunteerController->getEditableFieldsOfVolunteer($volunteerId);
         if (!$volunteer) {
-            header($destinationUrl);
-            exit;
+            return new RedirectResponse($destinationUrl);
         }
-
         $collectionController = new CollectionController($pdo);
         $collectionsList = $collectionController->getCollectionsList();
         $selectedCollections = $volunteerController->getCollectionsListVolunteerAttended($volunteerId);
-
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -47,22 +43,20 @@ class VolunteerEdit
                 $submittedParticipations = $_POST['attendances'] ?? [];
                 try {
                     $volunteerController->editVolunteer($submittedRole, $volunteerId, $submittedParticipations);
-                    header($destinationUrl);
-                    exit;
+                    return new RedirectResponse($destinationUrl);
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
-
-        $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-edit/" . urlencode($volunteerId);
-        $cancelUrl = "/back-office-app/volunteer-list";
+        $actionUrl = UrlGenerator::generate("/volunteer-edit/" . urlencode($volunteerId));
+        $cancelUrl = UrlGenerator::generate('/volunteer-list');
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Modifier le bénévole";
         $buttonTextContent = "Modifier le bénévole";
 
         $twig = View::getTwig();
-        echo $twig->render('Pages/volunteer_edit.twig', [
+        $content = $twig->render('Pages/volunteer_edit.twig', [
             'error'               => $error,
             'actionUrl'           => $actionUrl,
             'cancelUrl'           => $cancelUrl,
@@ -74,9 +68,8 @@ class VolunteerEdit
             'selectedCollections' => $selectedCollections,
             'session'             => $_SESSION,
         ]);
-
-        // Remove flash_error after the view has been rendered so it doesn't persist
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
+        return new Response($content);
     }
 }

@@ -9,6 +9,7 @@ use Kouak\BackOfficeApp\Utilities\Helpers;
 use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 use Kouak\BackOfficeApp\Utilities\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class VolunteerList
 {
@@ -31,7 +32,7 @@ class VolunteerList
         $pageNumber = $_GET['pageNumber'] ?? 1;
 
         $twig = View::getTwig();
-        echo $twig->render('Pages/volunteer_list.twig', [
+        $content = $twig->render('Pages/volunteer_list.twig', [
             'volunteers'  => $volunteersList,
             'totalPages'  => $numberOfPages,
             'role'        => $role,
@@ -43,5 +44,6 @@ class VolunteerList
         // Remove flash_error after the view has been rendered so it doesn't persist
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
+        return new Response($content);
     }
 }

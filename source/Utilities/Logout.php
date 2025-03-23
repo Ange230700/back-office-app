@@ -3,14 +3,13 @@
 namespace Kouak\BackOfficeApp\Utilities;
 
 use Kouak\BackOfficeApp\Utilities\Session;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class Logout
 {
     public static function run()
     {
         Session::destroySession();
-
-        header("Location: /back-office-app");
-        exit;
+        return new RedirectResponse('home');
     }
 }
