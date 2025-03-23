@@ -1,15 +1,14 @@
 <?php
 // source\Database\seeding.php
 
-define('BASE_PATH', __DIR__ . '/../../');
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
 use Faker\Factory as FakerFactory;
 use Kouak\BackOfficeApp\Database\Configuration;
 
 // Load environment variables
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
 $dotenv->load();
 
 // Get database connection settings from .env
@@ -44,7 +43,7 @@ try {
     echo "Inserted default admin\n";
 
     // Insert default user (example credentials: user/user123)
-    $pdo->exec("INSERT INTO Volunteer (username, email, password, role) VALUES ('user', 'user@user.user', '" . password_hash('user123', PASSWORD_DEFAULT) . "', 'user')");
+    $pdo->exec("INSERT INTO Volunteer (username, email, password, role) VALUES ('user', 'user@user.user', '" . password_hash('user123', PASSWORD_DEFAULT) . "', 'participant')");
     echo "Inserted default user\n";
 
 

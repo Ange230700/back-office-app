@@ -1,5 +1,11 @@
+# .gitignore
+
 .vscode/
 /vendor/
 .env
-/cache/
+cache/
 /logs/
+node_modules/
+dist/
+.DS_Store
+webfonts/

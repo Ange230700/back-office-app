@@ -12,6 +12,9 @@ use Kouak\BackOfficeApp\Database\Configuration;
 use Kouak\BackOfficeApp\Controllers\Volunteer\VolunteerController;
 use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Utilities\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Kouak\BackOfficeApp\Utilities\UrlGenerator;
 
 class VolunteerAdd
 {
@@ -19,11 +22,9 @@ class VolunteerAdd
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-
         $volunteerController = new VolunteerController($pdo);
         $collectionController = new CollectionController($pdo);
         $collectionsList = $collectionController->getCollectionsList();
-
         $error = "";
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_POST['csrf_token']) || !Session::verifyCsrfToken($_POST['csrf_token'])) {
@@ -35,28 +36,23 @@ class VolunteerAdd
                 $hashedPassword = password_hash($submittedPassword, PASSWORD_DEFAULT);
                 $submittedRole = $_POST['role'] ?? 'participant';
                 $submittedParticipations = $_POST['attendances'] ?? [];
-
                 try {
                     $volunteerController->addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations);
-                    header("Location: /back-office-app/volunteer-list");
-                    exit;
+                    return new RedirectResponse("volunteer-list");
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
-
-        $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-add";
-        $cancelUrl = "/back-office-app/volunteer-list";
+        $actionUrl = UrlGenerator::generate("/volunteer-add");
+        $cancelUrl = UrlGenerator::generate('/volunteer-list');
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Ajouter le bénévole";
         $buttonTextContent = "Ajouter le bénévole";
-
         $volunteer = [];
         $selectedCollections = [];
-
         $twig = View::getTwig();
-        echo $twig->render('Pages/volunteer_add.twig', [
+        $content = $twig->render('Pages/volunteer_add.twig', [
             'error'               => $error,
             'actionUrl'           => $actionUrl,
             'cancelUrl'           => $cancelUrl,
@@ -68,9 +64,8 @@ class VolunteerAdd
             'selectedCollections' => $selectedCollections,
             'session'             => $_SESSION,
         ]);
-
-        // Remove flash_error after the view has been rendered so it doesn't persist
         Session::removeSessionVariable("flash_success");
         Session::removeSessionVariable("flash_error");
+        return new Response($content);
     }
 }

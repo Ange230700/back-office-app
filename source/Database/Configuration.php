@@ -17,8 +17,8 @@ class Configuration
     public static function getPdo(): PDO
     {
         if (self::$pdo === null) {
-            $basePath = defined('BASE_PATH') ? BASE_PATH : dirname(__DIR__, 2);
-            $dotenv = Dotenv::createImmutable($basePath);
+            $projectRoot = dirname(__DIR__, 2);
+            $dotenv = Dotenv::createImmutable($projectRoot);
             $dotenv->load();
 
             $host = $_ENV['DB_HOST'];

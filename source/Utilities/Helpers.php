@@ -4,6 +4,8 @@
 
 namespace Kouak\BackOfficeApp\Utilities;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 class Helpers
 {
     public static function initSession(): void
@@ -14,10 +16,10 @@ class Helpers
     public static function checkUserLoggedIn(): void
     {
         self::initSession();
-
         $userId = Session::getSession("user_id");
         if (!isset($userId)) {
-            header('Location: /back-office-app/login');
+            $response = new RedirectResponse('login');
+            $response->send();
             exit();
         }
     }
@@ -25,10 +27,10 @@ class Helpers
     public static function checkUserAdmin(): void
     {
         self::checkUserLoggedIn();
-
         $role = Session::getSession("role");
         if ($role !== "admin") {
-            header("Location: /back-office-app/collection-list");
+            $response = new RedirectResponse('collection-list');
+            $response->send();
             exit();
         }
     }

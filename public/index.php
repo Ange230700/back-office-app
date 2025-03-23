@@ -1,8 +1,7 @@
 <?php
-// index.php
+// public\index.php
 
-define('BASE_PATH', __DIR__);
-require_once BASE_PATH . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Route;
@@ -18,7 +17,7 @@ use \Kouak\BackOfficeApp\Errors\DatabaseException;
 use \Kouak\BackOfficeApp\Errors\ValidationException;
 
 $logger = new Logger('app');
-$logger->pushHandler(new StreamHandler(BASE_PATH . '/logs/app.log', Level::Error));
+$logger->pushHandler(new StreamHandler(dirname(__DIR__) . '/logs/app.log', Level::Error));
 
 $routes = new RouteCollection();
 
@@ -33,7 +32,7 @@ $routes->add('volunteer-edit', new Route('/volunteer-edit/{volunteer_id}', ['_co
 $routes->add('volunteer-delete', new Route('/volunteer-delete/{volunteer_id}', ['_controller' => 'Kouak\BackOfficeApp\Utilities\VolunteerDelete::runVolunteerDeletion']));
 $routes->add('logout', new Route('/logout', ['_controller' => 'Kouak\BackOfficeApp\Utilities\Logout::run']));
 $routes->add('my-account', new Route('/my-account', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\MyAccount::render']));
-$routes->add('home', new Route('/', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\Home::render']));
+$routes->add('home', new Route('/home', ['_controller' => 'Kouak\BackOfficeApp\Views\Pages\Home::render']));
 
 $request = Request::createFromGlobals();
 
@@ -46,7 +45,10 @@ try {
     $parameters = $matcher->match($request->getPathInfo());
     $controller = $parameters['_controller'];
     unset($parameters['_controller'], $parameters['_route']);
-    call_user_func_array($controller, $parameters);
+    $result = call_user_func_array($controller, $parameters);
+    if ($result instanceof Response) {
+        $result->send();
+    }
 } catch (ResourceNotFoundException $e) {
     $logger->error('Route not found', ['exception' => $e]);
     $response = new Response('Not Found', 404);
