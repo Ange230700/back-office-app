@@ -11,6 +11,7 @@ use Kouak\BackOfficeApp\Controllers\MyAccount\MyAccountController;
 use Kouak\BackOfficeApp\Utilities\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Kouak\BackOfficeApp\Utilities\UrlGenerator;
 
 class MyAccount
 {
@@ -21,7 +22,7 @@ class MyAccount
         $demoUsers = ['admin@admin.admin', 'user@user.user'];
         if (in_array($email, $demoUsers)) {
             Session::setSession("flash_error", "Accès refusé pour ce compte.");
-            return new RedirectResponse("/back-office-app/public/collection-list");
+            return new RedirectResponse(UrlGenerator::generate('collection-list'));
         }
         $pdo = Configuration::getPdo();
         $controller = new MyAccountController($pdo);
@@ -41,7 +42,7 @@ class MyAccount
                 if ($error === null) {
                     Session::setSession("username", $username);
                     Session::setSession("email", $email);
-                    return new RedirectResponse("/back-office-app/public/my-account");
+                    return new RedirectResponse(UrlGenerator::generate("my-account"));
                 }
             }
         }

@@ -10,6 +10,6 @@ class Logout
     public static function run()
     {
         Session::destroySession();
-        return new RedirectResponse('/back-office-app/public/home');
+        return new RedirectResponse(UrlGenerator::generate('home'));
     }
 }

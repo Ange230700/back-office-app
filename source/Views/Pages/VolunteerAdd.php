@@ -14,6 +14,7 @@ use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Utilities\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Kouak\BackOfficeApp\Utilities\UrlGenerator;
 
 class VolunteerAdd
 {
@@ -37,7 +38,7 @@ class VolunteerAdd
                 $submittedParticipations = $_POST['attendances'] ?? [];
                 try {
                     $volunteerController->addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations);
-                    return new RedirectResponse("/back-office-app/public/volunteer-list");
+                    return new RedirectResponse(UrlGenerator::generate("volunteer-list"));
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }

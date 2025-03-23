@@ -10,6 +10,7 @@ use Kouak\BackOfficeApp\Controllers\Login\LoginController;
 use Kouak\BackOfficeApp\Utilities\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Kouak\BackOfficeApp\Utilities\UrlGenerator;
 
 class Login
 {
@@ -34,7 +35,7 @@ class Login
                     Session::setSession("username", $user["username"]);
                     Session::setSession("role", $user["role"]);
                     Session::setSession("email", $user["email"]);
-                    return new RedirectResponse('/back-office-app/public/collection-list');
+                    return new RedirectResponse(UrlGenerator::generate('collection-list'));
                 } else {
                     $error = "Identifiants incorrects";
                 }

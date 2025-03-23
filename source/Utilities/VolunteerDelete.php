@@ -15,7 +15,7 @@ class VolunteerDelete
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-        $destinationUrl = "/back-office-app/public/volunteer-list";
+        $destinationUrl = UrlGenerator::generate("volunteer-list");
         if (empty($volunteer_id)) {
             return new RedirectResponse($destinationUrl);
         }

@@ -13,6 +13,7 @@ use Kouak\BackOfficeApp\Controllers\CollectedWasteDetails\CollectedWasteDetailsC
 use Kouak\BackOfficeApp\Utilities\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Kouak\BackOfficeApp\Utilities\UrlGenerator;
 
 class CollectionEdit
 {
@@ -20,7 +21,7 @@ class CollectionEdit
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-        $destinationUrl = "/back-office-app/public/collection-list";
+        $destinationUrl = UrlGenerator::generate('collection-list');
         if (empty($collection_id)) {
             return new RedirectResponse($destinationUrl);
         }

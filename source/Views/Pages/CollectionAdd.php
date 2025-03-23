@@ -15,6 +15,7 @@ use Kouak\BackOfficeApp\Controllers\CollectedWasteDetails\CollectedWasteDetailsC
 use Kouak\BackOfficeApp\Utilities\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Kouak\BackOfficeApp\Utilities\UrlGenerator;
 
 class CollectionAdd
 {
@@ -49,7 +50,7 @@ class CollectionAdd
                         $wasteTypesSubmitted,
                         $quantitiesSubmitted
                     );
-                    return new RedirectResponse('/back-office-app/public/collection-list');
+                    return new RedirectResponse(UrlGenerator::generate('collection-list'));
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }

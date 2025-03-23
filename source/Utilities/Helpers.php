@@ -18,7 +18,7 @@ class Helpers
         self::initSession();
         $userId = Session::getSession("user_id");
         if (!isset($userId)) {
-            $response = new RedirectResponse('/back-office-app/public/login');
+            $response = new RedirectResponse(UrlGenerator::generate('login'));
             $response->send();
             exit();
         }
@@ -29,7 +29,7 @@ class Helpers
         self::checkUserLoggedIn();
         $role = Session::getSession("role");
         if ($role !== "admin") {
-            $response = new RedirectResponse('/back-office-app/public/collection-list');
+            $response = new RedirectResponse(UrlGenerator::generate('collection-list'));
             $response->send();
             exit();
         }
@@ -41,10 +41,5 @@ class Helpers
         $pageNumber = isset($_GET["pageNumber"]) ? (int)$_GET["pageNumber"] : 1;
         $offset = ($pageNumber - 1) * $limit;
         return compact('limit', 'pageNumber', 'offset');
-    }
-
-    public static function isDevelopment(): bool
-    {
-        return !isset($_ENV['APP_ENV']) || $_ENV['APP_ENV'] === 'development';
     }
 }

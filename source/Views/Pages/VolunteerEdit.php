@@ -13,6 +13,7 @@ use Kouak\BackOfficeApp\Controllers\CollectionEvent\CollectionController;
 use Kouak\BackOfficeApp\Utilities\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Kouak\BackOfficeApp\Utilities\UrlGenerator;
 
 class VolunteerEdit
 {
@@ -20,7 +21,7 @@ class VolunteerEdit
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-        $destinationUrl = "/back-office-app/public/volunteer-list";
+        $destinationUrl = UrlGenerator::generate("volunteer-list");
         if (empty($volunteer_id)) {
             return new RedirectResponse($destinationUrl);
         }
