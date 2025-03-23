@@ -38,14 +38,14 @@ class VolunteerAdd
                 $submittedParticipations = $_POST['attendances'] ?? [];
                 try {
                     $volunteerController->addVolunteer($submittedName, $submittedEmail, $hashedPassword, $submittedRole, $submittedParticipations);
-                    return new RedirectResponse(UrlGenerator::generate("volunteer-list"));
+                    return new RedirectResponse("volunteer-list");
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
-        $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-add";
-        $cancelUrl = "volunteer-list";
+        $actionUrl = UrlGenerator::generate("/volunteer-add");
+        $cancelUrl = UrlGenerator::generate('/volunteer-list');
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Ajouter le bénévole";
         $buttonTextContent = "Ajouter le bénévole";

@@ -44,8 +44,8 @@
 					{% if role == 'admin' or role == 'superAdmin' %}
 						<td class="py-3 px-4">
 							{% include 'Components/action_buttons.twig' with {
-								editUrl: 'collection-edit/' ~ collection.collection_id,
-								deleteUrl: 'collection-delete/' ~ collection.collection_id,
+								editUrl: baseUrl ~ '/collection-edit/' ~ collection.collection_id,
+								deleteUrl: baseUrl ~ '/collection-delete/' ~ collection.collection_id,
 								editTitle: 'Modifier la collecte du ' ~ collection.collection_date|date(dateFormat) ~ ' à ' ~ collection.collection_place,
 								deleteTitle: 'Supprimer la collecte du ' ~ collection.collection_date|date(dateFormat) ~ ' à ' ~ collection.collection_place } %}
 						</td>

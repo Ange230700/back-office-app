@@ -15,7 +15,7 @@ class CollectionDelete
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-        $destinationUrl = UrlGenerator::generate('collection-list');
+        $destinationUrl = UrlGenerator::generate('/collection-list');
         if (empty($collection_id)) {
             return new RedirectResponse($destinationUrl);
         }

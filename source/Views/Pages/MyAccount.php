@@ -22,7 +22,7 @@ class MyAccount
         $demoUsers = ['admin@admin.admin', 'user@user.user'];
         if (in_array($email, $demoUsers)) {
             Session::setSession("flash_error", "Accès refusé pour ce compte.");
-            return new RedirectResponse(UrlGenerator::generate('collection-list'));
+            return new RedirectResponse('collection-list');
         }
         $pdo = Configuration::getPdo();
         $controller = new MyAccountController($pdo);
@@ -42,7 +42,7 @@ class MyAccount
                 if ($error === null) {
                     Session::setSession("username", $username);
                     Session::setSession("email", $email);
-                    return new RedirectResponse(UrlGenerator::generate("my-account"));
+                    return new RedirectResponse("my-account");
                 }
             }
         }

@@ -35,7 +35,7 @@ class Login
                     Session::setSession("username", $user["username"]);
                     Session::setSession("role", $user["role"]);
                     Session::setSession("email", $user["email"]);
-                    return new RedirectResponse(UrlGenerator::generate('collection-list'));
+                    return new RedirectResponse('collection-list');
                 } else {
                     $error = "Identifiants incorrects";
                 }

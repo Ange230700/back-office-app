@@ -21,7 +21,7 @@ class VolunteerEdit
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-        $destinationUrl = UrlGenerator::generate("volunteer-list");
+        $destinationUrl = UrlGenerator::generate('/volunteer-list');
         if (empty($volunteer_id)) {
             return new RedirectResponse($destinationUrl);
         }
@@ -49,8 +49,8 @@ class VolunteerEdit
                 }
             }
         }
-        $actionUrl = $_SERVER['PHP_SELF'] . "/volunteer-edit/" . urlencode($volunteerId);
-        $cancelUrl = "volunteer-list";
+        $actionUrl = UrlGenerator::generate("/volunteer-edit/" . urlencode($volunteerId));
+        $cancelUrl = UrlGenerator::generate('/volunteer-list');
         $cancelTitle = "Retour à la liste des bénévoles";
         $buttonTitle = "Modifier le bénévole";
         $buttonTextContent = "Modifier le bénévole";

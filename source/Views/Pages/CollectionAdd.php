@@ -50,14 +50,14 @@ class CollectionAdd
                         $wasteTypesSubmitted,
                         $quantitiesSubmitted
                     );
-                    return new RedirectResponse(UrlGenerator::generate('collection-list'));
+                    return new RedirectResponse('collection-list');
                 } catch (PDOException $e) {
                     $error = "Erreur de base de données : " . $e->getMessage();
                 }
             }
         }
-        $actionUrl = $_SERVER['PHP_SELF'] . "/collection-add";
-        $cancelUrl = "collection-list";
+        $actionUrl = UrlGenerator::generate("/collection-add");
+        $cancelUrl = UrlGenerator::generate('/collection-list');
         $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Ajouter la collecte";
         $buttonTextContent = "Ajouter la collecte";

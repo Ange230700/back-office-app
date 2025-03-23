@@ -10,6 +10,6 @@ class Logout
     public static function run()
     {
         Session::destroySession();
-        return new RedirectResponse(UrlGenerator::generate('home'));
+        return new RedirectResponse('home');
     }
 }

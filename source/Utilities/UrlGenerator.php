@@ -9,12 +9,11 @@ class UrlGenerator
     public static function getBaseUrl(): string
     {
         $environment = getenv('APP_ENV');
-        return $environment === 'production' ? '/' : '/back-office-app/public/';
+        return $environment === 'production' ? '' : '/back-office-app/public';
     }
 
     public static function generate(string $path): string
     {
-        $path = ltrim($path, '/');
         return self::getBaseUrl() . $path;
     }
 }

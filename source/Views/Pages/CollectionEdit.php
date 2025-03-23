@@ -21,7 +21,7 @@ class CollectionEdit
     {
         Helpers::checkUserAdmin();
         $pdo = Configuration::getPdo();
-        $destinationUrl = UrlGenerator::generate('collection-list');
+        $destinationUrl = UrlGenerator::generate('/collection-list');
         if (empty($collection_id)) {
             return new RedirectResponse($destinationUrl);
         }
@@ -66,8 +66,8 @@ class CollectionEdit
                 }
             }
         }
-        $actionUrl = $_SERVER['PHP_SELF'] . "/collection-edit/" . urlencode($collectionId);
-        $cancelUrl = "collection-list";
+        $actionUrl = UrlGenerator::generate("/collection-edit/" . urlencode($collectionId));
+        $cancelUrl = UrlGenerator::generate('/collection-list');
         $cancelTitle = "Retour à la liste des CollectionEvent";
         $buttonTitle = "Modifier la collecte";
         $buttonTextContent = "Modifier la collecte";

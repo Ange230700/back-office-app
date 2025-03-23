@@ -18,7 +18,7 @@ class Helpers
         self::initSession();
         $userId = Session::getSession("user_id");
         if (!isset($userId)) {
-            $response = new RedirectResponse(UrlGenerator::generate('login'));
+            $response = new RedirectResponse('login');
             $response->send();
             exit();
         }
@@ -29,7 +29,7 @@ class Helpers
         self::checkUserLoggedIn();
         $role = Session::getSession("role");
         if ($role !== "admin") {
-            $response = new RedirectResponse(UrlGenerator::generate('collection-list'));
+            $response = new RedirectResponse('collection-list');
             $response->send();
             exit();
         }

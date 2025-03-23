@@ -3,6 +3,7 @@
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
+use Dotenv\Dotenv;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +17,8 @@ use Monolog\Handler\StreamHandler;
 use \Kouak\BackOfficeApp\Errors\DatabaseException;
 use \Kouak\BackOfficeApp\Errors\ValidationException;
 
+$dotenv = Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
 $logger = new Logger('app');
 $logger->pushHandler(new StreamHandler(dirname(__DIR__) . '/logs/app.log', Level::Error));
 
